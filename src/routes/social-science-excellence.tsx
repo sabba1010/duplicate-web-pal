@@ -27,8 +27,8 @@ function Nav() {
   const links = [
     { label: "Home", to: "/" },
     { label: "$1500 Social Science Excellence", to: "/social-science-excellence" },
-    { label: "Meet the team", to: "/" },
-    { label: "Partners", to: "/" },
+    { label: "Meet the team", to: "/meet-the-team" },
+    { label: "Partners", to: "/partners" },
     { label: "Member Page", to: "/" },
     { label: "Mentorship Program", to: "/" },
   ];

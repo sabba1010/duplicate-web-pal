@@ -9,55 +9,73 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SocialScienceExcellenceRouteImport } from './routes/social-science-excellence'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as MeetTheTeamRouteImport } from './routes/meet-the-team'
+import { Route as PartnersRouteImport } from './routes/partners'
+import { Route as SocialScienceExcellenceRouteImport } from './routes/social-science-excellence'
 
-const SocialScienceExcellenceRoute = SocialScienceExcellenceRouteImport.update({
-  id: '/social-science-excellence',
-  path: '/social-science-excellence',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MeetTheTeamRoute = MeetTheTeamRouteImport.update({
+  id: '/meet-the-team',
+  path: '/meet-the-team',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PartnersRoute = PartnersRouteImport.update({
+  id: '/partners',
+  path: '/partners',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SocialScienceExcellenceRoute = SocialScienceExcellenceRouteImport.update({
+  id: '/social-science-excellence',
+  path: '/social-science-excellence',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/meet-the-team': typeof MeetTheTeamRoute
+  '/partners': typeof PartnersRoute
   '/social-science-excellence': typeof SocialScienceExcellenceRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/meet-the-team': typeof MeetTheTeamRoute
+  '/partners': typeof PartnersRoute
   '/social-science-excellence': typeof SocialScienceExcellenceRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/meet-the-team': typeof MeetTheTeamRoute
+  '/partners': typeof PartnersRoute
   '/social-science-excellence': typeof SocialScienceExcellenceRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/social-science-excellence'
+  fullPaths: '/' | '/meet-the-team' | '/partners' | '/social-science-excellence'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/social-science-excellence'
-  id: '__root__' | '/' | '/social-science-excellence'
+  to: '/' | '/meet-the-team' | '/partners' | '/social-science-excellence'
+  id:
+    | '__root__'
+    | '/'
+    | '/meet-the-team'
+    | '/partners'
+    | '/social-science-excellence'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  MeetTheTeamRoute: typeof MeetTheTeamRoute
+  PartnersRoute: typeof PartnersRoute
   SocialScienceExcellenceRoute: typeof SocialScienceExcellenceRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/social-science-excellence': {
-      id: '/social-science-excellence'
-      path: '/social-science-excellence'
-      fullPath: '/social-science-excellence'
-      preLoaderRoute: typeof SocialScienceExcellenceRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -65,13 +83,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/meet-the-team': {
+      id: '/meet-the-team'
+      path: '/meet-the-team'
+      fullPath: '/meet-the-team'
+      preLoaderRoute: typeof MeetTheTeamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/partners': {
+      id: '/partners'
+      path: '/partners'
+      fullPath: '/partners'
+      preLoaderRoute: typeof PartnersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/social-science-excellence': {
+      id: '/social-science-excellence'
+      path: '/social-science-excellence'
+      fullPath: '/social-science-excellence'
+      preLoaderRoute: typeof SocialScienceExcellenceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  MeetTheTeamRoute: MeetTheTeamRoute,
+  PartnersRoute: PartnersRoute,
   SocialScienceExcellenceRoute: SocialScienceExcellenceRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
