@@ -33,20 +33,28 @@ function Nav() {
     { label: "Mentorship Program", to: "/mentorship-program" },
   ];
   return (
-    <header className="w-full">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 text-sm">
+    <header className="w-full bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-pink-soft/30">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 text-sm">
         <nav className="hidden items-center gap-7 text-ink/80 md:flex">
           {links.map((l) => (
-            <Link key={l.label} to={l.to} className="hover:text-pink-deep transition-colors">
+            <Link
+              key={l.label}
+              to={l.to}
+              activeOptions={{ exact: l.to === "/" }}
+              activeProps={{
+                className: "font-bold text-pink-deep",
+              }}
+              className="transition-colors hover:text-pink-deep text-ink/80"
+            >
               {l.label}
             </Link>
           ))}
         </nav>
         <div className="flex items-center gap-3">
-          <button className="rounded-full bg-pink px-5 py-2 text-sm font-medium text-white shadow-sm hover:bg-pink-deep transition-colors">
+          <button className="rounded-full bg-pink px-5 py-2 text-sm font-medium text-white shadow-md hover:bg-pink-deep hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5">
             Add to Chrome
           </button>
-          <span className="text-sm text-ink/80">Log In</span>
+          <span className="text-sm font-medium text-ink/80 cursor-pointer hover:text-pink transition-colors">Log In</span>
         </div>
       </div>
     </header>
@@ -56,41 +64,47 @@ function Nav() {
 function Hero() {
   return (
     <section
-      className="w-full"
+      className="relative overflow-hidden w-full"
       style={{
         background:
-          "linear-gradient(90deg, oklch(0.94 0.04 260), oklch(0.93 0.05 320), oklch(0.94 0.05 20))",
+          "linear-gradient(135deg, oklch(0.94 0.04 260) 0%, oklch(0.93 0.05 320) 50%, oklch(0.95 0.04 340) 100%)",
       }}
     >
-      <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-10 px-6 py-16 md:grid-cols-2">
+      <div className="absolute left-6 top-8 text-4xl animate-bounce duration-1000 select-none">🎀</div>
+      <div className="absolute right-8 top-10 text-4xl animate-pulse select-none">☁️</div>
+
+      <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-10 px-6 py-16 md:grid-cols-2 relative z-10">
         <div>
-          <h1 className="text-4xl font-extrabold leading-tight text-teal-700 md:text-5xl">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/80 px-4 py-1 text-xs font-bold text-teal-800 uppercase tracking-wider mb-3 shadow-sm">
+            🎓 SCHOLARSHIP OPPORTUNITY
+          </span>
+          <h1 className="text-4xl font-extrabold leading-tight text-teal-800 md:text-6xl tracking-tight">
             SOCIAL
             <br />
             SCIENCE
             <br />
             EXCELLENCE
           </h1>
-          <div className="mt-2 h-1 w-24 rounded-full bg-pink" />
+          <div className="mt-3 h-1.5 w-24 rounded-full bg-pink" />
           <a
             href="#apply"
-            className="mt-6 inline-block rounded-full border border-ink/20 bg-white px-5 py-2 text-sm font-medium text-ink hover:border-pink transition-colors"
+            className="mt-7 inline-block rounded-full bg-[#1e1b4b] px-7 py-3 text-xs font-bold text-white shadow-lg hover:bg-pink-deep transition-all duration-300 uppercase tracking-wider transform hover:-translate-y-0.5"
           >
             Apply Here
           </a>
         </div>
-        <div>
-          <p className="text-3xl font-bold text-ink md:text-4xl">$1,500</p>
-          <p className="mt-1 text-2xl italic text-ink/90 md:text-3xl">
+        <div className="bg-white/70 backdrop-blur-md p-8 rounded-3xl border border-white shadow-xl">
+          <p className="text-4xl font-extrabold text-pink-deep md:text-5xl">$1,500</p>
+          <p className="mt-2 text-2xl font-display italic text-ink md:text-3xl">
             Social Science
             <br />
             Excellence Scholarship
           </p>
-          <p className="mt-4 font-display text-lg text-ink/70">presented by</p>
-          <div className="mt-3 flex items-center gap-4">
-            <span className="text-lg font-bold text-green-600">educations.com</span>
-            <span className="text-xs text-ink/50">POWERED BY KEYSTONE</span>
-            <span className="font-display text-xl text-pink-deep">girls on campus</span>
+          <p className="mt-4 font-display text-base text-ink/70">presented by</p>
+          <div className="mt-3 flex flex-wrap items-center gap-3">
+            <span className="text-base font-bold text-green-600">educations.com</span>
+            <span className="text-[10px] font-bold text-ink/50 bg-ink/5 px-2 py-0.5 rounded">POWERED BY KEYSTONE</span>
+            <span className="font-display text-lg text-pink-deep">girls on campus</span>
           </div>
         </div>
       </div>

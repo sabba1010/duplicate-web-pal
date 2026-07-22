@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { UserCircle2, Linkedin, MessageCircle } from "lucide-react";
+import { UserCircle2, Linkedin, MessageCircle, Sparkles, Heart } from "lucide-react";
 import karlaImg from "../Assets/Karla M..avif";
 import julieImg from "../Assets/Julie M..avif";
 
@@ -35,28 +35,30 @@ function Nav() {
     { label: "Mentorship Program", to: "/mentorship-program" },
   ];
   return (
-    <header className="w-full bg-white">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 text-sm">
+    <header className="w-full bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-pink-soft/30">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 text-sm">
         <nav className="hidden items-center gap-7 text-ink/80 md:flex">
           {links.map((l) => (
             <Link
               key={l.label}
               to={l.to}
-              className={`transition-colors hover:text-pink-deep ${
-                l.to === "/meet-the-team" ? "font-semibold text-pink-deep" : ""
-              }`}
+              activeOptions={{ exact: l.to === "/" }}
+              activeProps={{
+                className: "font-bold text-pink-deep",
+              }}
+              className="transition-colors hover:text-pink-deep text-ink/80"
             >
               {l.label}
             </Link>
           ))}
         </nav>
         <div className="flex items-center gap-3">
-          <button className="rounded-full bg-pink px-5 py-2 text-sm font-medium text-white shadow-sm hover:bg-pink-deep transition-colors">
+          <button className="rounded-full bg-pink px-5 py-2 text-sm font-medium text-white shadow-md hover:bg-pink-deep hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5">
             Add to Chrome
           </button>
-          <a href="#" className="flex items-center gap-1.5 text-ink/80">
+          <a href="#" className="flex items-center gap-1.5 text-ink/80 hover:text-pink transition-colors">
             <UserCircle2 className="h-5 w-5 text-pink" />
-            <span className="text-sm">Log In</span>
+            <span className="text-sm font-medium">Log In</span>
           </a>
         </div>
       </div>
@@ -66,11 +68,11 @@ function Nav() {
 
 function StoryLogo() {
   return (
-    <div className="relative flex flex-col items-center justify-center p-4">
-      <div className="relative">
+    <div className="relative flex flex-col items-center justify-center p-6">
+      <div className="relative transform hover:scale-105 transition-transform duration-300">
         {/* Graduation cap */}
-        <div className="absolute -top-7 left-4 text-pink-deep">
-          <svg width="48" height="36" viewBox="0 0 48 36" fill="currentColor">
+        <div className="absolute -top-8 left-4 text-pink-deep">
+          <svg width="52" height="38" viewBox="0 0 48 36" fill="currentColor">
             <path d="M24 2L2 14L24 26L46 14L24 2Z" fill="#e05297" />
             <path d="M10 18.5V26.5C10 29.5 16.3 32 24 32C31.7 32 38 29.5 38 26.5V18.5" stroke="#e05297" strokeWidth="3" fill="none" strokeLinecap="round" />
             <path d="M42 16V27" stroke="#e05297" strokeWidth="2.5" strokeLinecap="round" />
@@ -87,26 +89,52 @@ function StoryLogo() {
   );
 }
 
+function FloatingStickers() {
+  return (
+    <>
+      <div className="absolute left-6 top-10 text-4xl md:text-5xl animate-bounce duration-1000 select-none filter drop-shadow">
+        🎀
+      </div>
+      <div className="absolute right-10 top-12 text-4xl md:text-5xl animate-pulse select-none filter drop-shadow-sm">
+        ☁️
+      </div>
+      <div className="absolute left-10 top-[480px] text-4xl hidden lg:block select-none filter drop-shadow animate-pulse">
+        🦋
+      </div>
+      <div className="absolute right-12 top-[600px] text-4xl hidden lg:block select-none filter drop-shadow animate-bounce">
+        🌸
+      </div>
+    </>
+  );
+}
+
 function OurStory() {
   return (
-    <section className="bg-white py-16 md:py-20">
-      <div className="mx-auto max-w-5xl px-6">
+    <section className="relative overflow-hidden bg-gradient-to-b from-[#fbf4ff] via-white to-white py-16 md:py-24">
+      <FloatingStickers />
+
+      <div className="mx-auto max-w-5xl px-6 relative z-10">
         <div className="text-center">
-          <h1 className="text-3xl font-bold tracking-tight text-[#1e1b4b] md:text-4xl">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-pink-soft px-4 py-1 text-xs font-bold text-pink-deep uppercase tracking-wider mb-2">
+            <Sparkles className="h-3.5 w-3.5" /> OUR VISION & MISSION
+          </span>
+          <h1 className="text-4xl font-extrabold tracking-tight text-[#1e1b4b] md:text-5xl">
             Our Story
           </h1>
-          <div className="mx-auto mt-2.5 h-[3px] w-10 rounded-full bg-pink" />
+          <div className="mx-auto mt-3 h-[3px] w-12 rounded-full bg-pink" />
         </div>
 
         <div className="mt-12 grid grid-cols-1 items-center gap-12 md:grid-cols-2">
-          <div className="text-sm md:text-base leading-relaxed text-ink/80 space-y-4">
+          <div className="text-sm md:text-base leading-relaxed text-ink/80 space-y-4 bg-white/80 backdrop-blur-sm p-8 rounded-3xl border border-pink-soft/50 shadow-lg">
             <p>
               Recognizing the need for support, our founders envision a
               platform for high school and college students to bridge the
-              gap and create a supportive community. They aim to ensure
-              that everyone, regardless of background, has equal access to
-              educational opportunities. Their initiative seeks to build a
-              more inclusive environment for students pursuing a higher
+              gap and create a supportive community.
+            </p>
+            <p>
+              They aim to ensure that everyone, regardless of background, has
+              equal access to educational opportunities. Their initiative seeks
+              to build a more inclusive environment for students pursuing a higher
               education.
             </p>
           </div>
@@ -131,26 +159,30 @@ function MeetTheTeamSection() {
     >
       <div className="mx-auto max-w-5xl px-6">
         <div className="text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-[#1e1b4b] md:text-4xl">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/80 px-4 py-1 text-xs font-bold text-pink-deep uppercase tracking-wider mb-2 shadow-sm">
+            <Heart className="h-3.5 w-3.5 fill-current" /> THE LEADERSHIP
+          </span>
+          <h2 className="text-3xl font-extrabold tracking-tight text-[#1e1b4b] md:text-5xl">
             Meet The Team
           </h2>
-          <div className="mx-auto mt-2.5 h-[3px] w-10 rounded-full bg-pink" />
+          <div className="mx-auto mt-3 h-[3px] w-12 rounded-full bg-pink" />
         </div>
 
         <div className="mt-14 grid grid-cols-1 gap-12 md:grid-cols-2 md:gap-16">
           {/* Member 1: Karla M. */}
-          <div className="flex flex-col items-center text-left">
-            <div className="relative mb-6 h-64 w-64 md:h-72 md:w-72 drop-shadow-md">
+          <div className="flex flex-col items-center text-left bg-white/70 backdrop-blur-md p-8 rounded-3xl border border-white/80 shadow-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl">
+            <div className="relative mb-6 h-64 w-64 md:h-72 md:w-72 drop-shadow-xl transform hover:scale-105 transition-transform duration-300">
               <img
                 src={karlaImg}
                 alt="Karla M. - Co Founder & CEO"
-                className="h-full w-full object-contain"
+                className="h-full w-full object-contain filter drop-shadow-md"
               />
+              <div className="absolute -bottom-2 -right-2 text-3xl">🎀</div>
             </div>
 
             <div className="w-full max-w-md">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-bold text-[#1e1b4b] md:text-xl">
+                <h3 className="text-xl font-extrabold text-[#1e1b4b] md:text-2xl">
                   Karla M.
                 </h3>
                 <a
@@ -158,12 +190,12 @@ function MeetTheTeamSection() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Karla M. LinkedIn"
-                  className="text-ink hover:text-pink transition-colors"
+                  className="rounded-full bg-pink-soft p-2 text-ink hover:bg-pink hover:text-white transition-colors shadow-sm"
                 >
-                  <Linkedin className="h-5 w-5 fill-current" />
+                  <Linkedin className="h-4 w-4 fill-current" />
                 </a>
               </div>
-              <p className="mt-1 text-xs md:text-sm font-medium text-ink/70">
+              <p className="mt-1 text-xs md:text-sm font-bold text-pink-deep uppercase tracking-wider">
                 Co Founder & CEO
               </p>
               <div className="mt-4 text-xs md:text-sm leading-relaxed text-ink/80 space-y-3">
@@ -178,7 +210,7 @@ function MeetTheTeamSection() {
                   favorite animes are JoJo's Bizarre Adventure and Jujutsu
                   Kaisen.
                 </p>
-                <p>
+                <p className="font-semibold text-pink-deep">
                   I'd love to connect with people who share similar interests!
                 </p>
               </div>
@@ -186,18 +218,19 @@ function MeetTheTeamSection() {
           </div>
 
           {/* Member 2: Julie M. */}
-          <div className="flex flex-col items-center text-left">
-            <div className="relative mb-6 h-64 w-64 md:h-72 md:w-72 drop-shadow-md">
+          <div className="flex flex-col items-center text-left bg-white/70 backdrop-blur-md p-8 rounded-3xl border border-white/80 shadow-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl">
+            <div className="relative mb-6 h-64 w-64 md:h-72 md:w-72 drop-shadow-xl transform hover:scale-105 transition-transform duration-300">
               <img
                 src={julieImg}
                 alt="Julie M. - Co-founder and Website Designer"
-                className="h-full w-full object-contain"
+                className="h-full w-full object-contain filter drop-shadow-md"
               />
+              <div className="absolute -bottom-2 -right-2 text-3xl">🌸</div>
             </div>
 
             <div className="w-full max-w-md">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-bold text-[#1e1b4b] md:text-xl">
+                <h3 className="text-xl font-extrabold text-[#1e1b4b] md:text-2xl">
                   Julie M.
                 </h3>
                 <a
@@ -205,12 +238,12 @@ function MeetTheTeamSection() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Julie M. LinkedIn"
-                  className="text-ink hover:text-pink transition-colors"
+                  className="rounded-full bg-pink-soft p-2 text-ink hover:bg-pink hover:text-white transition-colors shadow-sm"
                 >
-                  <Linkedin className="h-5 w-5 fill-current" />
+                  <Linkedin className="h-4 w-4 fill-current" />
                 </a>
               </div>
-              <p className="mt-1 text-xs md:text-sm font-medium text-ink/70">
+              <p className="mt-1 text-xs md:text-sm font-bold text-pink-deep uppercase tracking-wider">
                 Co-founder and Website Designer
               </p>
               <div className="mt-4 text-xs md:text-sm leading-relaxed text-ink/80 space-y-3">
@@ -220,24 +253,17 @@ function MeetTheTeamSection() {
                   especially dogs. There's something incredibly heartwarming
                   about the companionship and loyalty they offer. Corgis, in
                   particular, have stolen my heart with their adorable looks and
-                  playful personalities. I also love to hang out with friends and
-                  bake during my free time. My education is very important to me so
-                  I would love to be able to uplift women in an education
-                  setting.
+                  playful personalities.
+                </p>
+                <p className="font-semibold text-pink-deep">
+                  My education is very important to me so I would love to be
+                  able to uplift women in an education setting.
                 </p>
               </div>
             </div>
           </div>
         </div>
       </div>
-
-      {/* Floating Chat Action Button */}
-      <button
-        aria-label="Open chat"
-        className="fixed right-5 top-1/2 z-50 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-pink text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
-      >
-        <MessageCircle className="h-6 w-6 fill-current" />
-      </button>
     </section>
   );
 }
@@ -292,13 +318,13 @@ function Footer() {
       <div className="border-t border-ink/5 py-6">
         <div className="flex flex-col items-center justify-center gap-3">
           <div className="flex items-center gap-3 text-xs text-ink/60">
-            <span className="flex h-7 w-7 items-center justify-center rounded-full border border-ink/20 text-[10px] font-semibold">
+            <span className="flex h-7 w-7 items-center justify-center rounded-full border border-ink/20 text-[10px] font-semibold hover:border-pink hover:text-pink transition-colors">
               IG
             </span>
-            <span className="flex h-7 w-7 items-center justify-center rounded-full border border-ink/20 text-[10px] font-semibold">
+            <span className="flex h-7 w-7 items-center justify-center rounded-full border border-ink/20 text-[10px] font-semibold hover:border-pink hover:text-pink transition-colors">
               TT
             </span>
-            <span className="flex h-7 w-7 items-center justify-center rounded-full border border-ink/20 text-[10px] font-semibold">
+            <span className="flex h-7 w-7 items-center justify-center rounded-full border border-ink/20 text-[10px] font-semibold hover:border-pink hover:text-pink transition-colors">
               LI
             </span>
           </div>
@@ -311,11 +337,19 @@ function Footer() {
 
 export function MeetTheTeam() {
   return (
-    <div className="min-h-screen bg-white font-sans text-ink">
+    <div className="min-h-screen bg-white font-sans text-ink selection:bg-pink-soft selection:text-pink-deep">
       <Nav />
       <OurStory />
       <MeetTheTeamSection />
       <Footer />
+
+      {/* Floating Chat Action Button */}
+      <button
+        aria-label="Open chat"
+        className="fixed right-5 top-1/2 z-50 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-pink text-white shadow-xl transition-all duration-300 hover:scale-110 hover:bg-pink-deep active:scale-95"
+      >
+        <MessageCircle className="h-6 w-6 fill-current" />
+      </button>
     </div>
   );
 }

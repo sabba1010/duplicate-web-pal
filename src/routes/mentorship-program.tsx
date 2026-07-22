@@ -40,9 +40,11 @@ function Nav() {
             <Link
               key={l.label}
               to={l.to}
-              className={`transition-colors hover:text-pink-deep ${
-                l.to === "/mentorship-program" ? "font-semibold text-pink-deep" : ""
-              }`}
+              activeOptions={{ exact: l.to === "/" }}
+              activeProps={{
+                className: "font-bold text-pink-deep",
+              }}
+              className="transition-colors hover:text-pink-deep text-ink/80"
             >
               {l.label}
             </Link>

@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { UserCircle2, MessageCircle } from "lucide-react";
+import { UserCircle2, MessageCircle, Sparkles, Heart } from "lucide-react";
 
 export const Route = createFileRoute("/partners")({
   head: () => ({
@@ -33,28 +33,30 @@ function Nav() {
     { label: "Mentorship Program", to: "/mentorship-program" },
   ];
   return (
-    <header className="w-full bg-white">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 text-sm">
+    <header className="w-full bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-pink-soft/30">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 text-sm">
         <nav className="hidden items-center gap-7 text-ink/80 md:flex">
           {links.map((l) => (
             <Link
               key={l.label}
               to={l.to}
-              className={`transition-colors hover:text-pink-deep ${
-                l.to === "/partners" ? "font-semibold text-pink-deep" : ""
-              }`}
+              activeOptions={{ exact: l.to === "/" }}
+              activeProps={{
+                className: "font-bold text-pink-deep",
+              }}
+              className="transition-colors hover:text-pink-deep text-ink/80"
             >
               {l.label}
             </Link>
           ))}
         </nav>
         <div className="flex items-center gap-3">
-          <button className="rounded-full bg-pink px-5 py-2 text-sm font-medium text-white shadow-sm hover:bg-pink-deep transition-colors">
+          <button className="rounded-full bg-pink px-5 py-2 text-sm font-medium text-white shadow-md hover:bg-pink-deep hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5">
             Add to Chrome
           </button>
-          <a href="#" className="flex items-center gap-1.5 text-ink/80">
+          <a href="#" className="flex items-center gap-1.5 text-ink/80 hover:text-pink transition-colors">
             <UserCircle2 className="h-5 w-5 text-pink" />
-            <span className="text-sm">Log In</span>
+            <span className="text-sm font-medium">Log In</span>
           </a>
         </div>
       </div>
@@ -62,12 +64,35 @@ function Nav() {
   );
 }
 
+function FloatingStickers() {
+  return (
+    <>
+      <div className="absolute left-6 top-8 text-4xl md:text-5xl animate-bounce duration-1000 select-none filter drop-shadow">
+        🎀
+      </div>
+      <div className="absolute right-8 top-10 text-4xl md:text-5xl animate-pulse select-none filter drop-shadow-sm">
+        ☁️
+      </div>
+      <div className="absolute left-8 top-[500px] text-4xl hidden lg:block select-none filter drop-shadow animate-pulse">
+        🦋
+      </div>
+      <div className="absolute right-10 top-[750px] text-4xl hidden lg:block select-none filter drop-shadow animate-bounce">
+        🍒
+      </div>
+    </>
+  );
+}
+
 function Hero() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-[#f5ebff] via-[#fbf5ff] to-white pb-16 pt-12 md:pb-24 md:pt-16">
-      {/* Subtle Arc shape on top background */}
-      <div className="mx-auto max-w-4xl px-6 text-center">
-        <h1 className="text-3xl font-bold tracking-tight text-[#1e1b4b] md:text-4xl">
+    <section className="relative overflow-hidden bg-gradient-to-b from-[#fbf4ff] via-[#fff5fa] to-white pb-16 pt-12 md:pb-24 md:pt-16">
+      <FloatingStickers />
+
+      <div className="mx-auto max-w-4xl px-6 text-center relative z-10">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-pink-soft px-4 py-1 text-xs font-bold text-pink-deep uppercase tracking-wider mb-3">
+          <Sparkles className="h-3.5 w-3.5" /> JOIN OUR COMMUNITY
+        </span>
+        <h1 className="text-4xl font-extrabold tracking-tight text-[#1e1b4b] md:text-5xl lg:text-6xl leading-tight">
           We can make a change together
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-xs md:text-sm leading-relaxed text-ink/75">
@@ -81,16 +106,16 @@ function Hero() {
           Reach us at{" "}
           <a
             href="mailto:info@girlsoncampus.org"
-            className="text-pink-deep underline hover:text-pink"
+            className="text-pink-deep underline font-semibold hover:text-pink transition-colors"
           >
             info@girlsoncampus.org
           </a>
         </p>
 
-        <div className="mt-7">
+        <div className="mt-8">
           <a
             href="mailto:info@girlsoncampus.org"
-            className="inline-block rounded-md bg-[#4a4a4a] px-7 py-2.5 text-xs font-semibold text-white shadow-md hover:bg-[#333333] transition-colors"
+            className="inline-block rounded-full bg-[#1e1b4b] px-8 py-3 text-xs font-bold text-white shadow-lg hover:bg-pink-deep hover:shadow-pink/30 transition-all duration-300 transform hover:-translate-y-0.5 tracking-wider uppercase"
           >
             Donate Here
           </a>
@@ -120,7 +145,7 @@ function BigLogo() {
         </svg>
       </div>
 
-      <div className="relative">
+      <div className="relative transform hover:scale-105 transition-transform duration-300">
         {/* Graduation Cap on logo */}
         <div className="absolute -top-9 left-4 text-pink-deep">
           <svg width="60" height="45" viewBox="0 0 48 36" fill="currentColor">
@@ -151,17 +176,15 @@ function BenefitsGrid() {
   return (
     <section className="relative overflow-hidden bg-white py-12 md:py-20">
       {/* Floating Background Shapes */}
-      {/* Light Blue Oval Shape on Left */}
-      <div className="absolute -left-12 bottom-20 h-44 w-72 rounded-full bg-[#dbeafe] opacity-80 pointer-events-none" />
-      {/* Soft Yellow Box on Right */}
-      <div className="absolute -right-8 bottom-6 h-28 w-80 rounded-2xl bg-[#ffec99] opacity-80 pointer-events-none" />
+      <div className="absolute -left-12 bottom-20 h-44 w-72 rounded-full bg-[#dbeafe] opacity-80 pointer-events-none blur-sm" />
+      <div className="absolute -right-8 bottom-6 h-28 w-80 rounded-2xl bg-[#ffec99] opacity-80 pointer-events-none blur-sm" />
 
       <div className="mx-auto max-w-6xl px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10 items-stretch">
           {/* Card 1: Empowering Young Women */}
-          <div className="relative rounded-2xl bg-[#fcdbe8] p-7 md:p-8 shadow-sm flex flex-col justify-between">
+          <div className="relative rounded-3xl bg-[#fcdbe8] p-8 md:p-9 shadow-md border border-pink/30 flex flex-col justify-between transition-all duration-300 hover:scale-[1.02] hover:shadow-xl">
             <div>
-              <h2 className="text-lg md:text-xl font-bold text-[#1e1b4b]">
+              <h2 className="text-xl md:text-2xl font-extrabold text-[#1e1b4b]">
                 Empowering Young Women
               </h2>
               <p className="mt-3 text-xs md:text-sm leading-relaxed text-ink/75">
@@ -174,7 +197,7 @@ function BenefitsGrid() {
             </div>
 
             {/* Overlapping Photo Badge (Bottom Left) */}
-            <div className="absolute -bottom-5 -left-4 z-10 flex items-center gap-2 overflow-hidden rounded-full border-2 border-white bg-white px-3 py-1.5 shadow-md">
+            <div className="absolute -bottom-5 -left-4 z-10 flex items-center gap-2 overflow-hidden rounded-full border-2 border-white bg-white px-3.5 py-1.5 shadow-lg">
               <div className="flex -space-x-1.5">
                 <div className="h-6 w-6 rounded-full bg-pink-deep border border-white" />
                 <div className="h-6 w-6 rounded-full bg-amber-400 border border-white" />
@@ -185,9 +208,9 @@ function BenefitsGrid() {
           </div>
 
           {/* Card 2: Access to Talent */}
-          <div className="relative rounded-2xl bg-[#fcdbe8] p-7 md:p-8 shadow-sm flex flex-col justify-between">
+          <div className="relative rounded-3xl bg-[#fcdbe8] p-8 md:p-9 shadow-md border border-pink/30 flex flex-col justify-between transition-all duration-300 hover:scale-[1.02] hover:shadow-xl">
             <div>
-              <h2 className="text-lg md:text-xl font-bold text-[#1e1b4b]">
+              <h2 className="text-xl md:text-2xl font-extrabold text-[#1e1b4b]">
                 Access to Talent
               </h2>
               <p className="mt-3 text-xs md:text-sm leading-relaxed text-ink/75">
@@ -199,7 +222,7 @@ function BenefitsGrid() {
             </div>
 
             {/* Overlapping Avatar Pill (Bottom Right) */}
-            <div className="absolute -bottom-5 -right-4 z-10 flex items-center gap-1.5 overflow-hidden rounded-full border-2 border-white bg-white px-3 py-1.5 shadow-md">
+            <div className="absolute -bottom-5 -right-4 z-10 flex items-center gap-1.5 overflow-hidden rounded-full border-2 border-white bg-white px-3.5 py-1.5 shadow-lg">
               <div className="flex -space-x-2">
                 {["#9333ea", "#f59e0b", "#065f46", "#be185d"].map((c, i) => (
                   <div
@@ -221,9 +244,9 @@ function BenefitsGrid() {
           </div>
 
           {/* Card 3: Networking Opportunities */}
-          <div className="relative rounded-2xl bg-[#fcdbe8] p-7 md:p-8 shadow-sm flex flex-col justify-between z-10">
+          <div className="relative rounded-3xl bg-[#fcdbe8] p-8 md:p-9 shadow-md border border-pink/30 flex flex-col justify-between z-10 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl">
             <div>
-              <h2 className="text-lg md:text-xl font-bold text-[#1e1b4b]">
+              <h2 className="text-xl md:text-2xl font-extrabold text-[#1e1b4b]">
                 Networking Opportunities
               </h2>
               <p className="mt-3 text-xs md:text-sm leading-relaxed text-ink/75">
@@ -235,7 +258,7 @@ function BenefitsGrid() {
             </div>
 
             {/* Overlapping Photo Badge (Bottom Right) */}
-            <div className="absolute -bottom-5 -right-4 z-10 flex items-center gap-2 overflow-hidden rounded-full border-2 border-white bg-white px-3 py-1.5 shadow-md">
+            <div className="absolute -bottom-5 -right-4 z-10 flex items-center gap-2 overflow-hidden rounded-full border-2 border-white bg-white px-3.5 py-1.5 shadow-lg">
               <div className="flex -space-x-1.5">
                 <div className="h-6 w-6 rounded-full bg-blue-600 border border-white text-[9px] flex items-center justify-center text-white">🎓</div>
                 <div className="h-6 w-6 rounded-full bg-purple-600 border border-white text-[9px] flex items-center justify-center text-white">🎓</div>
@@ -246,9 +269,9 @@ function BenefitsGrid() {
           </div>
 
           {/* Card 4: Brand Visibility and Recognition */}
-          <div className="relative rounded-2xl bg-[#fcdbe8] p-7 md:p-8 shadow-sm flex flex-col justify-between z-10">
+          <div className="relative rounded-3xl bg-[#fcdbe8] p-8 md:p-9 shadow-md border border-pink/30 flex flex-col justify-between z-10 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl">
             <div>
-              <h2 className="text-lg md:text-xl font-bold text-[#1e1b4b]">
+              <h2 className="text-xl md:text-2xl font-extrabold text-[#1e1b4b]">
                 Brand Visibility and Recognition
               </h2>
               <p className="mt-3 text-xs md:text-sm leading-relaxed text-ink/75">
@@ -269,7 +292,7 @@ function DiverseWomenArtwork() {
   return (
     <div className="flex items-center justify-end overflow-hidden pt-4">
       <svg
-        className="h-48 w-auto md:h-60 lg:h-72"
+        className="h-48 w-auto md:h-60 lg:h-72 drop-shadow-md"
         viewBox="0 0 620 250"
         fill="none"
       >
@@ -324,12 +347,12 @@ function DiverseWomenArtwork() {
 
 function CommunityPartners() {
   return (
-    <section className="bg-[#fce7f3] py-16 md:py-20 overflow-hidden">
+    <section className="bg-[#fce7f3] py-16 md:py-24 overflow-hidden rounded-t-[50px] md:rounded-t-[80px] shadow-inner">
       <div className="mx-auto max-w-7xl px-6">
         <div className="grid grid-cols-1 gap-10 md:grid-cols-12 md:items-center">
           {/* Left Side: Title and Logos */}
           <div className="md:col-span-6">
-            <h2 className="text-3xl font-bold tracking-tight text-[#1e1b4b] md:text-4xl">
+            <h2 className="text-3xl font-extrabold tracking-tight text-[#1e1b4b] md:text-5xl">
               Our Community Partners
             </h2>
             <p className="mt-3 text-xs md:text-sm text-ink/75">
@@ -355,12 +378,12 @@ function CommunityPartners() {
               </div>
 
               {/* Financial Specialist Badge */}
-              <div className="rounded-full bg-black px-3.5 py-1.5 text-[9px] font-extrabold uppercase tracking-wider text-yellow-400">
+              <div className="rounded-full bg-black px-4 py-1.5 text-[9px] font-extrabold uppercase tracking-wider text-yellow-400 shadow">
                 FINANCIAL ADVISORS
               </div>
 
               {/* Bobatalks */}
-              <div className="flex items-center gap-2 rounded-xl bg-white px-3.5 py-2 shadow-sm border border-pink/20">
+              <div className="flex items-center gap-2 rounded-xl bg-white px-4 py-2 shadow border border-pink/20">
                 <span className="text-lg">🧋</span>
                 <span className="font-extrabold text-xs text-[#1e1b4b] tracking-tight">
                   BOBATALKS
@@ -368,7 +391,7 @@ function CommunityPartners() {
               </div>
 
               {/* Pine Apple */}
-              <div className="flex items-center gap-2 rounded-xl bg-white px-3.5 py-2 shadow-sm border border-pink/20">
+              <div className="flex items-center gap-2 rounded-xl bg-white px-4 py-2 shadow border border-pink/20">
                 <span className="text-lg">🍍</span>
                 <div className="text-[10px] font-extrabold leading-tight text-[#1e1b4b]">
                   PINE APPLE
@@ -378,12 +401,12 @@ function CommunityPartners() {
               </div>
 
               {/* The Princeton Review */}
-              <div className="flex items-center gap-2 rounded-full border border-ink/20 bg-white px-4 py-1.5 text-[10px] font-bold text-ink">
+              <div className="flex items-center gap-2 rounded-full border border-ink/20 bg-white px-4 py-1.5 text-[10px] font-bold text-ink shadow-sm">
                 <span>The Princeton Review</span>
               </div>
 
               {/* It Logo Box */}
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 font-bold text-white text-xs">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 font-bold text-white text-xs shadow">
                 it
               </div>
             </div>
@@ -449,13 +472,13 @@ function Footer() {
       <div className="border-t border-ink/5 py-6">
         <div className="flex flex-col items-center justify-center gap-3">
           <div className="flex items-center gap-3 text-xs text-ink/60">
-            <span className="flex h-7 w-7 items-center justify-center rounded-full border border-ink/20 text-[10px] font-semibold">
+            <span className="flex h-7 w-7 items-center justify-center rounded-full border border-ink/20 text-[10px] font-semibold hover:border-pink hover:text-pink transition-colors">
               IG
             </span>
-            <span className="flex h-7 w-7 items-center justify-center rounded-full border border-ink/20 text-[10px] font-semibold">
+            <span className="flex h-7 w-7 items-center justify-center rounded-full border border-ink/20 text-[10px] font-semibold hover:border-pink hover:text-pink transition-colors">
               TT
             </span>
-            <span className="flex h-7 w-7 items-center justify-center rounded-full border border-ink/20 text-[10px] font-semibold">
+            <span className="flex h-7 w-7 items-center justify-center rounded-full border border-ink/20 text-[10px] font-semibold hover:border-pink hover:text-pink transition-colors">
               LI
             </span>
           </div>
@@ -468,7 +491,7 @@ function Footer() {
 
 export function PartnersPage() {
   return (
-    <div className="min-h-screen bg-white font-sans text-ink">
+    <div className="min-h-screen bg-white font-sans text-ink selection:bg-pink-soft selection:text-pink-deep">
       <Nav />
       <Hero />
       <BenefitsGrid />
@@ -478,7 +501,7 @@ export function PartnersPage() {
       {/* Floating Chat Action Button */}
       <button
         aria-label="Open chat"
-        className="fixed right-5 top-1/2 z-50 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-pink text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+        className="fixed right-5 top-1/2 z-50 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-pink text-white shadow-xl transition-all duration-300 hover:scale-110 hover:bg-pink-deep active:scale-95"
       >
         <MessageCircle className="h-6 w-6 fill-current" />
       </button>
