@@ -215,7 +215,7 @@ function Extension() {
     "Quietly flags opportunities as you scroll, so you don't have to look.",
   ];
   return (
-    <section className="mx-auto grid max-w-7xl grid-cols-1 gap-14 px-6 py-24 md:grid-cols-2 md:items-center">
+    <section className="relative mx-auto grid max-w-7xl grid-cols-1 gap-14 px-6 py-24 md:grid-cols-2 md:items-center">
       <div>
         <SectionHeader
           kicker="Chrome extension — live now"
@@ -234,7 +234,7 @@ function Extension() {
           {bullets.map((b, i) => (
             <li
               key={b}
-              className="flex items-center gap-3 rounded-full border border-pink-soft bg-pink-soft/40 px-4 py-2.5 text-sm text-ink/80"
+              className="flex items-center gap-3 rounded-full border border-pink-soft bg-pink-soft/40 px-4 py-2.5 text-sm text-ink/80 transition-transform duration-300 hover:translate-x-1"
             >
               <span className="text-xs font-semibold text-pink">
                 {String(i + 1).padStart(2, "0")}
@@ -243,7 +243,7 @@ function Extension() {
             </li>
           ))}
         </ul>
-        <button className="mt-7 rounded-full bg-pink px-6 py-3 text-sm font-medium text-white shadow-sm hover:bg-pink-deep transition-colors">
+        <button className="mt-7 rounded-full bg-pink px-6 py-3 text-sm font-medium text-white shadow-md hover:bg-pink-deep hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5">
           Add to Chrome — it's free
         </button>
       </div>
@@ -261,27 +261,32 @@ function BrowserMock() {
     { n: "Open dashboard", tag: "→", color: "bg-ink/70" },
   ];
   return (
-    <div className="relative">
-      <div className="rounded-2xl border border-ink/10 bg-white shadow-[0_20px_60px_-30px_rgba(0,0,0,0.25)]">
+    <div className="relative group transition-transform duration-500 hover:-translate-y-1">
+      {/* Subtle Floating Sticker */}
+      <div className="absolute -top-6 -right-6 text-3xl select-none filter drop-shadow animate-bounce duration-1000">
+        🎀
+      </div>
+      <div className="rounded-2xl border border-ink/10 bg-white shadow-[0_20px_60px_-30px_rgba(0,0,0,0.25)] group-hover:shadow-[0_25px_70px_-25px_rgba(224,82,151,0.2)] transition-shadow duration-500">
         <div className="flex items-center justify-between border-b border-ink/5 px-4 py-2.5">
           <div className="flex gap-1.5">
             <span className="h-2.5 w-2.5 rounded-full bg-red-400" />
             <span className="h-2.5 w-2.5 rounded-full bg-yellow-400" />
             <span className="h-2.5 w-2.5 rounded-full bg-green-400" />
           </div>
-          <span className="rounded-full bg-pink px-3 py-1 text-[10px] font-semibold text-white">
+          <span className="rounded-full bg-pink px-3 py-1 text-[10px] font-semibold text-white shadow-xs">
             INSTALL FREE
           </span>
         </div>
         <div className="p-6">
-          <p className="mb-4 text-sm font-semibold text-ink">
-            Opportunity saved ✓
+          <p className="mb-4 text-sm font-semibold text-ink flex items-center gap-1.5">
+            <span>Opportunity saved</span>
+            <span className="text-pink animate-pulse">✓</span>
           </p>
           <div className="space-y-2">
             {items.map((it) => (
               <div
                 key={it.n}
-                className="flex items-center justify-between rounded-lg bg-pink-soft/50 px-3 py-2.5 text-xs text-ink/80"
+                className="flex items-center justify-between rounded-lg bg-pink-soft/50 px-3 py-2.5 text-xs text-ink/80 transition-transform duration-300 hover:scale-[1.01]"
               >
                 <span>{it.n}</span>
                 <span
@@ -307,7 +312,7 @@ function Dashboard() {
     "Stay ahead and stress less",
   ];
   return (
-    <section className="mx-auto grid max-w-7xl grid-cols-1 gap-14 px-6 py-24 md:grid-cols-2 md:items-center">
+    <section className="relative mx-auto grid max-w-7xl grid-cols-1 gap-14 px-6 py-24 md:grid-cols-2 md:items-center">
       <div>
         <SectionHeader kicker="Your dashboard" first="Y" main="our opportunities," />
         <h2 className="text-4xl font-bold leading-tight text-ink md:text-5xl">
@@ -315,13 +320,13 @@ function Dashboard() {
         </h2>
         <ul className="mt-6 space-y-2 text-sm text-ink/80">
           {bullets.map((b) => (
-            <li key={b} className="flex items-center gap-2">
+            <li key={b} className="flex items-center gap-2 transition-transform duration-300 hover:translate-x-1">
               <Check className="h-4 w-4 text-pink" />
               {b}
             </li>
           ))}
         </ul>
-        <button className="mt-7 flex items-center gap-1 rounded-full border border-ink/20 px-5 py-2.5 text-sm font-medium text-ink hover:border-ink/40 transition-colors">
+        <button className="mt-7 flex items-center gap-1.5 rounded-full border border-ink/20 px-5 py-2.5 text-sm font-medium text-ink hover:border-pink hover:text-pink transition-all duration-300 shadow-xs transform hover:-translate-y-0.5">
           Open your dashboard <ChevronRight className="h-4 w-4" />
         </button>
       </div>
@@ -332,74 +337,80 @@ function Dashboard() {
 
 function DashboardMock() {
   const rows = [
-    { name: "Gates Scholarship", type: "Scholarship", date: "May 15", status: "Due Soon", tone: "bg-pink text-white" },
+    { name: "Gates Scholarship", type: "Scholarship", date: "May 15", status: "Due Soon", tone: "bg-pink text-white animate-pulse" },
     { name: "Canva Career Program", type: "Internship", date: "May 30", status: "Applied", tone: "bg-lilac text-ink" },
     { name: "Google STEP Internship", type: "Internship", date: "May 20", status: "Saved", tone: "bg-pink-soft text-pink-deep" },
     { name: "Female Founders Fellowship", type: "Fellowship", date: "Jun 1", status: "—", tone: "bg-muted text-ink/60" },
   ];
   return (
-    <div className="rounded-2xl border border-ink/10 bg-white p-5 shadow-[0_20px_60px_-30px_rgba(0,0,0,0.25)]">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm font-semibold text-ink">Good morning, bestie 💗</p>
-          <p className="text-xs text-ink/60">You've got 5 deadlines coming up this week</p>
-        </div>
-        <div className="flex -space-x-1.5">
-          <div className="h-5 w-5 rounded-full bg-pink" />
-          <div className="h-5 w-5 rounded-full bg-lilac" />
-        </div>
+    <div className="relative group transition-transform duration-500 hover:-translate-y-1">
+      {/* Subtle Floating Cloud Sticker */}
+      <div className="absolute -top-5 -left-5 text-3xl select-none opacity-80 animate-pulse">
+        ☁️
       </div>
-      <div className="mt-4 grid grid-cols-4 gap-2 text-center">
-        {[
-          { n: "23", l: "SAVED" },
-          { n: "8", l: "APPLIED" },
-          { n: "5", l: "DUE SOON" },
-          { n: "3", l: "ESSAYS WROTE" },
-        ].map((s) => (
-          <div key={s.l} className="rounded-lg bg-pink-soft/40 p-2">
-            <p className="text-xl font-bold text-ink">{s.n}</p>
-            <p className="text-[9px] font-semibold tracking-wide text-ink/60">{s.l}</p>
-          </div>
-        ))}
-      </div>
-      <div className="mt-5">
+      <div className="rounded-2xl border border-ink/10 bg-white p-5 shadow-[0_20px_60px_-30px_rgba(0,0,0,0.25)] group-hover:shadow-[0_25px_70px_-25px_rgba(224,82,151,0.2)] transition-shadow duration-500">
         <div className="flex items-center justify-between">
-          <p className="text-xs font-semibold text-ink">My Opportunities</p>
-          <div className="flex gap-1 text-[10px]">
-            {["All", "Scholarships", "Remote", "Fellowship"].map((t, i) => (
-              <span
-                key={t}
-                className={`rounded-full px-2 py-0.5 ${i === 0 ? "bg-ink text-white" : "bg-muted text-ink/70"}`}
-              >
-                {t}
-              </span>
-            ))}
+          <div>
+            <p className="text-sm font-semibold text-ink">Good morning, bestie 💗</p>
+            <p className="text-xs text-ink/60">You've got 5 deadlines coming up this week</p>
+          </div>
+          <div className="flex -space-x-1.5">
+            <div className="h-5 w-5 rounded-full bg-pink animate-ping" />
+            <div className="h-5 w-5 rounded-full bg-lilac" />
           </div>
         </div>
-        <table className="mt-3 w-full text-left text-[11px]">
-          <thead className="text-[9px] font-semibold uppercase tracking-wide text-ink/50">
-            <tr>
-              <th className="pb-2">Name</th>
-              <th className="pb-2">Type</th>
-              <th className="pb-2">Date</th>
-              <th className="pb-2">Status</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-ink/5">
-            {rows.map((r) => (
-              <tr key={r.name}>
-                <td className="py-2 text-ink">{r.name}</td>
-                <td className="py-2 text-ink/70">{r.type}</td>
-                <td className="py-2 text-ink/70">{r.date}</td>
-                <td className="py-2">
-                  <span className={`rounded-full px-2 py-0.5 text-[9px] font-semibold ${r.tone}`}>
-                    {r.status}
-                  </span>
-                </td>
+        <div className="mt-4 grid grid-cols-4 gap-2 text-center">
+          {[
+            { n: "23", l: "SAVED" },
+            { n: "8", l: "APPLIED" },
+            { n: "5", l: "DUE SOON" },
+            { n: "3", l: "ESSAYS WROTE" },
+          ].map((s) => (
+            <div key={s.l} className="rounded-lg bg-pink-soft/40 p-2 transition-transform duration-300 hover:scale-105">
+              <p className="text-xl font-bold text-ink">{s.n}</p>
+              <p className="text-[9px] font-semibold tracking-wide text-ink/60">{s.l}</p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-5">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-semibold text-ink">My Opportunities</p>
+            <div className="flex gap-1 text-[10px]">
+              {["All", "Scholarships", "Remote", "Fellowship"].map((t, i) => (
+                <span
+                  key={t}
+                  className={`rounded-full px-2 py-0.5 ${i === 0 ? "bg-ink text-white" : "bg-muted text-ink/70"}`}
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
+          </div>
+          <table className="mt-3 w-full text-left text-[11px]">
+            <thead className="text-[9px] font-semibold uppercase tracking-wide text-ink/50">
+              <tr>
+                <th className="pb-2">Name</th>
+                <th className="pb-2">Type</th>
+                <th className="pb-2">Date</th>
+                <th className="pb-2">Status</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-ink/5">
+              {rows.map((r) => (
+                <tr key={r.name} className="transition-colors hover:bg-pink-soft/20">
+                  <td className="py-2 text-ink font-medium">{r.name}</td>
+                  <td className="py-2 text-ink/70">{r.type}</td>
+                  <td className="py-2 text-ink/70">{r.date}</td>
+                  <td className="py-2">
+                    <span className={`rounded-full px-2 py-0.5 text-[9px] font-semibold ${r.tone}`}>
+                      {r.status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
@@ -408,7 +419,7 @@ function DashboardMock() {
 function Chat() {
   const tags = ["Essay feedback", "Essay feedback", "Essay feedback", "Essay feedback", "Essay feedback"];
   return (
-    <section className="mx-auto grid max-w-7xl grid-cols-1 gap-14 px-6 py-24 md:grid-cols-2 md:items-center">
+    <section className="relative mx-auto grid max-w-7xl grid-cols-1 gap-14 px-6 py-24 md:grid-cols-2 md:items-center">
       <div>
         <SectionHeader kicker="Girl chat" first="A" main="sk, vent, or" />
         <h2 className="text-4xl font-bold leading-tight text-ink md:text-5xl">
@@ -424,13 +435,13 @@ function Chat() {
           {tags.map((t, i) => (
             <span
               key={i}
-              className="rounded-full border border-ink/15 bg-white px-3 py-1 text-xs text-ink/70"
+              className="rounded-full border border-ink/15 bg-white px-3 py-1 text-xs text-ink/70 transition-colors hover:border-pink hover:text-pink"
             >
               {t}
             </span>
           ))}
         </div>
-        <button className="mt-7 rounded-full bg-pink px-6 py-3 text-sm font-medium text-white shadow-sm hover:bg-pink-deep transition-colors">
+        <button className="mt-7 rounded-full bg-pink px-6 py-3 text-sm font-medium text-white shadow-md hover:bg-pink-deep hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5">
           Join Girl Chat
         </button>
       </div>
@@ -446,36 +457,46 @@ function ChatMock() {
     { who: "Sam Kim", color: "bg-indigo-300", text: "yes! We do a 1-hr coaching prep + a quick mock interview — happy to send a PDF too if useful" },
   ];
   return (
-    <div className="relative rounded-2xl border border-ink/10 bg-white p-5 shadow-[0_20px_60px_-30px_rgba(0,0,0,0.25)]">
-      <div className="absolute -top-3 left-5 rounded-full bg-pink px-3 py-1 text-[10px] font-semibold text-white">
-        LIVE NOW
+    <div className="relative group transition-transform duration-500 hover:-translate-y-1">
+      {/* Floating Heart Sticker */}
+      <div className="absolute -bottom-5 -right-5 text-3xl select-none filter drop-shadow animate-bounce duration-1000">
+        💖
       </div>
-      <div className="flex items-center justify-between border-b border-ink/5 pb-3">
-        <div className="flex items-center gap-2">
-          <MessageCircle className="h-4 w-4 text-pink" />
-          <span className="text-sm font-semibold text-ink">Girl Chat</span>
+      <div className="relative rounded-2xl border border-ink/10 bg-white p-5 shadow-[0_20px_60px_-30px_rgba(0,0,0,0.25)] group-hover:shadow-[0_25px_70px_-25px_rgba(224,82,151,0.2)] transition-shadow duration-500">
+        <div className="absolute -top-3 left-5 rounded-full bg-pink px-3 py-1 text-[10px] font-semibold text-white shadow-xs flex items-center gap-1.5">
+          <span className="h-1.5 w-1.5 rounded-full bg-white animate-ping" />
+          LIVE NOW
         </div>
-        <span className="text-[10px] text-ink/50">234 online</span>
-      </div>
-      <div className="mt-4 space-y-3">
-        {msgs.map((m) => (
-          <div key={m.who} className="flex gap-2">
-            <div className={`h-7 w-7 shrink-0 rounded-full ${m.color}`} />
-            <div className="flex-1">
-              <p className="text-[11px] font-semibold text-ink">{m.who}</p>
-              <p className="rounded-lg bg-muted px-3 py-2 text-xs text-ink/80">
-                {m.text}
-              </p>
-            </div>
+        <div className="flex items-center justify-between border-b border-ink/5 pb-3">
+          <div className="flex items-center gap-2">
+            <MessageCircle className="h-4 w-4 text-pink" />
+            <span className="text-sm font-semibold text-ink">Girl Chat</span>
           </div>
-        ))}
-      </div>
-      <div className="mt-4 flex items-center gap-2 rounded-full border border-ink/10 px-3 py-2">
-        <input
-          placeholder="Say hello ..."
-          className="flex-1 bg-transparent text-xs outline-none"
-        />
-        <Bookmark className="h-4 w-4 text-pink" />
+          <span className="text-[10px] font-medium text-ink/60 flex items-center gap-1">
+            <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
+            234 online
+          </span>
+        </div>
+        <div className="mt-4 space-y-3">
+          {msgs.map((m) => (
+            <div key={m.who} className="flex gap-2 transition-transform duration-300 hover:translate-x-1">
+              <div className={`h-7 w-7 shrink-0 rounded-full ${m.color} shadow-xs`} />
+              <div className="flex-1">
+                <p className="text-[11px] font-semibold text-ink">{m.who}</p>
+                <p className="rounded-lg bg-muted px-3 py-2 text-xs text-ink/80">
+                  {m.text}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="mt-4 flex items-center gap-2 rounded-full border border-ink/10 px-3 py-2 transition-colors focus-within:border-pink">
+          <input
+            placeholder="Say hello ..."
+            className="flex-1 bg-transparent text-xs outline-none"
+          />
+          <Bookmark className="h-4 w-4 text-pink" />
+        </div>
       </div>
     </div>
   );
