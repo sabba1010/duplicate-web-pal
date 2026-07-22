@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as MeetTheTeamRouteImport } from './routes/meet-the-team'
 import { Route as MentorshipProgramRouteImport } from './routes/mentorship-program'
 import { Route as PartnersRouteImport } from './routes/partners'
@@ -18,6 +19,11 @@ import { Route as SocialScienceExcellenceRouteImport } from './routes/social-sci
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MeetTheTeamRoute = MeetTheTeamRouteImport.update({
@@ -43,6 +49,7 @@ const SocialScienceExcellenceRoute = SocialScienceExcellenceRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
   '/meet-the-team': typeof MeetTheTeamRoute
   '/mentorship-program': typeof MentorshipProgramRoute
   '/partners': typeof PartnersRoute
@@ -50,6 +57,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
   '/meet-the-team': typeof MeetTheTeamRoute
   '/mentorship-program': typeof MentorshipProgramRoute
   '/partners': typeof PartnersRoute
@@ -58,6 +66,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
   '/meet-the-team': typeof MeetTheTeamRoute
   '/mentorship-program': typeof MentorshipProgramRoute
   '/partners': typeof PartnersRoute
@@ -67,6 +76,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/login'
     | '/meet-the-team'
     | '/mentorship-program'
     | '/partners'
@@ -74,6 +84,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/login'
     | '/meet-the-team'
     | '/mentorship-program'
     | '/partners'
@@ -81,6 +92,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/login'
     | '/meet-the-team'
     | '/mentorship-program'
     | '/partners'
@@ -89,6 +101,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  LoginRoute: typeof LoginRoute
   MeetTheTeamRoute: typeof MeetTheTeamRoute
   MentorshipProgramRoute: typeof MentorshipProgramRoute
   PartnersRoute: typeof PartnersRoute
@@ -102,6 +115,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/meet-the-team': {
@@ -137,6 +157,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  LoginRoute: LoginRoute,
   MeetTheTeamRoute: MeetTheTeamRoute,
   MentorshipProgramRoute: MentorshipProgramRoute,
   PartnersRoute: PartnersRoute,

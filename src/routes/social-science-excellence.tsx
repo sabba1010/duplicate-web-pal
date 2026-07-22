@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Clock, Eye, Mail, CheckCircle2, Laptop, Camera, ChevronDown } from "lucide-react";
+import { Clock, Eye, Mail, CheckCircle2, Laptop, Camera, ChevronDown, UserCircle2 } from "lucide-react";
 
 export const Route = createFileRoute("/social-science-excellence")({
   head: () => ({
@@ -54,7 +54,13 @@ function Nav() {
           <button className="rounded-full bg-pink px-5 py-2 text-sm font-medium text-white shadow-md hover:bg-pink-deep hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5">
             Add to Chrome
           </button>
-          <span className="text-sm font-medium text-ink/80 cursor-pointer hover:text-pink transition-colors">Log In</span>
+          <Link
+            to="/login"
+            className="flex items-center gap-1.5 text-ink/80 hover:text-pink transition-colors"
+          >
+            <UserCircle2 className="h-5 w-5 text-pink" />
+            <span className="text-sm font-medium">Log In</span>
+          </Link>
         </div>
       </div>
     </header>
