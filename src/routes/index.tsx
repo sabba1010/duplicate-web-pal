@@ -17,11 +17,11 @@ export const Route = createFileRoute("/")({
         content:
           "Scholarships, internships, paid programs, career advice, and student resources — curated for girls building their future.",
       },
-      { property: "og:title", content: "Girls On Campus" },
+      { property: "og:title", content: "Girls On Campus — Less gatekeeping, more access." },
       {
         property: "og:description",
         content:
-          "Scholarships, internships, paid programs, and career advice curated for girls building their future.",
+          "Scholarships, internships, paid programs, career advice, and student resources — curated for girls building their future.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
