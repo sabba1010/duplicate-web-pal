@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MeetTheTeamRouteImport } from './routes/meet-the-team'
+import { Route as MentorshipProgramRouteImport } from './routes/mentorship-program'
 import { Route as PartnersRouteImport } from './routes/partners'
 import { Route as SocialScienceExcellenceRouteImport } from './routes/social-science-excellence'
 
@@ -22,6 +23,11 @@ const IndexRoute = IndexRouteImport.update({
 const MeetTheTeamRoute = MeetTheTeamRouteImport.update({
   id: '/meet-the-team',
   path: '/meet-the-team',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MentorshipProgramRoute = MentorshipProgramRouteImport.update({
+  id: '/mentorship-program',
+  path: '/mentorship-program',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PartnersRoute = PartnersRouteImport.update({
@@ -38,12 +44,14 @@ const SocialScienceExcellenceRoute = SocialScienceExcellenceRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/meet-the-team': typeof MeetTheTeamRoute
+  '/mentorship-program': typeof MentorshipProgramRoute
   '/partners': typeof PartnersRoute
   '/social-science-excellence': typeof SocialScienceExcellenceRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/meet-the-team': typeof MeetTheTeamRoute
+  '/mentorship-program': typeof MentorshipProgramRoute
   '/partners': typeof PartnersRoute
   '/social-science-excellence': typeof SocialScienceExcellenceRoute
 }
@@ -51,18 +59,30 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/meet-the-team': typeof MeetTheTeamRoute
+  '/mentorship-program': typeof MentorshipProgramRoute
   '/partners': typeof PartnersRoute
   '/social-science-excellence': typeof SocialScienceExcellenceRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/meet-the-team' | '/partners' | '/social-science-excellence'
+  fullPaths:
+    | '/'
+    | '/meet-the-team'
+    | '/mentorship-program'
+    | '/partners'
+    | '/social-science-excellence'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/meet-the-team' | '/partners' | '/social-science-excellence'
+  to:
+    | '/'
+    | '/meet-the-team'
+    | '/mentorship-program'
+    | '/partners'
+    | '/social-science-excellence'
   id:
     | '__root__'
     | '/'
     | '/meet-the-team'
+    | '/mentorship-program'
     | '/partners'
     | '/social-science-excellence'
   fileRoutesById: FileRoutesById
@@ -70,6 +90,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   MeetTheTeamRoute: typeof MeetTheTeamRoute
+  MentorshipProgramRoute: typeof MentorshipProgramRoute
   PartnersRoute: typeof PartnersRoute
   SocialScienceExcellenceRoute: typeof SocialScienceExcellenceRoute
 }
@@ -88,6 +109,13 @@ declare module '@tanstack/react-router' {
       path: '/meet-the-team'
       fullPath: '/meet-the-team'
       preLoaderRoute: typeof MeetTheTeamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mentorship-program': {
+      id: '/mentorship-program'
+      path: '/mentorship-program'
+      fullPath: '/mentorship-program'
+      preLoaderRoute: typeof MentorshipProgramRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/partners': {
@@ -110,6 +138,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   MeetTheTeamRoute: MeetTheTeamRoute,
+  MentorshipProgramRoute: MentorshipProgramRoute,
   PartnersRoute: PartnersRoute,
   SocialScienceExcellenceRoute: SocialScienceExcellenceRoute,
 }

@@ -49,7 +49,7 @@ function Nav() {
     { label: "Meet the team", to: "/meet-the-team" },
     { label: "Partners", to: "/partners" },
     { label: "Member Page", to: "/" },
-    { label: "Mentorship Program", to: "/" },
+    { label: "Mentorship Program", to: "/mentorship-program" },
   ];
   return (
     <header className="w-full">
