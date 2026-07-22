@@ -88,8 +88,16 @@ function Nav() {
 
 function Hero() {
   return (
-    <section className="relative overflow-hidden">
-      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-6 py-16 md:grid-cols-2 md:py-24">
+    <section className="relative overflow-hidden bg-gradient-to-b from-[#fbf4ff]/40 via-white to-white">
+      {/* Floating Coquette Theme Stickers */}
+      <div className="absolute left-6 top-8 text-3xl md:text-4xl animate-bounce duration-1000 select-none filter drop-shadow opacity-80">
+        🎀
+      </div>
+      <div className="absolute right-10 top-10 text-3xl md:text-4xl animate-pulse select-none opacity-80">
+        ☁️
+      </div>
+
+      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-6 py-16 md:grid-cols-2 md:py-24 relative z-10">
         <div className="max-w-xl">
           <h1 className="text-5xl font-bold leading-[1.05] tracking-tight text-ink md:text-6xl">
             Less gatekeeping,
@@ -101,10 +109,10 @@ function Hero() {
             resources — curated for girls building their future.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
-            <button className="rounded-full bg-pink px-6 py-3 text-sm font-medium text-white shadow-sm hover:bg-pink-deep transition-colors">
+            <button className="rounded-full bg-pink px-6 py-3 text-sm font-medium text-white shadow-md hover:bg-pink-deep hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5">
               Add to Chrome
             </button>
-            <button className="rounded-full border border-ink/20 bg-white px-6 py-3 text-sm font-medium text-ink hover:border-ink/40 transition-colors">
+            <button className="rounded-full border border-ink/20 bg-white px-6 py-3 text-sm font-medium text-ink hover:border-pink hover:text-pink transition-all duration-300 shadow-sm">
               Explore Opportunities
             </button>
           </div>
@@ -113,21 +121,24 @@ function Hero() {
               {["#f472b6", "#c4b5fd", "#60a5fa", "#f9a8d4"].map((c, i) => (
                 <div
                   key={i}
-                  className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-white text-[10px] font-semibold text-white"
+                  className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-white text-[10px] font-semibold text-white shadow-sm transition-transform hover:scale-110"
                   style={{ backgroundColor: c }}
                 >
                   {["J", "M", "P", "L"][i]}
                 </div>
               ))}
             </div>
-            <span className="text-xs text-ink/60">10k+ girls in the community</span>
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-green-500 animate-ping" />
+              <span className="text-xs font-medium text-ink/70">10k+ girls in the community</span>
+            </div>
           </div>
         </div>
 
         <div className="relative flex items-center justify-center">
-          <div className="absolute right-8 top-0 h-40 w-40 rounded-sm bg-lilac/60" />
-          <div className="absolute left-4 top-16 h-44 w-44 rotate-[-6deg] rounded-sm bg-cream shadow-sm" />
-          <div className="relative z-10">
+          <div className="absolute right-8 top-0 h-40 w-40 rounded-2xl bg-lilac/50 blur-sm animate-pulse" />
+          <div className="absolute left-4 top-16 h-44 w-44 rotate-[-6deg] rounded-2xl bg-pink-soft/60 shadow-sm transition-transform hover:rotate-0 duration-500" />
+          <div className="relative z-10 transition-transform duration-500 hover:scale-105">
             <Logo className="text-6xl md:text-7xl" />
           </div>
         </div>
