@@ -10,7 +10,6 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
-import { reportLovableError } from "../lib/lovable-error-reporting";
 
 function NotFoundComponent() {
   return (
@@ -37,9 +36,6 @@ function NotFoundComponent() {
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
   const router = useRouter();
-  useEffect(() => {
-    reportLovableError(error, { boundary: "tanstack_root_error_component" });
-  }, [error]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -79,16 +75,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Girls On Campus — Less gatekeeping, more access." },
       { name: "description", content: "Scholarships, internships, paid programs, career advice, and student resources — curated for girls building their future." },
-      { name: "author", content: "Lovable" },
+      { name: "author", content: "Girls On Campus" },
       { property: "og:title", content: "Girls On Campus — Less gatekeeping, more access." },
       { property: "og:description", content: "Scholarships, internships, paid programs, career advice, and student resources — curated for girls building their future." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
       { name: "twitter:title", content: "Girls On Campus — Less gatekeeping, more access." },
       { name: "twitter:description", content: "Scholarships, internships, paid programs, career advice, and student resources — curated for girls building their future." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/8f5f94a0-873c-47da-b20e-5f3f354d6e0d/id-preview-4fbdd74f--1e82e658-1926-4263-b93b-84caf9600382.lovable.app-1784732584403.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/8f5f94a0-873c-47da-b20e-5f3f354d6e0d/id-preview-4fbdd74f--1e82e658-1926-4263-b93b-84caf9600382.lovable.app-1784732584403.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
