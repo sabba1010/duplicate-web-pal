@@ -9,8 +9,14 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SocialScienceExcellenceRouteImport } from './routes/social-science-excellence'
 import { Route as IndexRouteImport } from './routes/index'
 
+const SocialScienceExcellenceRoute = SocialScienceExcellenceRouteImport.update({
+  id: '/social-science-excellence',
+  path: '/social-science-excellence',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +25,39 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/social-science-excellence': typeof SocialScienceExcellenceRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/social-science-excellence': typeof SocialScienceExcellenceRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/social-science-excellence': typeof SocialScienceExcellenceRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/social-science-excellence'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/social-science-excellence'
+  id: '__root__' | '/' | '/social-science-excellence'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  SocialScienceExcellenceRoute: typeof SocialScienceExcellenceRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/social-science-excellence': {
+      id: '/social-science-excellence'
+      path: '/social-science-excellence'
+      fullPath: '/social-science-excellence'
+      preLoaderRoute: typeof SocialScienceExcellenceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,6 +70,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  SocialScienceExcellenceRoute: SocialScienceExcellenceRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

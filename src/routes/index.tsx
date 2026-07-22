@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   Check,
   MessageCircle,
@@ -43,22 +43,22 @@ function Logo({ className = "" }: { className?: string }) {
 }
 
 function Nav() {
-  const links = [
-    "Home",
-    "$1500 Social Science Excellence",
-    "Meet the team",
-    "Partners",
-    "Member Page",
-    "Mentorship Program",
+  const links: { label: string; to: string }[] = [
+    { label: "Home", to: "/" },
+    { label: "$1500 Social Science Excellence", to: "/social-science-excellence" },
+    { label: "Meet the team", to: "/" },
+    { label: "Partners", to: "/" },
+    { label: "Member Page", to: "/" },
+    { label: "Mentorship Program", to: "/" },
   ];
   return (
     <header className="w-full">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 text-sm">
         <nav className="hidden items-center gap-7 text-ink/80 md:flex">
           {links.map((l) => (
-            <a key={l} href="#" className="hover:text-pink-deep transition-colors">
-              {l}
-            </a>
+            <Link key={l.label} to={l.to} className="hover:text-pink-deep transition-colors">
+              {l.label}
+            </Link>
           ))}
         </nav>
         <div className="flex items-center gap-3">
