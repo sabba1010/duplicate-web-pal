@@ -471,11 +471,27 @@ function ChatMock() {
 }
 
 function Videos() {
-  const cards = [
-    { title: "LinkedIn alone doesn't get you the internship", bg: "from-pink-soft to-pink" },
-    { title: "How to answer 'Why do you want to work for us?'", bg: "from-lilac to-pink-soft" },
-    { title: "I almost lost $10,000", bg: "from-pink to-pink-deep" },
+  const reels = [
+    {
+      id: "DYtLWFcuchb",
+      url: "https://www.instagram.com/reels/DYtLWFcuchb/",
+      embedUrl: "https://www.instagram.com/p/DYtLWFcuchb/embed",
+      title: "LinkedIn alone doesn't get you the internship",
+    },
+    {
+      id: "DIujX1lTkg4",
+      url: "https://www.instagram.com/reels/DIujX1lTkg4/",
+      embedUrl: "https://www.instagram.com/p/DIujX1lTkg4/embed",
+      title: "How to answer 'Why do you want to work for us?'",
+    },
+    {
+      id: "DFkx3euxMga",
+      url: "https://www.instagram.com/reels/DFkx3euxMga/",
+      embedUrl: "https://www.instagram.com/p/DFkx3euxMga/embed",
+      title: "I almost lost $10,000",
+    },
   ];
+
   return (
     <section className="mx-auto max-w-7xl px-6 py-24 text-center">
       <p className="text-xs font-semibold uppercase tracking-widest text-pink">
@@ -490,29 +506,66 @@ function Videos() {
         Quick videos and carousels on the stuff nobody explains — essays,
         interviews, and more. New ones every week.
       </p>
-      <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-3">
-        {cards.map((c) => (
+
+      {/* Grid of Smartphone UI Mockups */}
+      <div className="mt-14 grid grid-cols-1 gap-10 md:grid-cols-3 justify-items-center">
+        {reels.map((r) => (
           <div
-            key={c.title}
-            className={`group relative aspect-[9/14] overflow-hidden rounded-2xl bg-gradient-to-br ${c.bg} shadow-[0_20px_60px_-30px_rgba(0,0,0,0.3)]`}
+            key={r.id}
+            className="group relative w-full max-w-[320px] transition-all duration-300 hover:scale-[1.03] hover:-translate-y-2"
           >
-            <div className="absolute left-3 right-3 top-3 flex items-center justify-between rounded-full bg-white/90 px-2 py-1 text-[10px]">
-              <div className="flex items-center gap-1.5">
-                <div className="h-4 w-4 rounded-full bg-pink" />
-                <span className="font-semibold text-ink">girls.on.campus</span>
+            {/* Outer Phone Shell Frame */}
+            <div className="relative overflow-hidden rounded-[42px] border-[10px] border-slate-900 bg-slate-900 shadow-[0_25px_60px_-15px_rgba(224,82,151,0.35)] ring-1 ring-slate-900/10">
+              
+              {/* Dynamic Island Notch */}
+              <div className="absolute top-2 left-1/2 z-30 flex h-4 w-24 -translate-x-1/2 items-center justify-between rounded-full bg-black px-2">
+                <span className="h-2 w-2 rounded-full bg-slate-800" />
+                <span className="h-1.5 w-1.5 rounded-full bg-blue-900/40" />
               </div>
-              <span className="rounded-full bg-blue-500 px-2 py-0.5 text-white">
-                View profile
-              </span>
-            </div>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="rounded-full bg-white/25 p-4 backdrop-blur-sm group-hover:bg-white/40 transition-colors">
-                <Play className="h-8 w-8 fill-white text-white" />
+
+              {/* Status Bar */}
+              <div className="flex items-center justify-between bg-white px-5 pt-3.5 pb-1 text-[10px] font-bold text-slate-800">
+                <span>9:41</span>
+                <div className="flex items-center gap-1">
+                  <span>5G</span>
+                  <div className="h-2.5 w-4 rounded-sm border border-slate-800 p-0.5">
+                    <div className="h-full w-full bg-slate-800" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Header Badge */}
+              <div className="flex items-center justify-between border-b border-pink-soft/40 bg-white px-4 py-2 text-xs">
+                <div className="flex items-center gap-1.5 font-bold text-ink">
+                  <span className="h-2.5 w-2.5 rounded-full bg-pink animate-pulse" />
+                  girls.on.campus
+                </div>
+                <a
+                  href={r.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-full bg-pink px-2.5 py-1 text-[9px] font-extrabold text-white shadow-sm hover:bg-pink-deep transition-colors"
+                >
+                  Watch ↗
+                </a>
+              </div>
+
+              {/* Instagram Embed Display */}
+              <div className="relative aspect-[9/16] w-full bg-black">
+                <iframe
+                  src={r.embedUrl}
+                  title={r.title}
+                  className="h-full w-full border-0"
+                  allowTransparency
+                  scrolling="no"
+                />
+              </div>
+
+              {/* Bottom Home Bar */}
+              <div className="bg-white py-2">
+                <div className="h-1 w-28 rounded-full bg-slate-300 mx-auto" />
               </div>
             </div>
-            <p className="absolute bottom-4 left-4 right-4 text-left text-lg font-bold leading-tight text-white drop-shadow">
-              {c.title}
-            </p>
           </div>
         ))}
       </div>
