@@ -17,6 +17,7 @@ import { Route as MeetTheTeamRouteImport } from './routes/meet-the-team'
 import { Route as MentorRouteImport } from './routes/mentor'
 import { Route as MentorshipProgramRouteImport } from './routes/mentorship-program'
 import { Route as PartnersRouteImport } from './routes/partners'
+import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SocialScienceExcellenceRouteImport } from './routes/social-science-excellence'
 
 const IndexRoute = IndexRouteImport.update({
@@ -59,6 +60,11 @@ const PartnersRoute = PartnersRouteImport.update({
   path: '/partners',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SocialScienceExcellenceRoute = SocialScienceExcellenceRouteImport.update({
   id: '/social-science-excellence',
   path: '/social-science-excellence',
@@ -74,6 +80,7 @@ export interface FileRoutesByFullPath {
   '/mentor': typeof MentorRoute
   '/mentorship-program': typeof MentorshipProgramRoute
   '/partners': typeof PartnersRoute
+  '/signup': typeof SignupRoute
   '/social-science-excellence': typeof SocialScienceExcellenceRoute
 }
 export interface FileRoutesByTo {
@@ -85,6 +92,7 @@ export interface FileRoutesByTo {
   '/mentor': typeof MentorRoute
   '/mentorship-program': typeof MentorshipProgramRoute
   '/partners': typeof PartnersRoute
+  '/signup': typeof SignupRoute
   '/social-science-excellence': typeof SocialScienceExcellenceRoute
 }
 export interface FileRoutesById {
@@ -97,6 +105,7 @@ export interface FileRoutesById {
   '/mentor': typeof MentorRoute
   '/mentorship-program': typeof MentorshipProgramRoute
   '/partners': typeof PartnersRoute
+  '/signup': typeof SignupRoute
   '/social-science-excellence': typeof SocialScienceExcellenceRoute
 }
 export interface FileRouteTypes {
@@ -110,6 +119,7 @@ export interface FileRouteTypes {
     | '/mentor'
     | '/mentorship-program'
     | '/partners'
+    | '/signup'
     | '/social-science-excellence'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -121,6 +131,7 @@ export interface FileRouteTypes {
     | '/mentor'
     | '/mentorship-program'
     | '/partners'
+    | '/signup'
     | '/social-science-excellence'
   id:
     | '__root__'
@@ -132,6 +143,7 @@ export interface FileRouteTypes {
     | '/mentor'
     | '/mentorship-program'
     | '/partners'
+    | '/signup'
     | '/social-science-excellence'
   fileRoutesById: FileRoutesById
 }
@@ -144,6 +156,7 @@ export interface RootRouteChildren {
   MentorRoute: typeof MentorRoute
   MentorshipProgramRoute: typeof MentorshipProgramRoute
   PartnersRoute: typeof PartnersRoute
+  SignupRoute: typeof SignupRoute
   SocialScienceExcellenceRoute: typeof SocialScienceExcellenceRoute
 }
 
@@ -205,6 +218,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PartnersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/social-science-excellence': {
       id: '/social-science-excellence'
       path: '/social-science-excellence'
@@ -224,6 +244,7 @@ const rootRouteChildren: RootRouteChildren = {
   MentorRoute: MentorRoute,
   MentorshipProgramRoute: MentorshipProgramRoute,
   PartnersRoute: PartnersRoute,
+  SignupRoute: SignupRoute,
   SocialScienceExcellenceRoute: SocialScienceExcellenceRoute,
 }
 export const routeTree = rootRouteImport

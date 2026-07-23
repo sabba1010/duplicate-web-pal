@@ -374,9 +374,9 @@ function LoginForm() {
         {/* Footer Sign Up Link */}
         <p className="mt-7 text-center text-xs text-ink/75">
           Don't have an account?{" "}
-          <a href="#" className="font-extrabold text-pink-deep hover:underline">
+          <Link to="/signup" className="font-extrabold text-pink-deep hover:underline">
             Sign up for free 💖
-          </a>
+          </Link>
         </p>
       </div>
     </div>
