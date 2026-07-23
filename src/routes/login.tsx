@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { UserCircle2, Mail, Lock, Eye, EyeOff, Sparkles, ArrowRight } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -116,25 +116,43 @@ function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState<"student" | "admin" | "mentor">("student");
   const [error, setError] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const cleanUser = username.trim().toLowerCase();
-    // Accept "student" or "studetn" or email containing student
-    if ((cleanUser === "student" || cleanUser === "studetn" || cleanUser.includes("student")) && password === "123456") {
-      localStorage.setItem("goc_user", JSON.stringify({ name: "Karla", username: cleanUser }));
+
+    if (password !== "123456") {
+      setError("Invalid password! Password for all roles is: 123456");
+      return;
+    }
+
+    if (cleanUser === "admin" || role === "admin") {
+      localStorage.setItem("goc_user", JSON.stringify({ name: "System Admin", username: cleanUser || "admin", role: "admin" }));
+      window.location.href = "/admin";
+    } else if (cleanUser === "mentor" || role === "mentor") {
+      localStorage.setItem("goc_user", JSON.stringify({ name: "Dr. Sarah (Mentor)", username: cleanUser || "mentor", role: "mentor" }));
+      window.location.href = "/mentor";
+    } else if (cleanUser === "student" || cleanUser === "studetn" || cleanUser.includes("student") || role === "student") {
+      localStorage.setItem("goc_user", JSON.stringify({ name: "Karla", username: cleanUser || "student", role: "student" }));
       window.location.href = "/dashboard";
     } else {
-      setError("Invalid credentials! Hint: User: student | Pass: 123456");
+      setError("Invalid credentials! Try student, admin, or mentor with pass: 123456");
     }
   };
 
-  const handleQuickLogin = () => {
-    setUsername("student");
-    setPassword("123456");
-    localStorage.setItem("goc_user", JSON.stringify({ name: "Karla", username: "student" }));
-    window.location.href = "/dashboard";
+  const handleRoleQuickLogin = (selectedRole: "student" | "admin" | "mentor") => {
+    if (selectedRole === "admin") {
+      localStorage.setItem("goc_user", JSON.stringify({ name: "System Admin", username: "admin", role: "admin" }));
+      window.location.href = "/admin";
+    } else if (selectedRole === "mentor") {
+      localStorage.setItem("goc_user", JSON.stringify({ name: "Dr. Sarah (Mentor)", username: "mentor", role: "mentor" }));
+      window.location.href = "/mentor";
+    } else {
+      localStorage.setItem("goc_user", JSON.stringify({ name: "Karla", username: "student", role: "student" }));
+      window.location.href = "/dashboard";
+    }
   };
 
   return (
@@ -174,23 +192,37 @@ function LoginForm() {
             Welcome Back, Bestie! 💗
           </h1>
           <p className="text-xs text-ink/70 mt-1">
-            Log in to access your student dashboard, saved opportunities & Girl Chat.
+            Select your role or enter credentials (Pass: <code className="font-mono bg-pink-soft/60 px-1 py-0.5 rounded">123456</code>).
           </p>
 
-          {/* Quick Demo Hint */}
-          <div className="mt-4 p-2.5 rounded-xl bg-pink-soft/40 border border-pink/30 text-left flex items-center justify-between">
-            <div className="text-[11px] text-pink-deep font-medium">
-              <span className="font-bold uppercase tracking-wider">Demo Login:</span>
-              <br />
-              User: <code className="bg-white/80 px-1 py-0.5 rounded font-mono">student</code> | Pass: <code className="bg-white/80 px-1 py-0.5 rounded font-mono">123456</code>
+          {/* Quick Multi-Role Demo Login Buttons */}
+          <div className="mt-4 p-3 rounded-2xl bg-pink-soft/40 border border-pink/30 text-left space-y-2">
+            <div className="text-[11px] text-pink-deep font-bold uppercase tracking-wider text-center">
+              Quick Role Login (Pass: 123456)
             </div>
-            <button
-              type="button"
-              onClick={handleQuickLogin}
-              className="bg-pink text-white text-[11px] font-bold px-3 py-1.5 rounded-lg shadow hover:bg-pink-deep transition-all"
-            >
-              Fill & Go →
-            </button>
+            <div className="grid grid-cols-3 gap-1.5 pt-1">
+              <button
+                type="button"
+                onClick={() => handleRoleQuickLogin("student")}
+                className="bg-[#e04f96] hover:bg-[#c73d7f] text-white text-[10px] font-bold py-2 rounded-xl shadow-xs transition-transform hover:scale-105 cursor-pointer text-center"
+              >
+                🎓 Student
+              </button>
+              <button
+                type="button"
+                onClick={() => handleRoleQuickLogin("admin")}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-bold py-2 rounded-xl shadow-xs transition-transform hover:scale-105 cursor-pointer text-center"
+              >
+                ⚡ Admin
+              </button>
+              <button
+                type="button"
+                onClick={() => handleRoleQuickLogin("mentor")}
+                className="bg-teal-600 hover:bg-teal-700 text-white text-[10px] font-bold py-2 rounded-xl shadow-xs transition-transform hover:scale-105 cursor-pointer text-center"
+              >
+                👩‍🏫 Mentor
+              </button>
+            </div>
           </div>
         </div>
 
@@ -201,7 +233,36 @@ function LoginForm() {
         )}
 
         {/* Login Form */}
-        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+        <form onSubmit={handleSubmit} className="mt-5 space-y-3.5">
+          {/* Role Selection Dropdown */}
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wider text-ink/80 mb-1">
+              Select Role
+            </label>
+            <div className="grid grid-cols-3 gap-2">
+              {(["student", "admin", "mentor"] as const).map((r) => (
+                <button
+                  key={r}
+                  type="button"
+                  onClick={() => {
+                    setRole(r);
+                    if (r === "student") setUsername("student");
+                    if (r === "admin") setUsername("admin");
+                    if (r === "mentor") setUsername("mentor");
+                    setError("");
+                  }}
+                  className={`py-2 px-1 text-xs font-bold rounded-xl border transition-all uppercase tracking-wider cursor-pointer ${
+                    role === r
+                      ? "bg-pink text-white border-pink shadow-xs"
+                      : "bg-white text-ink/70 border-pink-soft/60 hover:border-pink"
+                  }`}
+                >
+                  {r}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Username Input */}
           <div>
             <label className="block text-xs font-bold uppercase tracking-wider text-ink/80 mb-1.5">
@@ -219,7 +280,7 @@ function LoginForm() {
                   setUsername(e.target.value);
                   setError("");
                 }}
-                placeholder="student"
+                placeholder={role}
                 className="w-full rounded-xl border border-pink-soft bg-pink-soft/20 pl-10 pr-4 py-3 text-xs text-ink placeholder-ink/40 outline-none focus:border-pink focus:ring-2 focus:ring-pink/20 transition-all"
               />
             </div>
