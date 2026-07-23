@@ -82,12 +82,27 @@ function Logo({ className = "" }: { className?: string }) {
 
 function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    alert(`Welcome back! Logged in as ${email || "user"}`);
+    const cleanUser = username.trim().toLowerCase();
+    // Accept "student" or "studetn" or email containing student
+    if ((cleanUser === "student" || cleanUser === "studetn" || cleanUser.includes("student")) && password === "123456") {
+      localStorage.setItem("goc_user", JSON.stringify({ name: "Karla", username: cleanUser }));
+      window.location.href = "/dashboard";
+    } else {
+      setError("Invalid credentials! Hint: User: student | Pass: 123456");
+    }
+  };
+
+  const handleQuickLogin = () => {
+    setUsername("student");
+    setPassword("123456");
+    localStorage.setItem("goc_user", JSON.stringify({ name: "Karla", username: "student" }));
+    window.location.href = "/dashboard";
   };
 
   return (
@@ -127,27 +142,52 @@ function LoginForm() {
             Welcome Back, Bestie! 💗
           </h1>
           <p className="text-xs text-ink/70 mt-1">
-            Log in to access your dashboard, saved opportunities & Girl Chat.
+            Log in to access your student dashboard, saved opportunities & Girl Chat.
           </p>
+
+          {/* Quick Demo Hint */}
+          <div className="mt-4 p-2.5 rounded-xl bg-pink-soft/40 border border-pink/30 text-left flex items-center justify-between">
+            <div className="text-[11px] text-pink-deep font-medium">
+              <span className="font-bold uppercase tracking-wider">Demo Login:</span>
+              <br />
+              User: <code className="bg-white/80 px-1 py-0.5 rounded font-mono">student</code> | Pass: <code className="bg-white/80 px-1 py-0.5 rounded font-mono">123456</code>
+            </div>
+            <button
+              type="button"
+              onClick={handleQuickLogin}
+              className="bg-pink text-white text-[11px] font-bold px-3 py-1.5 rounded-lg shadow hover:bg-pink-deep transition-all"
+            >
+              Fill & Go →
+            </button>
+          </div>
         </div>
 
+        {error && (
+          <div className="mt-4 p-2.5 bg-red-50 border border-red-200 text-red-600 rounded-xl text-xs font-semibold text-center animate-shake">
+            {error}
+          </div>
+        )}
+
         {/* Login Form */}
-        <form onSubmit={handleSubmit} className="mt-8 space-y-4">
-          {/* Email Input */}
+        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+          {/* Username Input */}
           <div>
             <label className="block text-xs font-bold uppercase tracking-wider text-ink/80 mb-1.5">
-              Email Address
+              Username or Email
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-pink">
                 <Mail className="h-4 w-4" />
               </div>
               <input
-                type="email"
+                type="text"
                 required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="e.g. alexa@gmail.com"
+                value={username}
+                onChange={(e) => {
+                  setUsername(e.target.value);
+                  setError("");
+                }}
+                placeholder="student"
                 className="w-full rounded-xl border border-pink-soft bg-pink-soft/20 pl-10 pr-4 py-3 text-xs text-ink placeholder-ink/40 outline-none focus:border-pink focus:ring-2 focus:ring-pink/20 transition-all"
               />
             </div>
@@ -174,8 +214,11 @@ function LoginForm() {
                 type={showPassword ? "text" : "password"}
                 required
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setError("");
+                }}
+                placeholder="123456"
                 className="w-full rounded-xl border border-pink-soft bg-pink-soft/20 pl-10 pr-10 py-3 text-xs text-ink placeholder-ink/40 outline-none focus:border-pink focus:ring-2 focus:ring-pink/20 transition-all"
               />
               <button
@@ -207,7 +250,7 @@ function LoginForm() {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full mt-2 flex items-center justify-center gap-2 rounded-xl bg-pink py-3 text-xs font-extrabold text-white shadow-lg hover:bg-pink-deep hover:shadow-pink/40 transition-all duration-300 uppercase tracking-wider transform hover:-translate-y-0.5"
+            className="w-full mt-2 flex items-center justify-center gap-2 rounded-xl bg-pink py-3 text-xs font-extrabold text-white shadow-lg hover:bg-pink-deep hover:shadow-pink/40 transition-all duration-300 uppercase tracking-wider transform hover:-translate-y-0.5 cursor-pointer"
           >
             <span>Log In</span>
             <ArrowRight className="h-4 w-4" />
