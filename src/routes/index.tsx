@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState, useEffect } from "react";
 import {
   Check,
   MessageCircle,
@@ -7,6 +8,7 @@ import {
   UserCircle2,
   Bookmark,
   LayoutGrid,
+  LogOut,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -44,6 +46,25 @@ function Logo({ className = "" }: { className?: string }) {
 }
 
 function Nav() {
+  const [user, setUser] = useState<{ name: string; username: string } | null>(null);
+
+  useEffect(() => {
+    const stored = localStorage.getItem("goc_user");
+    if (stored) {
+      try {
+        setUser(JSON.parse(stored));
+      } catch (e) {
+        setUser(null);
+      }
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("goc_user");
+    setUser(null);
+    window.location.reload();
+  };
+
   const links: { label: string; to: string }[] = [
     { label: "Home", to: "/" },
     { label: "Dashboard", to: "/dashboard" },
@@ -52,6 +73,7 @@ function Nav() {
     { label: "Partners", to: "/partners" },
     { label: "Mentorship Program", to: "/mentorship-program" },
   ];
+
   return (
     <header className="w-full bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-pink-soft/30">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 text-sm">
@@ -81,13 +103,32 @@ function Nav() {
           <button className="rounded-full border border-pink text-pink px-4 py-1.5 text-xs font-medium hover:bg-pink-soft/40 transition-all duration-300">
             Add to Chrome
           </button>
-          <Link
-            to="/login"
-            className="flex items-center gap-1.5 text-ink/80 hover:text-pink transition-colors ml-1"
-          >
-            <UserCircle2 className="h-5 w-5 text-pink" />
-            <span className="text-xs font-medium">Log In</span>
-          </Link>
+          {user ? (
+            <div className="flex items-center gap-2 ml-1">
+              <Link
+                to="/dashboard"
+                className="flex items-center gap-1.5 font-bold text-pink-deep hover:text-pink transition-colors bg-pink-soft/60 px-3 py-1.5 rounded-full border border-pink/30 text-xs"
+              >
+                <UserCircle2 className="h-4 w-4 text-pink" />
+                <span>Hi, {user.name || "Student"}</span>
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="text-xs text-ink/50 hover:text-red-500 font-medium transition-colors px-1 py-1"
+                title="Log Out"
+              >
+                <LogOut className="h-4 w-4" />
+              </button>
+            </div>
+          ) : (
+            <Link
+              to="/login"
+              className="flex items-center gap-1.5 text-ink/80 hover:text-pink transition-colors ml-1"
+            >
+              <UserCircle2 className="h-5 w-5 text-pink" />
+              <span className="text-xs font-medium">Log In</span>
+            </Link>
+          )}
         </div>
       </div>
     </header>
