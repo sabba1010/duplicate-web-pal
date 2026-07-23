@@ -6,6 +6,7 @@ import {
   ChevronRight,
   UserCircle2,
   Bookmark,
+  LayoutGrid,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -45,10 +46,10 @@ function Logo({ className = "" }: { className?: string }) {
 function Nav() {
   const links: { label: string; to: string }[] = [
     { label: "Home", to: "/" },
+    { label: "Dashboard", to: "/dashboard" },
     { label: "$1500 Social Science Excellence", to: "/social-science-excellence" },
     { label: "Meet the team", to: "/meet-the-team" },
     { label: "Partners", to: "/partners" },
-    { label: "Member Page", to: "/" },
     { label: "Mentorship Program", to: "/mentorship-program" },
   ];
   return (
@@ -70,15 +71,22 @@ function Nav() {
           ))}
         </nav>
         <div className="flex items-center gap-3">
-          <button className="rounded-full bg-pink px-5 py-2 text-sm font-medium text-white shadow-md hover:bg-pink-deep hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5">
+          <Link
+            to="/dashboard"
+            className="flex items-center gap-1.5 font-bold text-white bg-pink px-4 py-2 rounded-full shadow-sm hover:bg-pink-deep transition-all duration-200 transform hover:-translate-y-0.5"
+          >
+            <LayoutGrid className="h-4 w-4" />
+            <span className="text-xs">Dashboard</span>
+          </Link>
+          <button className="rounded-full border border-pink text-pink px-4 py-1.5 text-xs font-medium hover:bg-pink-soft/40 transition-all duration-300">
             Add to Chrome
           </button>
           <Link
             to="/login"
-            className="flex items-center gap-1.5 text-ink/80 hover:text-pink transition-colors"
+            className="flex items-center gap-1.5 text-ink/80 hover:text-pink transition-colors ml-1"
           >
             <UserCircle2 className="h-5 w-5 text-pink" />
-            <span className="text-sm font-medium">Log In</span>
+            <span className="text-xs font-medium">Log In</span>
           </Link>
         </div>
       </div>

@@ -165,18 +165,18 @@ export function DashboardPage() {
           {/* ==================================================== */}
           <aside className="lg:col-span-2 lg:sticky lg:top-5 lg:h-[calc(100vh-2.5rem)] bg-white rounded-3xl p-5 border border-pink-100/60 shadow-xs flex flex-col justify-between overflow-y-auto z-20">
             <div>
-              {/* Logo Area */}
-              <div className="flex items-center gap-2 mb-8 px-2">
+              {/* Logo Area (Click to Home) */}
+              <Link to="/" className="flex items-center gap-2 mb-8 px-2 group cursor-pointer" title="Go to Home Page">
                 <div className="flex flex-col leading-none">
                   <div className="flex items-center gap-1">
-                    <span className="font-serif italic text-3xl font-bold text-[#e04f96] tracking-tight">goc</span>
+                    <span className="font-serif italic text-3xl font-bold text-[#e04f96] tracking-tight group-hover:opacity-80 transition-opacity">goc</span>
                     <span className="text-[#e04f96] text-xl font-bold">✶</span>
                   </div>
                   <span className="text-[10px] text-pink-400 font-semibold tracking-wider uppercase -mt-1">
                     girls on campus
                   </span>
                 </div>
-              </div>
+              </Link>
 
               {/* Navigation Menu */}
               <nav className="space-y-1.5">
