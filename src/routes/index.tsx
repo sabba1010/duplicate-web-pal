@@ -597,7 +597,7 @@ function Videos() {
           >
             {/* Outer Phone Shell Frame */}
             <div className="relative overflow-hidden rounded-[42px] border-[10px] border-slate-900 bg-slate-900 shadow-[0_25px_60px_-15px_rgba(224,82,151,0.35)] ring-1 ring-slate-900/10">
-              
+
               {/* Dynamic Island Notch */}
               <div className="absolute top-2 left-1/2 z-30 flex h-4 w-24 -translate-x-1/2 items-center justify-between rounded-full bg-black px-2">
                 <span className="h-2 w-2 rounded-full bg-slate-800" />
