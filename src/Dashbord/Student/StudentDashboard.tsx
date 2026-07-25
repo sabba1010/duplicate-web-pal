@@ -23,7 +23,7 @@ export function StudentDashboard() {
     if (stored) {
       try {
         setUser(JSON.parse(stored));
-      } catch (e) {
+      } catch {
         setUser({ name: "Karla", username: "student" });
       }
     } else {
@@ -38,37 +38,41 @@ export function StudentDashboard() {
 
   const renderActiveTab = () => {
     switch (activeTab) {
-      case "Dashboard": return <StudentHomeView onNavigate={setActiveTab} />;
+      case "Dashboard":     return <StudentHomeView onNavigate={setActiveTab} />;
       case "Opportunities": return <StudentOpportunitiesView />;
-      case "Saved": return <StudentSavedView />;
-      case "Applications": return <StudentApplicationsView />;
-      case "Calendar": return <StudentCalendarView />;
-      case "Community": return <StudentCommunityView />;
-      case "Resources": return <StudentResourcesView />;
-      case "Settings": return <StudentSettingsView />;
-      default: return <StudentHomeView onNavigate={setActiveTab} />;
+      case "Saved":         return <StudentSavedView />;
+      case "Applications":  return <StudentApplicationsView />;
+      case "Calendar":      return <StudentCalendarView />;
+      case "Community":     return <StudentCommunityView />;
+      case "Resources":     return <StudentResourcesView />;
+      case "Settings":      return <StudentSettingsView />;
+      default:              return <StudentHomeView onNavigate={setActiveTab} />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#fafafc] text-slate-900 font-sans antialiased flex flex-col justify-between selection:bg-teal-100 selection:text-teal-900">
-      {/* Main Grid Wrapper */}
-      <div className="flex-1 p-3 sm:p-5 max-w-[1800px] w-full mx-auto">
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
-          {/* 1. LEFT SIDEBAR */}
-          <StudentSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+    <div
+      className="min-h-screen font-sans antialiased"
+      style={{ background: "linear-gradient(135deg, #fff5f9 0%, #ffffff 50%, #fdf5ff 100%)" }}
+    >
+      <div className="flex-1 p-3 sm:p-4 max-w-[1800px] w-full mx-auto">
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 items-start">
+          {/* LEFT SIDEBAR */}
+          <div className="xl:col-span-2">
+            <StudentSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+          </div>
 
-          {/* 2. MAIN CENTER CONTENT */}
-          <main className="xl:col-span-7 flex flex-col gap-6 min-h-[calc(100vh-2.5rem)]">
+          {/* MAIN CENTER CONTENT */}
+          <main className="xl:col-span-7 flex flex-col gap-4 min-h-[calc(100vh-2rem)]">
             <StudentHeader user={user} onLogout={handleLogout} />
             <div className="flex-1 overflow-hidden relative">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeTab}
-                  initial={{ opacity: 0, y: 10 }}
+                  initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.2 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.2, ease: "easeInOut" }}
                   className="h-full"
                 >
                   {renderActiveTab()}
@@ -77,8 +81,10 @@ export function StudentDashboard() {
             </div>
           </main>
 
-          {/* 3. RIGHT SIDEBAR (LIVE CHAT) */}
-          <StudentLiveChat user={user} />
+          {/* RIGHT SIDEBAR: LIVE CHAT */}
+          <div className="xl:col-span-3">
+            <StudentLiveChat user={user} />
+          </div>
         </div>
       </div>
     </div>

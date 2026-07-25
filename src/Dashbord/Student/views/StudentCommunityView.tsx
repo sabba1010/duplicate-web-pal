@@ -3,21 +3,21 @@ import { MessageSquare, Heart, Share2, MoreHorizontal, PenSquare } from "lucide-
 
 export function StudentCommunityView() {
   return (
-    <div className="bg-white rounded-3xl border border-slate-200 shadow-sm h-full flex flex-col overflow-hidden">
+    <div className="bg-white rounded-3xl border border-pink-100 shadow-sm h-full flex flex-col overflow-hidden">
       <div className="p-6 border-b border-slate-100 flex items-center justify-between">
         <div>
           <h2 className="text-xl font-bold text-slate-900">Community Feed</h2>
           <p className="text-sm text-slate-500 mt-1">Connect, share, and grow with peers and mentors.</p>
         </div>
-        <button className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-sm shadow-teal-500/20 transition-all flex items-center gap-2">
+        <button className="bg-[#e04f96] hover:bg-[#c43d83] text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-sm shadow-pink-300/20 transition-all flex items-center gap-2 cursor-pointer">
           <PenSquare className="h-4 w-4" /> New Post
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-6 bg-slate-50/50">
+      <div className="flex-1 overflow-y-auto p-6 bg-pink-50/20">
         <div className="max-w-2xl mx-auto space-y-6">
           {COMMUNITY_POSTS.map((post) => (
-            <div key={post.id} className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <div key={post.id} className="bg-white p-5 rounded-2xl border border-pink-100 shadow-sm hover:border-pink-200 transition-colors">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <img src={post.author.avatar} alt={post.author.name} className="w-10 h-10 rounded-full border border-slate-100 object-cover" />
@@ -41,7 +41,7 @@ export function StudentCommunityView() {
 
               <div className="flex flex-wrap gap-2 mb-4">
                 {post.tags.map(tag => (
-                  <span key={tag} className="text-[11px] font-semibold text-teal-700 bg-teal-50 px-2.5 py-1 rounded-full">
+                  <span key={tag} className="text-[11px] font-semibold text-[#e04f96] bg-pink-50 px-2.5 py-1 rounded-full">
                     #{tag}
                   </span>
                 ))}
@@ -52,7 +52,7 @@ export function StudentCommunityView() {
                   <Heart className="h-4 w-4" />
                   <span className="text-xs font-semibold">{post.likes}</span>
                 </button>
-                <button className="flex items-center gap-2 text-slate-500 hover:text-teal-600 transition-colors">
+                <button className="flex items-center gap-2 text-slate-500 hover:text-[#e04f96] transition-colors">
                   <MessageSquare className="h-4 w-4" />
                   <span className="text-xs font-semibold">{post.comments}</span>
                 </button>

@@ -16,7 +16,7 @@ export function StudentSavedView() {
   };
 
   return (
-    <div className="bg-white rounded-3xl border border-slate-200 shadow-sm h-full flex flex-col overflow-hidden">
+    <div className="bg-white rounded-3xl border border-pink-100 shadow-sm h-full flex flex-col overflow-hidden">
       <div className="p-6 border-b border-slate-100 space-y-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
@@ -31,11 +31,11 @@ export function StudentSavedView() {
                 placeholder="Search saved..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 text-sm text-slate-700 rounded-xl py-2 pl-9 pr-4 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"
+                className="w-full bg-gray-50 border border-gray-200 text-sm text-gray-700 rounded-full py-2 pl-9 pr-4 outline-none focus:border-[#e04f96] focus:ring-2 focus:ring-pink-500/20"
               />
               <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
             </div>
-            <button className="p-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors">
+            <button className="p-2.5 rounded-xl border border-pink-200 text-[#e04f96] hover:bg-pink-50 transition-colors">
               <Filter className="h-4 w-4" />
             </button>
           </div>
@@ -85,7 +85,7 @@ export function StudentSavedView() {
                 </td>
                 <td className="px-6 py-4 text-right">
                   <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button className="p-1.5 text-slate-400 hover:text-teal-600 rounded bg-white border border-slate-200 shadow-sm transition-colors">
+                    <button className="p-1.5 text-slate-400 hover:text-[#e04f96] rounded bg-white border border-slate-200 shadow-sm transition-colors">
                       <ExternalLink className="h-4 w-4" />
                     </button>
                     <button className="p-1.5 text-slate-400 hover:text-rose-600 rounded bg-white border border-slate-200 shadow-sm transition-colors">
