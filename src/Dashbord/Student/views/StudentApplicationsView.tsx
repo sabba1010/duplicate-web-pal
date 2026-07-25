@@ -1,98 +1,181 @@
-import { useState } from "react";
-import { SAVED_ITEMS, SavedItem } from "@/lib/mock-data";
-import { motion, AnimatePresence } from "framer-motion";
-import { MoreHorizontal, Plus } from "lucide-react";
+import { motion } from "framer-motion";
+import { FileText, CheckCircle2, Clock, Eye } from "lucide-react";
 
-const COLUMNS = ["Saved", "Planning", "In Progress", "Submitted"] as const;
+// ─── Data ────────────────────────────────────────────────────────────────────
+
+type AppStatus = "IN PROGRESS" | "SUBMITTED" | "IN REVIEW" | "DRAFT";
+
+interface Application {
+  id: string;
+  title: string;
+  subtitle: string;
+  progress: number;
+  status: AppStatus;
+}
+
+const APPLICATIONS: Application[] = [
+  {
+    id: "a1",
+    title: "Google STEP Internship 2026",
+    subtitle: "Essay + 2 short answers remaining",
+    progress: 65,
+    status: "IN PROGRESS",
+  },
+  {
+    id: "a2",
+    title: "$2,500 Women in Business Scholarship",
+    subtitle: "Working on recommendation letter",
+    progress: 80,
+    status: "IN PROGRESS",
+  },
+  {
+    id: "a3",
+    title: "Public Policy Fellowship",
+    subtitle: "Submitted Jun 18, 2026",
+    progress: 100,
+    status: "SUBMITTED",
+  },
+  {
+    id: "a4",
+    title: "Fully Funded Summer Program",
+    subtitle: "Under review by admissions",
+    progress: 100,
+    status: "IN REVIEW",
+  },
+];
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+function StatusBadge({ status }: { status: AppStatus }) {
+  switch (status) {
+    case "IN PROGRESS":
+      return (
+        <span className="text-[10px] font-extrabold px-2.5 py-1 rounded-full bg-[#e04f96] text-white whitespace-nowrap">
+          IN PROGRESS
+        </span>
+      );
+    case "SUBMITTED":
+      return (
+        <span className="text-[10px] font-extrabold px-2.5 py-1 rounded-full border border-emerald-400 text-emerald-600 bg-emerald-50 whitespace-nowrap">
+          SUBMITTED
+        </span>
+      );
+    case "IN REVIEW":
+      return (
+        <span className="text-[10px] font-extrabold px-2.5 py-1 rounded-full bg-purple-100 text-purple-600 whitespace-nowrap">
+          IN REVIEW
+        </span>
+      );
+    case "DRAFT":
+      return (
+        <span className="text-[10px] font-extrabold px-2.5 py-1 rounded-full bg-gray-100 text-gray-500 whitespace-nowrap">
+          DRAFT
+        </span>
+      );
+  }
+}
+
+function AppIcon({ status }: { status: AppStatus }) {
+  if (status === "SUBMITTED") {
+    return (
+      <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center shrink-0">
+        <CheckCircle2 className="h-4.5 w-4.5 text-emerald-500" style={{ width: 18, height: 18 }} />
+      </div>
+    );
+  }
+  if (status === "IN REVIEW") {
+    return (
+      <div className="w-9 h-9 rounded-xl bg-purple-50 border border-purple-200 flex items-center justify-center shrink-0">
+        <Eye className="h-4.5 w-4.5 text-purple-400" style={{ width: 18, height: 18 }} />
+      </div>
+    );
+  }
+  if (status === "IN PROGRESS") {
+    return (
+      <div className="w-9 h-9 rounded-xl bg-pink-50 border border-pink-200 flex items-center justify-center shrink-0">
+        <FileText className="h-4.5 w-4.5 text-[#e04f96]" style={{ width: 18, height: 18 }} />
+      </div>
+    );
+  }
+  return (
+    <div className="w-9 h-9 rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-center shrink-0">
+      <Clock className="h-4.5 w-4.5 text-gray-400" style={{ width: 18, height: 18 }} />
+    </div>
+  );
+}
+
+// ─── Component ────────────────────────────────────────────────────────────────
 
 export function StudentApplicationsView() {
-  const [items, setItems] = useState<SavedItem[]>(SAVED_ITEMS);
-  const [draggedId, setDraggedId] = useState<string | null>(null);
-
-  const handleDragStart = (id: string) => {
-    setDraggedId(id);
-  };
-
-  const handleDrop = (e: React.DragEvent, status: string) => {
-    e.preventDefault();
-    if (!draggedId) return;
-
-    setItems((prev) =>
-      prev.map((item) =>
-        item.id === draggedId ? { ...item, status: status as any } : item
-      )
-    );
-    setDraggedId(null);
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
-
   return (
-    <div className="bg-white rounded-3xl border border-pink-100 shadow-sm h-full flex flex-col overflow-hidden">
-      <div className="p-6 border-b border-slate-100 flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-bold text-slate-900">Application Tracker</h2>
-          <p className="text-sm text-slate-500 mt-1">Drag and drop to update application progress.</p>
-        </div>
-        <button className="bg-[#e04f96] hover:bg-[#c43d83] text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-sm transition-colors flex items-center gap-2 cursor-pointer">
-          <Plus className="h-4 w-4" /> Add Custom
-        </button>
+    <div className="space-y-5">
+      {/* ── Plain header (no card wrapper) ── */}
+      <div>
+        <h2 className="text-xl font-black text-[#2d1b28]">Applications</h2>
+        <p className="text-[12px] text-gray-400 mt-0.5">
+          Track every application from draft to{" "}
+          <span className="text-[#e04f96] font-semibold">submitted.</span>
+        </p>
       </div>
 
-      <div className="flex-1 overflow-x-auto p-6 bg-pink-50/20">
-        <div className="flex gap-6 min-w-max h-full">
-          {COLUMNS.map((col) => (
-            <div
-              key={col}
-              onDrop={(e) => handleDrop(e, col)}
-              onDragOver={handleDragOver}
-              className="w-80 flex flex-col bg-pink-50/30 rounded-2xl p-4 border border-pink-100 h-full"
+      {/* ── In Progress Card ── */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.05 }}
+        className="bg-white rounded-3xl border border-pink-100 shadow-sm overflow-hidden"
+      >
+        {/* Section label */}
+        <div className="px-6 py-4 border-b border-pink-50">
+          <h3 className="text-[13px] font-bold text-[#2d1b28]">In progress</h3>
+        </div>
+
+        {/* Application rows */}
+        <div className="divide-y divide-pink-50/60">
+          {APPLICATIONS.map((app, i) => (
+            <motion.div
+              key={app.id}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 + i * 0.07 }}
+              className="flex items-center gap-4 px-6 py-4 hover:bg-pink-50/20 transition-colors cursor-pointer group"
             >
-              <div className="flex items-center justify-between mb-4 px-1">
-                <h3 className="font-bold text-slate-700 text-sm">{col}</h3>
-                <span className="bg-white text-slate-500 text-xs font-bold px-2 py-0.5 rounded-full shadow-sm border border-slate-100">
-                  {items.filter(i => i.status === col).length}
+              {/* Icon */}
+              <AppIcon status={app.status} />
+
+              {/* Title + subtitle */}
+              <div className="flex-1 min-w-0">
+                <p className="text-[13px] font-bold text-[#e04f96] group-hover:underline leading-snug truncate">
+                  {app.title}
+                </p>
+                <p className="text-[11px] text-gray-400 mt-0.5 truncate">
+                  {app.subtitle}
+                </p>
+              </div>
+
+              {/* Progress bar + % */}
+              <div className="flex items-center gap-3 w-48 shrink-0">
+                <div className="flex-1 h-1.5 bg-pink-100 rounded-full overflow-hidden">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${app.progress}%` }}
+                    transition={{ delay: 0.2 + i * 0.07, duration: 0.6, ease: "easeOut" }}
+                    className="h-full bg-[#e04f96] rounded-full"
+                  />
+                </div>
+                <span className="text-[10px] font-semibold text-gray-400 whitespace-nowrap">
+                  {app.progress}% complete
                 </span>
               </div>
 
-              <div className="flex-1 space-y-3 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-slate-300">
-                <AnimatePresence>
-                  {items.filter(i => i.status === col).map((item) => (
-                    <motion.div
-                      key={item.id}
-                      layout
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.95 }}
-                      draggable
-                      onDragStart={() => handleDragStart(item.id)}
-                      className="bg-white p-4 rounded-xl border border-pink-100 shadow-sm cursor-grab active:cursor-grabbing hover:shadow-md hover:border-[#e04f96]/30 transition-all group"
-                    >
-                      <div className="flex justify-between items-start mb-2">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-[#e04f96] bg-pink-50 px-2 py-0.5 rounded-full">
-                          {item.opportunity.type}
-                        </span>
-                        <button className="text-slate-400 hover:text-slate-800 transition-colors opacity-0 group-hover:opacity-100">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </button>
-                      </div>
-                      <h4 className="font-bold text-slate-900 text-sm leading-tight mb-1">{item.opportunity.title}</h4>
-                      <p className="text-xs font-medium text-slate-500 truncate mb-3">{item.opportunity.organization}</p>
-                      
-                      <div className="bg-slate-50 rounded-lg p-2 flex items-center justify-between border border-slate-100">
-                        <span className="text-[10px] font-semibold text-slate-500 uppercase">Deadline</span>
-                        <span className="text-xs font-bold text-slate-700">{item.opportunity.deadline}</span>
-                      </div>
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
+              {/* Status badge */}
+              <div className="shrink-0 w-28 flex justify-end">
+                <StatusBadge status={app.status} />
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

@@ -1,92 +1,193 @@
-import { CALENDAR_EVENTS } from "@/lib/mock-data";
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Clock, Chrome } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { motion } from "framer-motion";
+
+// ─── June 2026 calendar data ──────────────────────────────────────────────────
+// June 1, 2026 = Monday → 1 blank Sunday cell in Sun-start grid
+const JUNE_START_OFFSET = 1;
+const JUNE_DAYS = 30;
+const TODAY = 28;
+
+// Days with event dots in June
+const EVENT_DAYS = new Set([1, 5, 29, 30]);
+
+// "This week" events (Jun 27 – Jul 1)
+const THIS_WEEK = [
+  {
+    id: "w1",
+    monthLabel: "JUN",
+    day: 27,
+    title: "1:1 with Dr. Priya Nandan",
+    dayName: "Fri",
+    isDeadline: false,
+  },
+  {
+    id: "w2",
+    monthLabel: "JUN",
+    day: 30,
+    title: "Google STEP Internship deadline",
+    dayName: "Mon",
+    isDeadline: true,
+  },
+  {
+    id: "w3",
+    monthLabel: "JUL",
+    day: 1,
+    title: "Women in Business Scholarship deadline",
+    dayName: "Tue",
+    isDeadline: true,
+  },
+];
+
+// ─── Component ────────────────────────────────────────────────────────────────
 
 export function StudentCalendarView() {
+  // Build cells: null = blank, number = day
+  const cells: (number | null)[] = [
+    ...Array(JUNE_START_OFFSET).fill(null),
+    ...Array.from({ length: JUNE_DAYS }, (_, i) => i + 1),
+  ];
+
   return (
-    <div className="bg-white rounded-3xl border border-pink-100 shadow-sm h-full flex flex-col overflow-hidden">
-      <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-xl font-bold text-slate-900">Calendar & Deadlines</h2>
-          <p className="text-sm text-slate-500 mt-1">Track your important dates and upcoming events.</p>
-        </div>
-        <div className="flex items-center gap-2 bg-pink-50 border border-pink-100 px-3 py-1.5 rounded-xl">
-          <Chrome className="h-4 w-4 text-[#e04f96]" />
-          <span className="text-xs font-semibold text-[#e04f96]">Google Calendar Synced</span>
-        </div>
+    <div className="space-y-5">
+      {/* ── Page Header (plain, no card) ── */}
+      <div>
+        <h2 className="text-xl font-black text-[#2d1b28]">Calendar</h2>
+        <p className="text-[12px] text-gray-400 mt-0.5">
+          Deadlines and mentor sessions, at a glance.
+        </p>
       </div>
 
-      <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
-        {/* Main Calendar Area (Placeholder for actual grid) */}
-        <div className="flex-1 p-6 border-r border-pink-100 bg-pink-50/20 overflow-y-auto">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-bold text-slate-800">July 2026</h3>
-            <div className="flex items-center gap-2">
-              <button className="p-1.5 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-100">
-                <ChevronLeft className="h-5 w-5" />
+      {/* ── Main row: Calendar + This Week ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-5 items-start">
+
+        {/* ── Calendar Card (3/5) ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.04 }}
+          className="lg:col-span-3 bg-white rounded-3xl border border-pink-100 shadow-sm p-5"
+        >
+          {/* Month nav */}
+          <div className="flex items-center justify-between mb-5">
+            <h3 className="font-bold text-[14px] text-[#2d1b28]">June 2026</h3>
+            <div className="flex items-center gap-1.5">
+              <button className="w-7 h-7 rounded-full border border-pink-100 flex items-center justify-center text-gray-400 hover:bg-pink-50 hover:text-[#e04f96] transition-colors cursor-pointer">
+                <ChevronLeft className="h-3.5 w-3.5" />
               </button>
-              <button className="px-3 py-1.5 rounded-lg font-semibold text-sm border border-slate-200 text-slate-700 hover:bg-slate-100">
-                Today
-              </button>
-              <button className="p-1.5 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-100">
-                <ChevronRight className="h-5 w-5" />
+              <button className="w-7 h-7 rounded-full border border-pink-100 flex items-center justify-center text-gray-400 hover:bg-pink-50 hover:text-[#e04f96] transition-colors cursor-pointer">
+                <ChevronRight className="h-3.5 w-3.5" />
               </button>
             </div>
           </div>
 
-          <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
-            <div className="grid grid-cols-7 border-b border-slate-100 bg-slate-50">
-              {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                <div key={day} className="py-3 text-center text-xs font-bold text-slate-500 uppercase">
-                  {day}
-                </div>
-              ))}
-            </div>
-            <div className="grid grid-cols-7 auto-rows-[100px] divide-x divide-y divide-slate-100">
-              {/* Fake calendar grid cells */}
-              {Array.from({ length: 35 }).map((_, i) => (
-                <div key={i} className={`p-2 relative ${i === 24 ? 'bg-pink-50/40' : ''}`}>
-                  <span className={`text-sm font-semibold ${i === 24 ? 'text-[#e04f96]' : 'text-slate-400'}`}>
-                    {(i % 31) + 1}
-                  </span>
-                  {/* Mock Event Dot */}
-                  {[12, 15, 24, 28].includes(i) && (
-                    <div className="absolute bottom-2 left-2 right-2 h-1.5 rounded-full bg-[#e04f96]/60"></div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Upcoming List */}
-        <div className="w-full lg:w-80 p-6 bg-white overflow-y-auto">
-          <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
-            <CalendarIcon className="h-4 w-4 text-[#e04f96]" /> Upcoming
-          </h3>
-          <div className="space-y-4">
-            {CALENDAR_EVENTS.map(event => (
-              <div key={event.id} className="p-4 rounded-2xl border border-pink-100 bg-pink-50/20 hover:border-[#e04f96]/30 transition-colors group">
-                <div className="flex items-start justify-between mb-2">
-                  <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${
-                    event.type === 'Deadline' ? 'bg-rose-100 text-rose-700' :
-                    event.type === 'Meeting' ? 'bg-blue-100 text-blue-700' :
-                    'bg-slate-200 text-slate-700'
-                  }`}>
-                    {event.type}
-                  </span>
-                  <span className="text-xs font-bold text-slate-500">{event.date.split('-').slice(1).join('/')}</span>
-                </div>
-                <h4 className="font-bold text-slate-800 text-sm leading-tight mb-2">{event.title}</h4>
-                {event.time && (
-                  <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500">
-                    <Clock className="h-3.5 w-3.5" />
-                    {event.time}
-                  </div>
-                )}
+          {/* Day-of-week headers */}
+          <div className="grid grid-cols-7 mb-1">
+            {["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map((d) => (
+              <div
+                key={d}
+                className="text-center text-[9px] font-extrabold text-gray-400 uppercase py-1.5 tracking-wider"
+              >
+                {d}
               </div>
             ))}
           </div>
-        </div>
+
+          {/* Day cells */}
+          <div className="grid grid-cols-7">
+            {cells.map((day, i) => {
+              if (day === null) return <div key={`blank-${i}`} className="h-10" />;
+
+              const isToday   = day === TODAY;
+              const hasEvent  = EVENT_DAYS.has(day);
+
+              return (
+                <div key={day} className="flex flex-col items-center justify-start h-10">
+                  <button
+                    className={`w-8 h-8 flex items-center justify-center rounded-full text-[13px] font-semibold transition-all cursor-pointer select-none ${
+                      isToday
+                        ? "bg-[#e04f96] text-white shadow-md shadow-pink-300/40 font-bold"
+                        : "text-gray-600 hover:bg-pink-50 hover:text-[#e04f96]"
+                    }`}
+                  >
+                    {day}
+                  </button>
+                  {hasEvent && (
+                    <span
+                      className={`w-1 h-1 rounded-full mt-0.5 ${
+                        isToday ? "bg-white/60" : "bg-[#e04f96]"
+                      }`}
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </motion.div>
+
+        {/* ── This Week Card (2/5) ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="lg:col-span-2 bg-white rounded-3xl border border-pink-100 shadow-sm p-5"
+        >
+          <h3 className="font-bold text-[13px] text-[#2d1b28] mb-4">This week</h3>
+
+          <div className="space-y-3">
+            {THIS_WEEK.map((event, i) => (
+              <motion.div
+                key={event.id}
+                initial={{ opacity: 0, x: 8 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.15 + i * 0.07 }}
+                className="flex items-center gap-3 p-2.5 rounded-2xl hover:bg-pink-50/30 transition-colors cursor-pointer group"
+              >
+                {/* Date badge */}
+                <div
+                  className={`w-11 h-11 rounded-xl flex flex-col items-center justify-center shrink-0 ${
+                    event.isDeadline
+                      ? "bg-pink-100/80 border border-pink-200"
+                      : "bg-blue-50 border border-blue-100"
+                  }`}
+                >
+                  <span
+                    className={`text-[8px] font-extrabold uppercase leading-none ${
+                      event.isDeadline ? "text-[#e04f96]" : "text-blue-500"
+                    }`}
+                  >
+                    {event.monthLabel}
+                  </span>
+                  <span
+                    className={`text-[16px] font-black leading-tight ${
+                      event.isDeadline ? "text-[#e04f96]" : "text-blue-600"
+                    }`}
+                  >
+                    {event.day}
+                  </span>
+                </div>
+
+                {/* Title + Day name */}
+                <div className="flex-1 min-w-0">
+                  <p
+                    className={`text-[12px] font-semibold leading-snug line-clamp-2 ${
+                      event.isDeadline
+                        ? "text-[#e04f96]"
+                        : "text-[#2d1b28] group-hover:text-[#e04f96] transition-colors"
+                    }`}
+                  >
+                    {event.title}
+                  </p>
+                </div>
+
+                {/* Day label */}
+                <span className="text-[10px] font-bold text-gray-400 shrink-0">
+                  {event.dayName}
+                </span>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
       </div>
     </div>
   );
