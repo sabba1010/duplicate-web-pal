@@ -1,15 +1,22 @@
 import { useState, useEffect } from "react";
-import { StudentSidebar } from "./StudentSidebar";
-import { StudentHeader } from "./StudentHeader";
-import { StudentMetrics } from "./StudentMetrics";
-import { StudentOpportunities, OpportunityItem } from "./StudentOpportunities";
-import { StudentFeedAndCalendar } from "./StudentFeedAndCalendar";
+import { StudentSidebar, TabType } from "./StudentSidebar";
 import { StudentLiveChat } from "./StudentLiveChat";
+import { AnimatePresence, motion } from "framer-motion";
+
+// Views
+import { StudentHomeView } from "./views/StudentHomeView";
+import { StudentOpportunitiesView } from "./views/StudentOpportunitiesView";
+import { StudentSavedView } from "./views/StudentSavedView";
+import { StudentApplicationsView } from "./views/StudentApplicationsView";
+import { StudentCalendarView } from "./views/StudentCalendarView";
+import { StudentCommunityView } from "./views/StudentCommunityView";
+import { StudentResourcesView } from "./views/StudentResourcesView";
+import { StudentSettingsView } from "./views/StudentSettingsView";
+import { StudentHeader } from "./StudentHeader";
 
 export function StudentDashboard() {
   const [user, setUser] = useState<{ name: string; username: string } | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [savedIds, setSavedIds] = useState<number[]>([1, 2]);
+  const [activeTab, setActiveTab] = useState<TabType>("Dashboard");
 
   useEffect(() => {
     const stored = localStorage.getItem("goc_user");
@@ -24,80 +31,50 @@ export function StudentDashboard() {
     }
   }, []);
 
-  const toggleBookmark = (id: number) => {
-    setSavedIds((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-    );
-  };
-
   const handleLogout = () => {
     localStorage.removeItem("goc_user");
     window.location.href = "/login";
   };
 
-  // Opportunities Data matching image
-  const opportunities: OpportunityItem[] = [
-    {
-      id: 1,
-      title: "$2,500 Women in Business Scholarship",
-      category: "Scholarship",
-      deadline: "Jul 1, 2026",
-      featured: true,
-      tags: ["Women", "Business"],
-      image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=500&auto=format&fit=crop&q=80",
-    },
-    {
-      id: 2,
-      title: "Google STEP Internship 2026",
-      category: "Paid Internship",
-      deadline: "Jun 30, 2026",
-      featured: false,
-      tags: ["STEM", "Google"],
-      image: "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=500&auto=format&fit=crop&q=80",
-    },
-    {
-      id: 3,
-      title: "Public Policy Fellowship",
-      category: "Fellowship",
-      deadline: "Jul 10, 2026",
-      featured: false,
-      tags: ["Policy", "Leadership"],
-      image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=500&auto=format&fit=crop&q=80",
-    },
-    {
-      id: 4,
-      title: "Fully Funded Summer Program",
-      category: "Paid Program",
-      deadline: "Jul 15, 2026",
-      featured: false,
-      tags: ["Leadership", "Summer"],
-      image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=500&auto=format&fit=crop&q=80",
-    },
-  ];
+  const renderActiveTab = () => {
+    switch (activeTab) {
+      case "Dashboard": return <StudentHomeView onNavigate={setActiveTab} />;
+      case "Opportunities": return <StudentOpportunitiesView />;
+      case "Saved": return <StudentSavedView />;
+      case "Applications": return <StudentApplicationsView />;
+      case "Calendar": return <StudentCalendarView />;
+      case "Community": return <StudentCommunityView />;
+      case "Resources": return <StudentResourcesView />;
+      case "Settings": return <StudentSettingsView />;
+      default: return <StudentHomeView onNavigate={setActiveTab} />;
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-[#faf5f8] text-[#2d1b28] font-sans antialiased flex flex-col justify-between">
+    <div className="min-h-screen bg-[#fafafc] text-slate-900 font-sans antialiased flex flex-col justify-between selection:bg-teal-100 selection:text-teal-900">
       {/* Main Grid Wrapper */}
-      <div className="flex-1 p-3 sm:p-5 max-w-[1600px] w-full mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+      <div className="flex-1 p-3 sm:p-5 max-w-[1800px] w-full mx-auto">
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
           {/* 1. LEFT SIDEBAR */}
-          <StudentSidebar />
+          <StudentSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
           {/* 2. MAIN CENTER CONTENT */}
-          <main className="lg:col-span-7 space-y-5">
-            <StudentHeader
-              user={user}
-              onLogout={handleLogout}
-              searchQuery={searchQuery}
-              setSearchQuery={setSearchQuery}
-            />
-            <StudentMetrics />
-            <StudentOpportunities
-              opportunities={opportunities}
-              savedIds={savedIds}
-              toggleBookmark={toggleBookmark}
-            />
-            <StudentFeedAndCalendar />
+          <main className="xl:col-span-7 flex flex-col gap-6 min-h-[calc(100vh-2.5rem)]">
+            <StudentHeader user={user} onLogout={handleLogout} />
+            <div className="flex-1 overflow-hidden relative">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeTab}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                  className="h-full"
+                >
+                  {renderActiveTab()}
+                </motion.div>
+              </AnimatePresence>
+            </div>
           </main>
 
           {/* 3. RIGHT SIDEBAR (LIVE CHAT) */}

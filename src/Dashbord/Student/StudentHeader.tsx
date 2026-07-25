@@ -1,56 +1,68 @@
-import { Bell, LogOut, Search } from "lucide-react";
+import { Bell, LogOut, Search, Chrome, Settings } from "lucide-react";
 import { useState } from "react";
+import { motion } from "framer-motion";
 
 interface StudentHeaderProps {
   user: { name: string; username: string } | null;
   onLogout: () => void;
-  searchQuery: string;
-  setSearchQuery: (query: string) => void;
 }
 
-export function StudentHeader({ user, onLogout, searchQuery, setSearchQuery }: StudentHeaderProps) {
+export function StudentHeader({ user, onLogout }: StudentHeaderProps) {
   const [extensionOn, setExtensionOn] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
 
   return (
-    <div className="bg-white rounded-3xl p-5 border border-pink-100/60 shadow-xs space-y-4">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-gray-100 pb-4">
-        {/* Left Extension status */}
-        <div>
-          <h1 className="font-bold text-xs text-[#e04f96] uppercase tracking-wide">GOC Extension</h1>
-          <p className="text-[11px] text-gray-400 font-medium">Opportunities. Community. Growth.</p>
+    <header className="bg-white/80 backdrop-blur-xl rounded-3xl p-5 border border-slate-200 shadow-sm space-y-5">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
+        
+        {/* Left Side: Status / Context */}
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-teal-50 rounded-xl">
+            <Chrome className="h-5 w-5 text-teal-600" />
+          </div>
+          <div>
+            <h1 className="font-bold text-xs text-slate-800 uppercase tracking-wider">Chrome Extension</h1>
+            <p className="text-[11px] text-slate-500 font-medium">Syncing opportunities automatically</p>
+          </div>
         </div>
 
-        {/* Right controls: Extension Switch, Bell, Avatar */}
-        <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
-          {/* Extension ON toggle switch */}
-          <div className="flex items-center gap-2 bg-pink-50/60 px-3 py-1.5 rounded-full border border-pink-100">
-            <span className="text-[11px] font-semibold text-gray-600">Extension ON</span>
+        {/* Right Side: Controls */}
+        <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+          
+          {/* Extension Toggle */}
+          <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-full border border-slate-200">
+            <span className="text-[11px] font-semibold text-slate-600">
+              {extensionOn ? "Active" : "Paused"}
+            </span>
             <button
               onClick={() => setExtensionOn(!extensionOn)}
               className={`w-9 h-5 rounded-full transition-colors relative flex items-center p-0.5 cursor-pointer ${
-                extensionOn ? "bg-[#e04f96]" : "bg-gray-300"
+                extensionOn ? "bg-teal-500" : "bg-slate-300"
               }`}
             >
-              <div
-                className={`w-4 h-4 bg-white rounded-full shadow-md transition-transform ${
-                  extensionOn ? "translate-x-4" : "translate-x-0"
-                }`}
+              <motion.div
+                layout
+                className="w-4 h-4 bg-white rounded-full shadow-sm"
+                animate={{ x: extensionOn ? 16 : 0 }}
+                transition={{ type: "spring", stiffness: 500, damping: 30 }}
               />
             </button>
           </div>
 
           {/* Notifications */}
-          <button className="p-2 rounded-full bg-pink-50/60 text-[#e04f96] hover:bg-pink-100 transition-colors relative cursor-pointer">
+          <button className="p-2.5 rounded-xl bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors relative cursor-pointer border border-slate-200">
             <Bell className="h-4 w-4" />
-            <span className="absolute top-1 right-1 w-2 h-2 bg-[#e04f96] rounded-full ring-2 ring-white"></span>
+            <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white"></span>
           </button>
 
-          {/* Profile avatar */}
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-pink-100 border border-pink-300 flex items-center justify-center text-[#e04f96] font-bold text-xs shadow-xs">
-              {user?.name?.[0] || "K"}
+          {/* Profile Menu */}
+          <div className="flex items-center gap-3 pl-2 border-l border-slate-200">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-teal-500 to-blue-500 p-0.5 shadow-sm">
+              <div className="w-full h-full bg-white rounded-[10px] flex items-center justify-center text-teal-600 font-bold text-sm">
+                {user?.name?.[0] || "K"}
+              </div>
             </div>
-            <button onClick={onLogout} title="Logout" className="text-gray-400 hover:text-red-500 transition-colors cursor-pointer">
+            <button onClick={onLogout} title="Logout" className="text-slate-400 hover:text-red-500 transition-colors cursor-pointer p-1">
               <LogOut className="h-4 w-4" />
             </button>
           </div>
@@ -58,28 +70,28 @@ export function StudentHeader({ user, onLogout, searchQuery, setSearchQuery }: S
       </div>
 
       {/* Greeting & Search Row */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-1">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl sm:text-2xl font-black text-[#2d1b28]">
-            Hi, {user?.name || "Karla"}! 💕
+          <h2 className="text-2xl font-black text-slate-900 tracking-tight">
+            Hi, {user?.name || "Karla"}! 👋
           </h2>
-          <p className="text-xs text-gray-500 mt-0.5">
-            Let's find your next opportunity.
+          <p className="text-sm text-slate-500 mt-1 font-medium">
+            Let's find your next big opportunity today.
           </p>
         </div>
 
         {/* Search input */}
-        <div className="relative w-full md:w-80">
+        <div className="relative w-full md:w-96 group">
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search scholarships, internships, programs..."
-            className="w-full bg-pink-50/40 border border-pink-100 text-xs text-gray-700 rounded-2xl py-2.5 pl-4 pr-10 outline-none focus:border-[#e04f96] focus:ring-2 focus:ring-pink-100 transition-all placeholder:text-gray-400"
+            placeholder="Search scholarships, internships..."
+            className="w-full bg-slate-50 border border-slate-200 text-sm text-slate-900 rounded-2xl py-3 pl-11 pr-4 outline-none focus:bg-white focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 transition-all placeholder:text-slate-400"
           />
-          <Search className="absolute right-3 top-2.5 h-4 w-4 text-[#e04f96]" />
+          <Search className="absolute left-4 top-3.5 h-4 w-4 text-slate-400 group-focus-within:text-teal-500 transition-colors" />
         </div>
       </div>
-    </div>
+    </header>
   );
 }
