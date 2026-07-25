@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { StudentHomeView } from "./views/StudentHomeView";
 import { StudentOpportunitiesView } from "./views/StudentOpportunitiesView";
 import { StudentSavedView } from "./views/StudentSavedView";
+import { StudentSharedView } from "./views/StudentSharedView";
 import { StudentApplicationsView } from "./views/StudentApplicationsView";
 import { StudentCalendarView } from "./views/StudentCalendarView";
 import { StudentCommunityView } from "./views/StudentCommunityView";
@@ -41,8 +42,10 @@ export function StudentDashboard() {
       case "Dashboard":     return <StudentHomeView onNavigate={setActiveTab} />;
       case "Opportunities": return <StudentOpportunitiesView />;
       case "Saved":         return <StudentSavedView />;
+      case "Shared":        return <StudentSharedView />;
       case "Applications":  return <StudentApplicationsView />;
       case "Calendar":      return <StudentCalendarView />;
+      case "Mentors":       return <StudentCommunityView />;
       case "Community":     return <StudentCommunityView />;
       case "Resources":     return <StudentResourcesView />;
       case "Settings":      return <StudentSettingsView />;
