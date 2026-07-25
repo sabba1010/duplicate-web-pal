@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { RECOMMENDED_OPPORTUNITIES, CALENDAR_EVENTS } from "@/lib/mock-data";
-import { ArrowRight, BookmarkPlus } from "lucide-react";
+import { ArrowRight, BookmarkPlus, Search } from "lucide-react";
 import { TabType } from "../StudentSidebar";
 import { StudentMetrics } from "../StudentMetrics";
 import { StudentOpportunities } from "../StudentOpportunities";
@@ -60,7 +60,29 @@ export function StudentHomeView({ onNavigate }: StudentHomeViewProps) {
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-[18px]">
+      {/* Greeting & Search */}
+      <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 flex-wrap">
+        <div className="flex flex-col">
+          <h1 className="text-[24px] font-black text-[#2a2026] tracking-[-0.01em] leading-tight">
+            Hi, Karla! <span className="text-[#f14f98]">💕</span>
+          </h1>
+          <p className="text-[13px] text-[#8b7e85] font-semibold mt-[2px]">
+            Let's find your next opportunity.
+          </p>
+        </div>
+
+        {/* Search */}
+        <div className="flex items-center gap-[10px] bg-white border border-[#f1e4e9] rounded-[24px] py-[11px] px-[18px] w-full md:w-[380px] max-w-full">
+          <Search className="h-[13px] w-[13px] text-[#f14f98] shrink-0" />
+          <input
+            type="text"
+            placeholder="Search scholarships, internships, programs..."
+            className="flex-1 border-none outline-none text-[12.5px] bg-transparent text-[#2a2026] placeholder-[#8b7e85]"
+          />
+        </div>
+      </div>
+
       {/* Metrics */}
       <StudentMetrics />
 

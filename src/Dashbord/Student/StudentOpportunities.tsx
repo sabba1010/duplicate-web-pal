@@ -25,7 +25,7 @@ export function StudentOpportunities({
   onViewAll,
 }: StudentOpportunitiesProps) {
   return (
-    <div className="bg-white rounded-3xl p-5 border border-pink-100 shadow-xs space-y-4">
+    <div className="bg-white rounded-[18px] p-[16px_18px] border border-pink-100 shadow-xs space-y-4 mb-[14px]">
       <div className="flex items-center justify-between">
         <h3 className="font-bold text-sm text-[#2d1b28]">More opportunities for you</h3>
         <button

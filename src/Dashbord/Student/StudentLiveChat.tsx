@@ -43,7 +43,7 @@ export function StudentLiveChat({ user }: StudentLiveChatProps) {
   };
 
   return (
-    <aside className="xl:col-span-3 xl:sticky xl:top-5 xl:h-[calc(100vh-2.5rem)] bg-white rounded-3xl border border-pink-100 shadow-sm flex flex-col overflow-hidden z-20">
+    <aside className="xl:sticky xl:top-4 xl:h-[calc(100vh-2rem)] bg-white rounded-[18px] border border-pink-100 shadow-sm flex flex-col overflow-hidden z-20">
       {/* Header */}
       <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-white shrink-0">
         <div className="flex items-center gap-2">

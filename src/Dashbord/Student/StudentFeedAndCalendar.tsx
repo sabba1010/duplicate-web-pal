@@ -54,7 +54,7 @@ export function StudentFeedAndCalendar() {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-white rounded-3xl p-5 border border-pink-100 shadow-xs space-y-3"
+          className="bg-white rounded-[18px] p-[16px_18px] border border-pink-100 shadow-xs space-y-3"
         >
           <div className="flex items-center justify-between">
             <h3 className="font-bold text-[13px] text-[#2d1b28]">Upcoming deadlines</h3>
@@ -97,7 +97,7 @@ export function StudentFeedAndCalendar() {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-white rounded-3xl p-5 border border-pink-100 shadow-xs space-y-3"
+          className="bg-white rounded-[18px] p-[16px_18px] border border-pink-100 shadow-xs space-y-3"
         >
           <h3 className="font-bold text-[13px] text-[#2d1b28]">Pending / Action needed</h3>
           <div className="space-y-2">
@@ -131,7 +131,7 @@ export function StudentFeedAndCalendar() {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
-          className="bg-white rounded-3xl p-5 border border-pink-100 shadow-xs space-y-3"
+          className="bg-white rounded-[18px] p-[16px_18px] border border-pink-100 shadow-xs space-y-3"
         >
           <div className="flex items-center justify-between">
             <h3 className="font-bold text-[13px] text-[#2d1b28]">What's been shared by others</h3>
@@ -176,7 +176,7 @@ export function StudentFeedAndCalendar() {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25 }}
-          className="bg-white rounded-3xl p-5 border border-pink-100 shadow-xs space-y-3"
+          className="bg-white rounded-[18px] p-[16px_18px] border border-pink-100 shadow-xs space-y-3"
         >
           <div className="flex items-center justify-between">
             <h3 className="font-bold text-[13px] text-[#2d1b28]">Your calendar</h3>

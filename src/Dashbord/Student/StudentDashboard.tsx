@@ -46,7 +46,6 @@ export function StudentDashboard() {
       case "Applications":  return <StudentApplicationsView />;
       case "Calendar":      return <StudentCalendarView />;
       case "Mentors":       return <StudentCommunityView />;
-      case "Community":     return <StudentCommunityView />;
       case "Resources":     return <StudentResourcesView />;
       case "Settings":      return <StudentSettingsView />;
       default:              return <StudentHomeView onNavigate={setActiveTab} />;
@@ -58,17 +57,17 @@ export function StudentDashboard() {
       className="min-h-screen font-sans antialiased"
       style={{ background: "linear-gradient(135deg, #fff5f9 0%, #ffffff 50%, #fdf5ff 100%)" }}
     >
-      <div className="flex-1 p-3 sm:p-4 max-w-[1800px] w-full mx-auto">
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 items-start">
+      <div className="flex-1 p-4 max-w-[1536px] w-full mx-auto">
+        <div className="grid grid-cols-1 xl:grid-cols-[180px_1fr_400px] gap-3 items-start min-h-[calc(100vh-2rem)]">
           {/* LEFT SIDEBAR */}
-          <div className="xl:col-span-2">
+          <div>
             <StudentSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
           </div>
 
           {/* MAIN CENTER CONTENT */}
-          <main className="xl:col-span-7 flex flex-col gap-4 min-h-[calc(100vh-2rem)]">
+          <main className="bg-white rounded-[18px] border border-pink-100 shadow-sm flex flex-col min-w-0 h-[calc(100vh-2rem)]">
             <StudentHeader user={user} onLogout={handleLogout} />
-            <div className="flex-1 overflow-hidden relative">
+            <div className="flex-1 overflow-y-auto px-[22px] pb-[24px]">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeTab}
@@ -85,7 +84,7 @@ export function StudentDashboard() {
           </main>
 
           {/* RIGHT SIDEBAR: LIVE CHAT */}
-          <div className="xl:col-span-3">
+          <div>
             <StudentLiveChat user={user} />
           </div>
         </div>

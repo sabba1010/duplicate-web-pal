@@ -14,7 +14,7 @@ function MetricCard({ icon: Icon, value, label, delay = 0 }: MetricCardProps) {
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.4 }}
-      className="bg-white rounded-3xl p-4 border border-pink-100 shadow-xs flex items-center gap-3 hover:shadow-sm hover:border-pink-200 transition-all cursor-pointer group"
+      className="bg-white rounded-[14px] p-[15px_16px] border border-pink-100 shadow-xs flex items-center gap-[12px] hover:shadow-sm hover:-translate-y-[1px] hover:border-pink-200 transition-all cursor-pointer group"
     >
       <div className="w-10 h-10 rounded-2xl border border-pink-200 bg-pink-50/60 flex items-center justify-center text-[#e04f96] shrink-0 group-hover:scale-105 transition-transform">
         <Icon className="h-4 w-4" />

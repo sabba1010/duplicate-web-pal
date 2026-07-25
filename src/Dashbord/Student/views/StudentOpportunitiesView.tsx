@@ -138,32 +138,30 @@ function OpportunityCard({
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.3 }}
-      className="group bg-white border border-pink-100 rounded-2xl overflow-hidden hover:shadow-md hover:border-pink-200 transition-all duration-300 cursor-pointer flex flex-col"
+      className="bg-white border border-[#f1e4e9] rounded-[14px] overflow-hidden hover:shadow-[0_1px_3px_rgba(207,52,120,0.04),_0_6px_18px_rgba(207,52,120,0.05)] hover:-translate-y-[2px] transition-all flex flex-col cursor-pointer"
     >
       {/* Image */}
-      <div className="relative h-28 overflow-hidden bg-gray-100 shrink-0">
-        <img
-          src={opp.image}
-          alt={opp.title}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-        />
+      <div 
+        className="h-[78px] relative bg-cover bg-center shrink-0" 
+        style={{ backgroundImage: `url('${opp.image}')` }}
+      >
       </div>
 
       {/* Body */}
-      <div className="p-3 flex-1 flex flex-col gap-1">
-        <h4 className="font-bold text-[12px] text-[#2d1b28] leading-snug line-clamp-2 group-hover:text-[#e04f96] transition-colors">
+      <div className="p-[11px_12px_13px] flex-1 flex flex-col">
+        <h4 className="font-extrabold text-[12.5px] leading-[1.3] mb-[3px] text-[#2a2026]">
           {opp.title}
         </h4>
-        <p className="text-[10px] text-gray-500 font-medium">{opp.category}</p>
-        <p className="text-[10px] text-gray-400">Deadline: {opp.deadline}</p>
+        <p className="text-[11px] font-bold text-[#8b7e85]">{opp.category}</p>
+        <p className="text-[10.5px] font-semibold text-[#8b7e85] m-[3px_0_9px]">Deadline: {opp.deadline}</p>
 
-        {/* Tags + Bookmark */}
-        <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-50">
-          <div className="flex flex-wrap gap-1">
+        {/* Footer (Tags + Bookmark) */}
+        <div className="flex items-end justify-between mt-auto">
+          <div className="flex gap-[5px] flex-wrap">
             {opp.tags.slice(0, 2).map((t) => (
               <span
                 key={t}
-                className="bg-pink-50 text-[#e04f96] text-[9px] font-bold px-1.5 py-0.5 rounded-md"
+                className="bg-[#fde8f1] text-[#cf3478] text-[9.5px] font-extrabold px-[8px] py-[2px] rounded-[12px]"
               >
                 {t}
               </span>
@@ -174,12 +172,12 @@ function OpportunityCard({
               e.stopPropagation();
               onToggle();
             }}
-            className="text-gray-300 hover:text-[#e04f96] transition-colors cursor-pointer shrink-0"
+            className={`text-[13px] p-[2px] transition-colors cursor-pointer ${saved ? "text-[#f14f98]" : "text-[#cbbcc3] hover:text-[#f14f98]"}`}
           >
             <Bookmark
               className="h-3.5 w-3.5"
-              fill={saved ? "#e04f96" : "none"}
-              stroke={saved ? "#e04f96" : "currentColor"}
+              fill={saved ? "currentColor" : "none"}
+              stroke="currentColor"
             />
           </button>
         </div>
@@ -192,24 +190,18 @@ function SectionHeader({
   icon: Icon,
   title,
   count,
-  color,
 }: {
   icon: React.ElementType;
   title: string;
   count: number;
-  color: string;
 }) {
   return (
-    <div className="flex items-center justify-between mb-3">
-      <div className="flex items-center gap-2">
-        <div className={`p-1.5 rounded-lg ${color}`}>
-          <Icon className="h-3.5 w-3.5 text-[#e04f96]" />
-        </div>
-        <h3 className="font-bold text-[13px] text-[#2d1b28]">{title}</h3>
+    <div className="flex items-center gap-[10px] mb-[12px]">
+      <div className="w-[30px] h-[30px] rounded-[9px] bg-[#fde8f1] text-[#cf3478] flex items-center justify-center text-[13px] shrink-0">
+        <Icon className="h-4 w-4" />
       </div>
-      <a href="#" className="text-[11px] font-semibold text-[#e04f96] hover:underline cursor-pointer flex items-center gap-1">
-        {count} open · View all →
-      </a>
+      <h3 className="font-extrabold text-[14px] flex-1 text-[#2a2026]">{title}</h3>
+      <div className="text-[10.5px] text-[#8b7e85] font-bold">{count} open</div>
     </div>
   );
 }
@@ -229,98 +221,86 @@ export function StudentOpportunitiesView() {
   return (
     <div className="space-y-5">
       {/* ── Header ── */}
-      <div className="bg-white rounded-3xl border border-pink-100 shadow-sm p-5 space-y-4">
-        {/* Title + Search */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <h2 className="text-xl font-black text-[#2d1b28]">Opportunities</h2>
-            <p className="text-[12px] text-gray-400 mt-0.5">
-              Every scholarship, internship and program — organized for you.
-            </p>
-          </div>
-
-          <div className="relative w-full sm:w-72 group">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search all opportunities..."
-              className="w-full bg-gray-50 border border-gray-200 text-[12px] text-gray-700 rounded-full py-2.5 pl-10 pr-10 outline-none focus:bg-white focus:border-[#e04f96] focus:ring-4 focus:ring-pink-500/10 transition-all placeholder:text-gray-400"
-            />
-            <Search className="absolute left-3.5 top-3 h-3.5 w-3.5 text-gray-400 group-focus-within:text-[#e04f96] transition-colors" />
-          </div>
+      <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 flex-wrap mb-[18px]">
+        <div>
+          <h1 className="text-[22px] font-black tracking-[-0.01em] text-[#2a2026]">Opportunities</h1>
+          <p className="text-[12.5px] text-[#8b7e85] font-semibold mt-[3px]">
+            Every scholarship, internship and program — organized for you.
+          </p>
         </div>
 
-        {/* Filter Pills */}
-        <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-1">
+        {/* Search */}
+        <div className="flex items-center gap-[10px] bg-white border border-[#f1e4e9] rounded-[24px] py-[11px] px-[18px] w-full md:w-[380px] max-w-full">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search all opportunities..."
+            className="flex-1 border-none outline-none text-[12.5px] bg-transparent text-[#2a2026] placeholder-[#8b7e85]"
+          />
+          <Search className="h-[13px] w-[13px] text-[#f14f98] shrink-0" />
+        </div>
+      </div>
+
+      {/* Filter Chips */}
+      <div className="flex gap-[8px] flex-wrap mb-[18px]">
           {FILTERS.map((f) => (
             <button
               key={f}
               onClick={() => setActiveFilter(f)}
-              className={`whitespace-nowrap px-4 py-1.5 rounded-full text-[12px] font-semibold transition-all cursor-pointer ${
+              className={`px-[16px] py-[8px] rounded-[20px] border text-[12px] font-extrabold whitespace-nowrap transition-colors cursor-pointer ${
                 activeFilter === f
-                  ? "bg-[#e04f96] text-white shadow-sm shadow-pink-300/30"
-                  : "border border-pink-200 text-gray-500 hover:bg-pink-50 hover:text-[#e04f96] bg-white"
+                  ? "bg-[#f14f98] border-[#f14f98] text-white"
+                  : "bg-white border-[#f1e4e9] text-[#8b7e85] hover:border-[#fde8f1] hover:text-[#2a2026]"
               }`}
             >
               {f}
             </button>
           ))}
         </div>
-      </div>
 
       {/* ── Just Shared Banner ── */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.05 }}
-        className="bg-white border border-pink-100 rounded-3xl overflow-hidden shadow-sm flex flex-col sm:flex-row items-stretch"
+        className="flex flex-col md:flex-row md:items-center gap-[18px] bg-gradient-to-br from-[#fde8f1] to-[#f3e8ff] border border-[#f1e4e9] rounded-[18px] p-[18px_20px] mb-[20px]"
       >
-        <div className="sm:w-32 h-24 sm:h-auto shrink-0 overflow-hidden">
+        <div className="w-[96px] h-[72px] rounded-[14px] shrink-0 shadow-[0_4px_14px_rgba(207,52,120,0.18)] bg-center bg-cover overflow-hidden">
           <img
             src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&q=80&w=300"
             alt="MIT Summer Research"
             className="w-full h-full object-cover"
           />
         </div>
-        <div className="flex-1 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-2 mb-1.5">
-              <div className="flex items-center gap-1.5 bg-pink-50 border border-pink-200 rounded-full px-2.5 py-0.5">
-                <Users className="h-2.5 w-2.5 text-[#e04f96]" />
-                <span className="text-[9px] font-extrabold text-[#e04f96] uppercase tracking-wider">
-                  Just Shared by Isabella R. · 2h ago
-                </span>
-              </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-[6px] text-[10.5px] font-black text-[#cf3478] uppercase tracking-[.05em] mb-[4px]">
+            <div className="w-[18px] h-[18px] rounded-full bg-cover bg-center flex items-center justify-center bg-[#fde8f1] text-[#cf3478] font-black text-[9px]" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&q=60')" }}>
+              I
             </div>
-            <h3 className="font-extrabold text-[14px] text-[#2d1b28]">
-              MIT Summer Research Program
-            </h3>
-            <p className="text-[11px] text-gray-500 mt-0.5">
-              Scholarship · Paid Research Program · Deadline Jul 5, 2026
-            </p>
+            Just shared by Isabella R. · 2h ago
           </div>
-          <div className="flex flex-row sm:flex-col gap-2 shrink-0">
-            <button className="px-4 py-2 bg-[#e04f96] hover:bg-[#c43d83] text-white text-[11px] font-bold rounded-xl shadow-sm transition-colors cursor-pointer whitespace-nowrap">
-              View details
-            </button>
-            <button className="px-4 py-2 bg-white border border-pink-200 hover:bg-pink-50 text-[#e04f96] text-[11px] font-bold rounded-xl transition-colors cursor-pointer flex items-center gap-1 whitespace-nowrap">
-              <Bookmark className="h-3 w-3" />
-              Save
-            </button>
+          <div className="text-[15px] font-black text-[#2a2026] mb-[2px]">
+            MIT Summer Research Program
           </div>
+          <div className="text-[11.5px] text-[#8b7e85] font-bold">
+            Scholarship · Paid Research Program · Deadline Jul 5, 2026
+          </div>
+        </div>
+        <div className="flex flex-row md:flex-col gap-[8px] shrink-0 w-full md:w-auto">
+          <button className="flex-1 md:flex-none px-[18px] py-[9px] bg-[#f14f98] hover:bg-[#cf3478] text-white text-[12px] font-extrabold rounded-[20px] transition-colors whitespace-nowrap">
+            View details
+          </button>
+          <button className="flex-1 md:flex-none px-[18px] py-[9px] bg-white border border-[#fde8f1] text-[#cf3478] text-[12px] font-extrabold rounded-[20px] transition-colors flex items-center justify-center gap-2 whitespace-nowrap">
+            <Bookmark className="h-[13px] w-[13px]" /> Save
+          </button>
         </div>
       </motion.div>
 
       {/* ── Scholarships ── */}
-      <div className="bg-white rounded-3xl border border-pink-100 shadow-sm p-5">
-        <SectionHeader
-          icon={GraduationCap}
-          title="Scholarships"
-          count={4}
-          color="bg-pink-50"
-        />
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="mb-[22px]">
+        <SectionHeader icon={GraduationCap} title="Scholarships" count={12} />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-[12px]">
           {SCHOLARSHIPS.map((opp, i) => (
             <OpportunityCard
               key={opp.id}
@@ -334,14 +314,9 @@ export function StudentOpportunitiesView() {
       </div>
 
       {/* ── Internships ── */}
-      <div className="bg-white rounded-3xl border border-pink-100 shadow-sm p-5">
-        <SectionHeader
-          icon={MapPin}
-          title="Internships"
-          count={4}
-          color="bg-pink-50"
-        />
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="mb-[22px]">
+        <SectionHeader icon={MapPin} title="Internships" count={8} />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-[12px]">
           {INTERNSHIPS.map((opp, i) => (
             <OpportunityCard
               key={opp.id}
@@ -355,14 +330,9 @@ export function StudentOpportunitiesView() {
       </div>
 
       {/* ── Remote Programs ── */}
-      <div className="bg-white rounded-3xl border border-pink-100 shadow-sm p-5">
-        <SectionHeader
-          icon={Globe}
-          title="Remote Programs"
-          count={4}
-          color="bg-pink-50"
-        />
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="mb-[22px]">
+        <SectionHeader icon={Globe} title="Remote Programs" count={5} />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-[12px]">
           {REMOTE_PROGRAMS.map((opp, i) => (
             <OpportunityCard
               key={opp.id}

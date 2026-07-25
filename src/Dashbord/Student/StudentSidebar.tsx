@@ -43,7 +43,7 @@ export function StudentSidebar({ activeTab, setActiveTab }: StudentSidebarProps)
   ] as const;
 
   return (
-    <aside className="xl:col-span-2 xl:sticky xl:top-5 xl:h-[calc(100vh-2.5rem)] bg-white rounded-3xl p-5 border border-pink-100 shadow-sm flex flex-col justify-between overflow-y-auto z-20">
+    <aside className="xl:sticky xl:top-4 xl:h-[calc(100vh-2rem)] bg-white rounded-[18px] p-[20px_14px] border border-pink-100 shadow-sm flex flex-col justify-between overflow-y-auto z-20">
       <div>
         {/* Logo */}
         <Link to="/" className="flex flex-col items-start mb-8 px-1 cursor-pointer group">

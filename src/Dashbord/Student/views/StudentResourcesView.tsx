@@ -1,50 +1,102 @@
-import { PlayCircle, FileText, Download, Search } from "lucide-react";
+const ARTICLES = [
+  {
+    id: 1,
+    category: "SCHOLARSHIPS",
+    title: "Writing a scholarship essay that stands out",
+    read: "6 min read",
+    image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    id: 2,
+    category: "INTERVIEWS",
+    title: "10 questions to prep for before any interview",
+    read: "4 min read",
+    image: "https://images.unsplash.com/photo-1521737852567-6949f3f9f2b5?auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    id: 3,
+    category: "MENTORSHIP",
+    title: "How to ask for a strong letter of recommendation",
+    read: "5 min read",
+    image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    id: 4,
+    category: "INTERNSHIPS",
+    title: "Negotiating your first internship offer",
+    read: "7 min read",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    id: 5,
+    category: "STEM",
+    title: "Breaking into tech with no prior experience",
+    read: "8 min read",
+    image: "https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    id: 6,
+    category: "CONFIDENCE",
+    title: "Overcoming imposter syndrome in new rooms",
+    read: "5 min read",
+    image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80",
+  },
+];
+
+const CATEGORY_COLORS: Record<string, string> = {
+  SCHOLARSHIPS: "text-[#f14f98]",
+  INTERVIEWS: "text-[#7c5cbf]",
+  MENTORSHIP: "text-[#2b9e6a]",
+  INTERNSHIPS: "text-[#f14f98]",
+  STEM: "text-[#2196f3]",
+  CONFIDENCE: "text-[#f6b83c]",
+};
 
 export function StudentResourcesView() {
-  const resources = [
-    { id: 1, type: "Video", title: "Nailing the Technical Interview", author: "Tech Mentor Team", icon: PlayCircle, color: "text-blue-500", bg: "bg-blue-50" },
-    { id: 2, type: "Template", title: "Harvard Format Resume", author: "Career Services", icon: FileText, color: "text-emerald-500", bg: "bg-emerald-50" },
-    { id: 3, type: "Guide", title: "Writing a Killer Cover Letter", author: "Alumni Network", icon: FileText, color: "text-amber-500", bg: "bg-amber-50" },
-    { id: 4, type: "Download", title: "Top 100 Behavioral Questions", author: "Mock Interviewers", icon: Download, color: "text-purple-500", bg: "bg-purple-50" },
-  ];
-
   return (
-    <div className="bg-white rounded-3xl border border-slate-200 shadow-sm h-full flex flex-col overflow-hidden">
-      <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-xl font-bold text-slate-900">Curated Resources</h2>
-          <p className="text-sm text-slate-500 mt-1">Guides, templates, and videos to help you succeed.</p>
-        </div>
-        <div className="relative w-full md:w-64">
-          <input
-            type="text"
-            placeholder="Search resources..."
-            className="w-full bg-slate-50 border border-slate-200 text-sm text-slate-700 rounded-xl py-2 pl-9 pr-4 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"
-          />
-          <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-        </div>
+    <div className="space-y-6 pb-8">
+      {/* ── Page Header ── */}
+      <div className="border-b border-[#f1e4e9] pb-5">
+        <h1 className="text-[24px] font-black text-[#2a2026] tracking-tight">Resources</h1>
+        <p className="text-[13px] text-[#8b7e85] font-semibold mt-[2px]">
+          Guides to help you apply, interview and negotiate with confidence.
+        </p>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-6 bg-slate-50/50">
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {resources.map((res) => {
-            const Icon = res.icon;
-            return (
-              <div key={res.id} className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-teal-200 transition-all group cursor-pointer">
-                <div className="flex items-start justify-between mb-4">
-                  <div className={`p-3 rounded-xl ${res.bg}`}>
-                    <Icon className={`h-6 w-6 ${res.color}`} />
-                  </div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
-                    {res.type}
-                  </span>
-                </div>
-                <h3 className="font-bold text-slate-900 mb-1 group-hover:text-teal-600 transition-colors line-clamp-2">{res.title}</h3>
-                <p className="text-xs font-medium text-slate-500">By {res.author}</p>
+      {/* ── Article Grid ── */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-[20px]">
+        {ARTICLES.map((article) => (
+          <div
+            key={article.id}
+            className="bg-white border border-[#f1e4e9] rounded-[18px] overflow-hidden hover:shadow-[0_4px_20px_rgba(207,52,120,0.06)] hover:-translate-y-[2px] transition-all cursor-pointer flex flex-col group"
+          >
+            {/* Thumbnail */}
+            <div className="h-[160px] overflow-hidden bg-gray-100 shrink-0">
+              <img
+                src={article.image}
+                alt={article.title}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+            </div>
+
+            {/* Body */}
+            <div className="p-[16px] flex flex-col flex-1">
+              <div
+                className={`text-[10px] font-black tracking-[0.1em] uppercase mb-[8px] ${
+                  CATEGORY_COLORS[article.category] ?? "text-[#f14f98]"
+                }`}
+              >
+                {article.category}
               </div>
-            );
-          })}
-        </div>
+              <h3 className="text-[14px] font-black text-[#2a2026] leading-[1.4] mb-auto group-hover:text-[#f14f98] transition-colors">
+                {article.title}
+              </h3>
+              <p className="text-[11.5px] font-bold text-[#8b7e85] mt-[12px]">
+                {article.read}
+              </p>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
