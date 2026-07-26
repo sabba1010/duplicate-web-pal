@@ -34,7 +34,7 @@ export function AdminExtensionView() {
             </div>
             <p className="text-sm text-slate-500">Monitor and verify opportunities scraped by students.</p>
           </div>
-          
+
           <div className="relative w-full md:w-64">
             <input
               type="text"
