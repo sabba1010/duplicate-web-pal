@@ -1,15 +1,17 @@
-import { Link } from "@tanstack/react-router";
 import {
-  ShieldCheck,
+  Shield,
   Users,
   FileText,
-  Settings,
+  Inbox,
+  Puzzle,
   BarChart3,
-  Chrome,
-  Inbox
+  LifeBuoy,
+  Settings,
 } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { motion } from "framer-motion";
 
-export type AdminTabType = "Overview" | "Members" | "Opportunities" | "Submissions" | "Analytics" | "Extension" | "Settings";
+export type AdminTabType = "Overview" | "Members" | "Opportunities" | "Submissions" | "Extension" | "Analytics" | "Support" | "Settings";
 
 interface AdminSidebarProps {
   activeTab: AdminTabType;
@@ -18,68 +20,68 @@ interface AdminSidebarProps {
 
 export function AdminSidebar({ activeTab, setActiveTab }: AdminSidebarProps) {
   const tabs = [
-    { id: "Overview", label: "Overview", icon: ShieldCheck },
-    { id: "Members", label: "Members", icon: Users, badge: "12.4k" },
-    { id: "Opportunities", label: "Opportunities", icon: FileText, badge: "342" },
-    { id: "Submissions", label: "Submissions", icon: Inbox, badge: "3" },
-    { id: "Extension", label: "Extension Data", icon: Chrome },
-    { id: "Analytics", label: "Analytics", icon: BarChart3 },
-    { id: "Settings", label: "System Settings", icon: Settings },
+    { id: "Overview",     label: "Overview",       icon: Shield },
+    { id: "Members",      label: "Members",        icon: Users,      badge: "12.4k" },
+    { id: "Opportunities",label: "Opportunities",  icon: FileText,   badge: "20" },
+    { id: "Submissions",  label: "Submissions",    icon: Inbox,      badge: "6" },
+    { id: "Extension",    label: "Extension Data", icon: Puzzle },
+    { id: "Analytics",    label: "Analytics",      icon: BarChart3 },
+    { id: "Support",      label: "Support",        icon: LifeBuoy,   badge: "2" },
+    { id: "Settings",     label: "System Settings",icon: Settings },
   ] as const;
 
   return (
-    <aside className="lg:col-span-2 lg:sticky lg:top-5 lg:h-[calc(100vh-2.5rem)] bg-white rounded-3xl p-5 border border-indigo-100 shadow-sm flex flex-col justify-between min-h-[800px] overflow-y-auto">
+    <aside className="xl:sticky xl:top-6 flex flex-col justify-between overflow-y-auto z-20 h-full font-sans">
       <div>
-        <Link to="/" className="flex items-center gap-2 mb-10 px-2 group">
-          <div className="flex flex-col leading-none">
-            <div className="flex items-center gap-1">
-              <span className="font-serif italic text-3xl font-bold text-indigo-900 tracking-tight">goc</span>
-              <span className="text-indigo-600 text-[10px] font-black bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-100">ADMIN</span>
-            </div>
-            <span className="text-[10px] text-indigo-400 font-bold tracking-widest uppercase mt-1">
-              Control Panel
+        {/* Logo */}
+        <Link to="/" className="flex flex-col items-start mb-8 px-4 cursor-pointer group">
+          <div className="flex items-center gap-2">
+            <span className="font-serif font-black italic text-[24px] text-[#111827] tracking-tight">goc</span>
+            <span className="bg-[#eef2ff] text-[#4f46e5] text-[9px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-widest">
+              ADMIN
             </span>
           </div>
+          <span className="text-[10px] text-gray-400 font-bold tracking-widest uppercase mt-0.5">
+            CONTROL PANEL
+          </span>
         </Link>
 
-        <nav className="space-y-1.5">
+        {/* Nav */}
+        <nav className="space-y-1">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
-            
             return (
-              <button
+              <motion.button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as AdminTabType)}
-                className={`w-full flex items-center justify-between px-4 py-3 text-sm font-medium rounded-2xl transition-all duration-300 ${
+                whileHover={{ x: 4 }}
+                whileTap={{ scale: 0.96 }}
+                className={`w-full flex items-center justify-between px-4 py-3 text-[13px] font-bold rounded-r-full rounded-l-md transition-all duration-300 cursor-pointer ${
                   isActive
-                    ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/20 translate-x-1"
-                    : "text-slate-600 hover:bg-indigo-50 hover:text-indigo-900"
+                    ? "bg-gradient-to-r from-[#4f46e5] to-[#6366f1] text-white shadow-[0_4px_12px_rgba(79,70,229,0.3)]"
+                    : "text-gray-500 hover:bg-gray-100/80 hover:text-[#111827]"
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <Icon className={`h-4 w-4 ${isActive ? "text-white" : "text-slate-400"}`} />
+                  <Icon className={`h-[18px] w-[18px] shrink-0 ${isActive ? "text-white" : "text-gray-400"}`} />
                   <span>{tab.label}</span>
                 </div>
-                {tab.badge && (
+                {"badge" in tab && tab.badge && (
                   <span
-                    className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                      isActive ? "bg-white/20 text-white" : "bg-indigo-100 text-indigo-600"
+                    className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full ${
+                      isActive
+                        ? "bg-white/20 text-white"
+                        : "bg-[#eef2ff] text-[#4f46e5]"
                     }`}
                   >
                     {tab.badge}
                   </span>
                 )}
-              </button>
+              </motion.button>
             );
           })}
         </nav>
-      </div>
-
-      <div className="p-4 bg-gradient-to-br from-indigo-50 to-blue-50 rounded-2xl border border-indigo-100 text-center shadow-inner">
-        <ShieldCheck className="h-6 w-6 text-indigo-500 mx-auto mb-2" />
-        <span className="text-xs font-bold text-indigo-900">Admin Active</span>
-        <p className="text-[10px] text-slate-500 mt-1">Full system management permissions enabled.</p>
       </div>
     </aside>
   );

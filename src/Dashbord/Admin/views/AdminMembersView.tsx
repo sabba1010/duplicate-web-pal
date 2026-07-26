@@ -7,44 +7,45 @@ export function AdminMembersView() {
   const [members, setMembers] = useState(ADMIN_MEMBERS);
 
   const toggleSuspend = (id: string) => {
-    setMembers(prev => prev.map(m => {
-      if (m.id === id) {
-        return { ...m, status: m.status === "Active" ? "Suspended" : "Active" };
-      }
-      return m;
-    }));
+    setMembers(prev => prev.map(m =>
+      m.id === id ? { ...m, status: m.status === "Active" ? "Suspended" : "Active" } : m
+    ));
   };
 
+  const filtered = members.filter(m =>
+    m.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    m.email.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
-    <div className="bg-white rounded-3xl border border-slate-200 shadow-sm h-full flex flex-col overflow-hidden">
-      <div className="p-6 border-b border-slate-100 space-y-6 bg-slate-50/30">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h2 className="text-xl font-bold text-slate-900">Member Directory</h2>
-            <p className="text-sm text-slate-500 mt-1">Manage students, mentors, and administrators.</p>
+    <div className="space-y-6 pb-8">
+      {/* Page Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#e5e7eb] pb-5">
+        <div>
+          <h1 className="text-[24px] font-black text-[#111827] tracking-tight">Member Directory</h1>
+          <p className="text-[13px] text-[#6b7280] font-semibold mt-[2px]">Manage students, mentors, and administrators.</p>
+        </div>
+        <div className="flex items-center gap-[10px]">
+          <div className="flex items-center gap-[10px] bg-white border border-[#e5e7eb] rounded-[24px] py-[10px] px-[16px] w-full md:w-[300px]">
+            <input
+              type="text"
+              placeholder="Search members..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="flex-1 border-none outline-none text-[12.5px] bg-transparent text-[#111827] placeholder-[#6b7280]"
+            />
+            <Search className="h-[13px] w-[13px] text-[#4f46e5] shrink-0" />
           </div>
-          
-          <div className="flex items-center gap-3">
-            <div className="relative w-full md:w-64">
-              <input
-                type="text"
-                placeholder="Search members..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-white border border-slate-200 text-sm text-slate-700 rounded-xl py-2 pl-9 pr-4 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
-              />
-              <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-            </div>
-            <button className="p-2.5 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition-colors">
-              <Filter className="h-4 w-4" />
-            </button>
-          </div>
+          <button className="w-[42px] h-[42px] flex items-center justify-center border border-[#e5e7eb] rounded-full bg-white text-[#6b7280] hover:bg-[#f3f4f6] hover:text-[#4f46e5] transition-colors">
+            <Filter className="h-4 w-4" />
+          </button>
         </div>
       </div>
 
-      <div className="flex-1 overflow-auto">
+      {/* Table */}
+      <div className="bg-white border border-[#e5e7eb] rounded-[20px] overflow-hidden">
         <table className="w-full text-left text-sm whitespace-nowrap">
-          <thead className="bg-slate-50 border-b border-slate-100 sticky top-0 z-10 text-slate-500 font-bold text-[10px] uppercase tracking-wider">
+          <thead className="border-b border-[#e5e7eb] text-[#6b7280] font-extrabold text-[10px] uppercase tracking-wider bg-[#f3f4f6]">
             <tr>
               <th className="px-6 py-4">User</th>
               <th className="px-6 py-4">Role</th>
@@ -53,59 +54,57 @@ export function AdminMembersView() {
               <th className="px-6 py-4 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
-            {members.map((member) => (
-              <tr key={member.id} className="hover:bg-slate-50/80 transition-colors group">
+          <tbody className="divide-y divide-[#f9f0f5]">
+            {filtered.map((member) => (
+              <tr key={member.id} className="hover:bg-[#f3f4f6] transition-colors group">
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-slate-200 border border-slate-300 flex items-center justify-center text-slate-600 font-bold text-xs shrink-0">
+                    <div className="w-9 h-9 rounded-full bg-[#eef2ff] border border-[#e5e7eb] flex items-center justify-center text-[#4f46e5] font-extrabold text-xs shrink-0">
                       {member.name.charAt(0)}
                     </div>
                     <div>
-                      <div className="font-bold text-slate-900">{member.name}</div>
-                      <div className="text-xs text-slate-500 mt-0.5">{member.email}</div>
+                      <div className="font-extrabold text-[#111827] text-[13px]">{member.name}</div>
+                      <div className="text-[11px] text-[#6b7280] font-bold mt-0.5">{member.email}</div>
                     </div>
                   </div>
                 </td>
                 <td className="px-6 py-4">
-                  <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border ${
-                    member.role === 'Admin' ? 'bg-purple-50 text-purple-700 border-purple-200' :
-                    member.role === 'Mentor' ? 'bg-blue-50 text-blue-700 border-blue-200' :
-                    'bg-slate-100 text-slate-600 border-slate-200'
+                  <span className={`text-[10px] font-extrabold uppercase tracking-wider px-[10px] py-[4px] rounded-full border ${
+                    member.role === 'Admin'  ? 'bg-purple-50 text-purple-700 border-purple-200' :
+                    member.role === 'Mentor' ? 'bg-[#f3f4f6] text-[#4f46e5] border-[#eef2ff]' :
+                    'bg-[#f3f4f6] text-[#6b7280] border-[#e5e7eb]'
                   }`}>
-                    {member.role === 'Admin' && <Shield className="h-3 w-3 inline-block mr-1 -mt-0.5" />}
+                    {member.role === 'Admin' && <Shield className="h-2.5 w-2.5 inline-block mr-1 -mt-0.5" />}
                     {member.role}
                   </span>
                 </td>
                 <td className="px-6 py-4">
                   {member.status === "Active" ? (
-                    <div className="flex items-center gap-1.5 text-emerald-600 text-xs font-semibold">
-                      <UserCheck className="h-4 w-4" /> Active
+                    <div className="flex items-center gap-1.5 text-[#39b86b] text-[12px] font-extrabold">
+                      <UserCheck className="h-3.5 w-3.5" /> Active
                     </div>
                   ) : (
-                    <div className="flex items-center gap-1.5 text-rose-600 text-xs font-semibold">
-                      <UserX className="h-4 w-4" /> {member.status}
+                    <div className="flex items-center gap-1.5 text-rose-500 text-[12px] font-extrabold">
+                      <UserX className="h-3.5 w-3.5" /> {member.status}
                     </div>
                   )}
                 </td>
-                <td className="px-6 py-4 text-slate-500 text-xs font-medium">
-                  {member.joinDate}
-                </td>
+                <td className="px-6 py-4 text-[#6b7280] text-[12px] font-bold">{member.joinDate}</td>
                 <td className="px-6 py-4 text-right">
                   <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     {member.role !== 'Admin' && (
-                      <button 
+                      <button
                         onClick={() => toggleSuspend(member.id)}
-                        className={`px-3 py-1.5 text-xs font-semibold rounded-lg border shadow-sm transition-colors ${
-                          member.status === 'Active' 
-                            ? 'bg-white border-rose-200 text-rose-600 hover:bg-rose-50' 
+                        className={`px-[12px] py-[5px] text-[11px] font-extrabold rounded-full border transition-colors ${
+                          member.status === 'Active'
+                            ? 'bg-white border-rose-200 text-rose-500 hover:bg-rose-50'
                             : 'bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100'
                         }`}
                       >
                         {member.status === "Active" ? "Suspend" : "Activate"}
                       </button>
                     )}
-                    <button className="p-1.5 text-slate-400 hover:text-slate-900 rounded-lg bg-white border border-slate-200 shadow-sm transition-colors">
+                    <button className="p-1.5 text-[#6b7280] hover:text-[#4f46e5] rounded-full bg-white border border-[#e5e7eb] transition-colors">
                       <MoreHorizontal className="h-4 w-4" />
                     </button>
                   </div>

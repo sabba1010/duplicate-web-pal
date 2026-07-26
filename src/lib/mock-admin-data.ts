@@ -11,8 +11,8 @@ export type AdminMetrics = {
 
 export const ADMIN_METRICS: AdminMetrics = {
   totalStudents: 12450,
-  activeMentors: 148,
-  activeOpportunities: 342,
+  activeMentors: 236,
+  activeOpportunities: 20,
   systemHealth: 99.9,
   growth: {
     students: 12.4,
@@ -33,24 +33,24 @@ export const ADMIN_PENDING_REVIEWS: AdminPendingReview[] = [
   {
     id: "rev_1",
     type: "Mentor",
-    title: "New Mentor Application - Dr. Sarah Lin",
-    subtitle: "Computer Science Mentor",
-    time: "2 hours ago",
+    title: "New Mentor Application - Nadia Farouk",
+    subtitle: "Data Scientist, Spotify",
+    time: "Jun 22, 2026",
     status: "Pending",
   },
   {
     id: "rev_2",
-    type: "Scholarship",
-    title: "Tech Women 2026 - Sponsorship Listing",
-    subtitle: "$5,000 Grant by Global Tech Foundation",
-    time: "4 hours ago",
-    status: "In Review",
+    type: "Mentor",
+    title: "New Mentor Application - Rachel Kim",
+    subtitle: "Civil Rights Attorney",
+    time: "Jun 23, 2026",
+    status: "Pending",
   },
   {
     id: "rev_3",
     type: "Organization",
     title: "Organization Verification - Horizon Non-profit",
-    subtitle: "Submitted tax documents",
+    subtitle: "Submitted tax documents for verification",
     time: "1 day ago",
     status: "Pending",
   }
@@ -58,19 +58,17 @@ export const ADMIN_PENDING_REVIEWS: AdminPendingReview[] = [
 
 export type AnalyticsDataPoint = {
   name: string;
-  students: number;
-  applications: number;
-  opportunities: number;
+  value: number;
 };
 
 export const ADMIN_ANALYTICS_DATA: AnalyticsDataPoint[] = [
-  { name: "Jan", students: 4000, applications: 2400, opportunities: 240 },
-  { name: "Feb", students: 5000, applications: 1398, opportunities: 221 },
-  { name: "Mar", students: 6000, applications: 9800, opportunities: 229 },
-  { name: "Apr", students: 7780, applications: 3908, opportunities: 200 },
-  { name: "May", students: 8890, applications: 4800, opportunities: 218 },
-  { name: "Jun", students: 10390, applications: 3800, opportunities: 250 },
-  { name: "Jul", students: 12450, applications: 4300, opportunities: 342 },
+  { name: "MON", value: 38 },
+  { name: "TUE", value: 82 },
+  { name: "WED", value: 41 },
+  { name: "THU", value: 87 },
+  { name: "FRI", value: 74 },
+  { name: "SAT", value: 29 },
+  { name: "SUN", value: 31 },
 ];
 
 export type AdminMember = {
@@ -78,17 +76,18 @@ export type AdminMember = {
   name: string;
   email: string;
   role: "Student" | "Mentor" | "Admin";
+  schoolOrOrg: string;
   status: "Active" | "Restricted" | "Suspended";
   joinDate: string;
   lastActive: string;
 };
 
 export const ADMIN_MEMBERS: AdminMember[] = [
-  { id: "usr_1", name: "Karla Mora", email: "karla@example.com", role: "Student", status: "Active", joinDate: "2025-01-15", lastActive: "2026-07-24" },
-  { id: "usr_2", name: "Elena Rodriguez", email: "elena@example.com", role: "Mentor", status: "Active", joinDate: "2024-11-02", lastActive: "2026-07-23" },
-  { id: "usr_3", name: "System Admin", email: "admin@girlsoncampus.org", role: "Admin", status: "Active", joinDate: "2024-01-01", lastActive: "2026-07-24" },
-  { id: "usr_4", name: "Spam Account", email: "spam@bot.com", role: "Student", status: "Suspended", joinDate: "2026-07-20", lastActive: "2026-07-20" },
-  { id: "usr_5", name: "Jessica L.", email: "jessica.l@university.edu", role: "Student", status: "Active", joinDate: "2025-08-11", lastActive: "2026-07-22" },
+  { id: "usr_1", name: "Karla M.", email: "karla@example.com", role: "Student", schoolOrOrg: "Lincoln High School", status: "Active", joinDate: "2025-01-15", lastActive: "2026-07-24" },
+  { id: "usr_2", name: "Isabella R.", email: "isabella@example.com", role: "Student", schoolOrOrg: "Roosevelt High", status: "Active", joinDate: "2024-11-02", lastActive: "2026-07-23" },
+  { id: "usr_3", name: "System Admin", email: "admin@girlsoncampus.org", role: "Admin", schoolOrOrg: "Girls On Campus", status: "Active", joinDate: "2024-01-01", lastActive: "2026-07-24" },
+  { id: "usr_4", name: "Nadia Farouk", email: "nadia@example.com", role: "Mentor", schoolOrOrg: "Spotify", status: "Active", joinDate: "2026-06-22", lastActive: "2026-07-20" },
+  { id: "usr_5", name: "Rachel Kim", email: "rachel@example.com", role: "Mentor", schoolOrOrg: "Private Practice", status: "Active", joinDate: "2026-06-23", lastActive: "2026-07-22" },
 ];
 
 export type ExtensionSave = {

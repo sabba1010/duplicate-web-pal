@@ -42,8 +42,8 @@ export function StudentSavedView() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-auto">
-        <table className="w-full text-left text-sm whitespace-nowrap">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden">
+        <table className="w-full text-left text-sm">
           <thead className="bg-slate-50 border-b border-slate-100 sticky top-0 z-10 text-slate-500 font-semibold text-xs uppercase tracking-wider">
             <tr>
               <th className="px-6 py-4">Opportunity</th>
@@ -65,15 +65,15 @@ export function StudentSavedView() {
                     </div>
                   </div>
                 </td>
-                <td className="px-6 py-4 text-slate-600">
+                <td className="px-6 py-4 whitespace-nowrap text-slate-600">
                   <span className="font-medium">{item.opportunity.deadline}</span>
                 </td>
-                <td className="px-6 py-4">
+                <td className="px-6 py-4 whitespace-nowrap">
                   <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wide uppercase ${getStatusColor(item.status)}`}>
                     {item.status}
                   </span>
                 </td>
-                <td className="px-6 py-4 text-slate-600">
+                <td className="px-6 py-4 whitespace-nowrap text-slate-600">
                   {item.reminder ? (
                     <div className="flex items-center gap-1.5 text-amber-600 text-xs font-semibold">
                       <Calendar className="h-3.5 w-3.5" />
@@ -83,7 +83,7 @@ export function StudentSavedView() {
                     <span className="text-slate-400 text-xs italic">Not set</span>
                   )}
                 </td>
-                <td className="px-6 py-4 text-right">
+                <td className="px-6 py-4 whitespace-nowrap text-right">
                   <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button className="p-1.5 text-slate-400 hover:text-[#e04f96] rounded bg-white border border-slate-200 shadow-sm transition-colors">
                       <ExternalLink className="h-4 w-4" />
