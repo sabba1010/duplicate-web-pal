@@ -11,7 +11,7 @@ export function StudentHeader({ user, onLogout }: StudentHeaderProps) {
   const [extensionOn, setExtensionOn] = useState(true);
 
   return (
-    <div className="pt-[18px] pb-4 mb-[18px] border-b border-gray-100 flex items-center justify-between gap-3 flex-wrap">
+    <div className="pt-[18px] pb-4 px-[22px] mb-[18px] border-b border-gray-100 flex items-center justify-between gap-3 flex-wrap">
       {/* Left side */}
       <div className="flex flex-col">
         <h2 className="text-base font-extrabold text-[#cf3478]">GOC Extension</h2>

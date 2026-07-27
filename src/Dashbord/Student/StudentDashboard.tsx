@@ -54,8 +54,8 @@ export function StudentDashboard() {
 
   return (
     <div
-      className="min-h-screen font-sans antialiased"
-      style={{ background: "linear-gradient(135deg, #fff5f9 0%, #ffffff 50%, #fdf5ff 100%)" }}
+      className="min-h-screen font-sans antialiased bg-white"
+      style={{ backgroundColor: "#ffffff" }}
     >
       <div className="flex-1 p-4 max-w-[1536px] w-full mx-auto">
         <div className="grid grid-cols-1 xl:grid-cols-[180px_1fr_400px] gap-3 items-start min-h-[calc(100vh-2rem)]">
@@ -67,7 +67,7 @@ export function StudentDashboard() {
           {/* MAIN CENTER CONTENT */}
           <main className="bg-white rounded-[18px] border border-pink-100 shadow-sm flex flex-col min-w-0 h-[calc(100vh-2rem)]">
             <StudentHeader user={user} onLogout={handleLogout} />
-            <div className="flex-1 overflow-y-auto px-[22px] pb-[24px]">
+            <div className="flex-1 overflow-y-auto px-[22px] pb-[24px] bg-white">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeTab}

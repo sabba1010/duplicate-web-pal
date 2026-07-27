@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { motion, animate } from "framer-motion";
 import {
   Check,
   MessageCircle,
@@ -196,34 +197,161 @@ function Hero() {
   );
 }
 
+// ── Rolling digit (slot-machine style) ──────────────────────────────────────
+const LINE_H = 1.15; // em
+
+function RollingDigit({
+  digit,
+  startDelay = 0,
+  visible,
+}: {
+  digit: string;
+  startDelay?: number;
+  visible: boolean;
+}) {
+  const isNum = /\d/.test(digit);
+  const num = isNum ? parseInt(digit) : 0;
+
+  if (!isNum) {
+    // suffix / non-numeric: just fade in
+    return (
+      <motion.span
+        className="inline-block"
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: visible ? 1 : 0, y: visible ? 0 : 6 }}
+        transition={{ duration: 0.45, delay: startDelay + 0.2, ease: "easeOut" }}
+      >
+        {digit}
+      </motion.span>
+    );
+  }
+
+  return (
+    <span
+      className="inline-block overflow-hidden"
+      style={{ height: `${LINE_H}em`, verticalAlign: "top" }}
+    >
+      <motion.span
+        className="flex flex-col select-none"
+        style={{ lineHeight: LINE_H }}
+        initial={{ y: 0 }}
+        animate={{ y: visible ? `${-num * LINE_H}em` : 0 }}
+        transition={{
+          duration: 1.7,
+          ease: [0.16, 1, 0.3, 1], // expo-out
+          delay: startDelay,
+        }}
+      >
+        {Array.from({ length: 10 }, (_, d) => (
+          <span key={d} className="block" style={{ height: `${LINE_H}em` }}>
+            {d}
+          </span>
+        ))}
+      </motion.span>
+    </span>
+  );
+}
+
+function StatItem({
+  n,
+  l,
+  staggerMs = 0,
+}: {
+  n: string;
+  l: string;
+  staggerMs?: number;
+}) {
+  const [visible, setVisible] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => setVisible(true), staggerMs);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.2 }
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [staggerMs]);
+
+  const digitsMatch = n.match(/^(\d+)(.*)$/);
+  const digits = digitsMatch ? digitsMatch[1].split("") : [];
+  const suffix = digitsMatch ? digitsMatch[2] : "";
+
+  return (
+    <div ref={ref} className="flex flex-col items-center gap-1.5">
+      <motion.span
+        className="inline-flex items-start text-4xl font-bold md:text-5xl"
+        style={{ letterSpacing: "-0.025em" }}
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: visible ? 1 : 0, y: visible ? 0 : 16 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+      >
+        {digits.map((d, i) => (
+          <RollingDigit
+            key={i}
+            digit={d}
+            startDelay={i * 0.055}
+            visible={visible}
+          />
+        ))}
+        {suffix && (
+          <RollingDigit
+            digit={suffix}
+            startDelay={digits.length * 0.055}
+            visible={visible}
+          />
+        )}
+      </motion.span>
+      <motion.span
+        className="text-[13px] text-ink/55 font-normal text-center leading-relaxed max-w-[130px]"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: visible ? 1 : 0 }}
+        transition={{ duration: 0.5, delay: 0.7, ease: "easeOut" }}
+      >
+        {l}
+      </motion.span>
+    </div>
+  );
+}
+
 function Stats() {
   const items = [
-    { n: "550+", l: "opportunities" },
-    { n: "75k", l: "reach" },
-    { n: "230+", l: "partners" },
-    { n: "20", l: "campuses" },
+    { n: "550+", l: "Students assisted with essay editing, scholarship search, inquiries, etc" },
+    { n: "75k",  l: "Members and followers across all our social media accounts" },
+    { n: "230+", l: "Scholarships Posted" },
+    { n: "20",   l: "Giveaways Done" },
   ];
   return (
     <section
-      className="w-full py-12"
+      className="w-full py-16"
       style={{
         background:
-          "linear-gradient(90deg, oklch(0.94 0.04 260), oklch(0.93 0.05 320), oklch(0.94 0.04 20))",
+          "linear-gradient(100deg, oklch(0.94 0.04 260), oklch(0.93 0.05 320), oklch(0.94 0.04 20))",
       }}
     >
       <div className="mx-auto max-w-6xl px-6 text-center">
-        <p className="text-sm font-semibold text-ink">More About Us</p>
-        <div className="mt-6 flex flex-wrap items-baseline justify-center gap-x-10 gap-y-4 text-ink">
+        {/* Heading */}
+        <p className="text-xl font-bold text-ink mb-10">More About Us</p>
+
+        {/* Stats row */}
+        <div className="flex flex-wrap items-start justify-center gap-y-8 text-ink">
           {items.map((it, i) => (
-            <div key={it.n} className="flex items-baseline gap-3">
-              <div>
-                <span className="text-4xl font-bold md:text-5xl">{it.n}</span>
-                <span className="ml-2 text-xs text-ink/60">{it.l}</span>
-              </div>
+            <React.Fragment key={it.n}>
+              <StatItem n={it.n} l={it.l} staggerMs={i * 140} />
               {i < items.length - 1 && (
-                <span className="hidden text-3xl text-ink/40 md:inline">·</span>
+                <span
+                  className="hidden md:inline-flex items-start text-5xl font-bold text-ink/30 select-none px-6 pt-1 leading-none"
+                  style={{ letterSpacing: "-0.025em" }}
+                >
+                  ·
+                </span>
               )}
-            </div>
+            </React.Fragment>
           ))}
         </div>
       </div>
