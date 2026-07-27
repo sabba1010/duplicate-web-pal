@@ -17,19 +17,35 @@ import { StudentHeader } from "./StudentHeader";
 
 export function StudentDashboard() {
   const [user, setUser] = useState<{ name: string; username: string } | null>(null);
-  const [activeTab, setActiveTab] = useState<TabType>("Dashboard");
+  const [activeTab, setActiveTabState] = useState<TabType>(() => {
+    return (localStorage.getItem("goc_student_tab") as TabType) || "Dashboard";
+  });
+
+  const setActiveTab = (tab: TabType) => {
+    setActiveTabState(tab);
+    localStorage.setItem("goc_student_tab", tab);
+  };
 
   useEffect(() => {
-    const stored = localStorage.getItem("goc_user");
-    if (stored) {
-      try {
-        setUser(JSON.parse(stored));
-      } catch {
+    const loadUser = () => {
+      const stored = localStorage.getItem("goc_user");
+      if (stored) {
+        try {
+          setUser(JSON.parse(stored));
+        } catch {
+          setUser({ name: "Karla", username: "student" });
+        }
+      } else {
         setUser({ name: "Karla", username: "student" });
       }
-    } else {
-      setUser({ name: "Karla", username: "student" });
-    }
+    };
+
+    loadUser();
+
+    window.addEventListener("goc_user_updated", loadUser);
+    return () => {
+      window.removeEventListener("goc_user_updated", loadUser);
+    };
   }, []);
 
   const handleLogout = () => {

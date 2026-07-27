@@ -163,6 +163,7 @@ export function StudentOpportunitiesView() {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
+        window.dispatchEvent(new Event("goc_user_updated"));
         fetchOppsAndUser(); // refresh user data to reflect changes
       }
     } catch (error) {

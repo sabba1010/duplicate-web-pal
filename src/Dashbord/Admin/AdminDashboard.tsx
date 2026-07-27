@@ -12,7 +12,14 @@ import { AdminSubmissionsView } from "./views/AdminSubmissionsView";
 import { AdminSystemSettingsView } from "./views/AdminSystemSettingsView";
 
 export function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState<AdminTabType>("Overview");
+  const [activeTab, setActiveTabState] = useState<AdminTabType>(() => {
+    return (localStorage.getItem("goc_admin_tab") as AdminTabType) || "Overview";
+  });
+
+  const setActiveTab = (tab: AdminTabType) => {
+    setActiveTabState(tab);
+    localStorage.setItem("goc_admin_tab", tab);
+  };
 
   const renderActiveTab = () => {
     switch (activeTab) {

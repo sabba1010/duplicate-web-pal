@@ -39,6 +39,7 @@ export function StudentSavedView() {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
+        window.dispatchEvent(new Event("goc_user_updated"));
         fetchUser();
       }
     } catch (error) {

@@ -42,8 +42,9 @@ export function StudentOpportunityDetailView({
         method: "POST",
         headers: { Authorization: `Bearer ${token}` }
       });
-      if (res.ok && onInteraction) {
-        onInteraction();
+      if (res.ok) {
+        window.dispatchEvent(new Event("goc_user_updated"));
+        if (onInteraction) onInteraction();
       }
     } catch (error) {
       console.error("Failed to apply", error);
@@ -57,8 +58,9 @@ export function StudentOpportunityDetailView({
         method: "POST",
         headers: { Authorization: `Bearer ${token}` }
       });
-      if (res.ok && onInteraction) {
-        onInteraction();
+      if (res.ok) {
+        window.dispatchEvent(new Event("goc_user_updated"));
+        if (onInteraction) onInteraction();
       }
     } catch (error) {
       console.error("Failed to save", error);

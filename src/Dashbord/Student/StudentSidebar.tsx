@@ -52,6 +52,12 @@ export function StudentSidebar({ activeTab, setActiveTab }: StudentSidebarProps)
       }
     };
     fetchUser();
+
+    // Listen for custom event to refetch user when save/apply happens
+    window.addEventListener("goc_user_updated", fetchUser);
+    return () => {
+      window.removeEventListener("goc_user_updated", fetchUser);
+    };
   }, []);
 
   const tabs = [

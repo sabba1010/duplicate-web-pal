@@ -55,6 +55,7 @@ export function StudentHomeView({ onNavigate }: StudentHomeViewProps) {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
+        window.dispatchEvent(new Event("goc_user_updated"));
         fetchData();
       }
     } catch (err) {
