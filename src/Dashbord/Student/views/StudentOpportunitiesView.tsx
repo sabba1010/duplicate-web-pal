@@ -1,115 +1,13 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Bookmark, Users, GraduationCap, Globe, MapPin } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { StudentOpportunityDetailView } from "./StudentOpportunityDetailView";
+
 // ─── Data ────────────────────────────────────────────────────────────────────
 
 const FILTERS = ["All", "Scholarships", "Internships", "Remote Programs", "Near You"];
 
-const SCHOLARSHIPS = [
-  {
-    id: "s1",
-    title: "Coca-Cola Scholars Program",
-    category: "Scholarship",
-    deadline: "Oct 1, 2026",
-    tags: ["Merit", "$10k"],
-    image: "https://images.unsplash.com/photo-1573164713988-8665fc963095?auto=format&fit=crop&q=80&w=400",
-  },
-  {
-    id: "s2",
-    title: "$2,500 Women in Business Scholarship",
-    category: "Scholarship",
-    deadline: "Jul 1, 2026",
-    tags: ["Women", "Business"],
-    image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=400",
-  },
-  {
-    id: "s3",
-    title: "First-Gen Futures Scholarship",
-    category: "Scholarship",
-    deadline: "Aug 15, 2026",
-    tags: ["First-Gen", "$5k"],
-    image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=400",
-  },
-  {
-    id: "s4",
-    title: "Society of Women Engineers Scholarship",
-    category: "Scholarship",
-    deadline: "Sep 20, 2026",
-    tags: ["STEM", "Engineering"],
-    image: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&q=80&w=400",
-  },
-];
 
-const INTERNSHIPS = [
-  {
-    id: "i1",
-    title: "Google STEP Internship 2026",
-    category: "Paid Internship",
-    deadline: "Jun 30, 2026",
-    tags: ["STEM", "Google"],
-    image: "https://images.unsplash.com/photo-1521898284481-a5ec348cb555?auto=format&fit=crop&q=80&w=400",
-  },
-  {
-    id: "i2",
-    title: "Nike Marketing Internship",
-    category: "Paid Internship",
-    deadline: "Jun 20, 2026",
-    tags: ["Marketing", "Nike"],
-    image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&q=80&w=400",
-  },
-  {
-    id: "i3",
-    title: "Goldman Sachs Summer Analyst",
-    category: "Paid Internship",
-    deadline: "Aug 5, 2026",
-    tags: ["Finance", "Summer"],
-    image: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?auto=format&fit=crop&q=80&w=400",
-  },
-  {
-    id: "i4",
-    title: "NASA JPL Student Internship",
-    category: "Paid Internship",
-    deadline: "Sep 1, 2026",
-    tags: ["STEM", "NASA"],
-    image: "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&q=80&w=400",
-  },
-];
-
-const REMOTE_PROGRAMS = [
-  {
-    id: "r1",
-    title: "MIT Summer Research Program",
-    category: "Research Program",
-    deadline: "Jul 5, 2026",
-    tags: ["Research", "Remote"],
-    image: "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&q=80&w=400",
-  },
-  {
-    id: "r2",
-    title: "Global Leaders Virtual Fellowship",
-    category: "Fellowship",
-    deadline: "Aug 20, 2026",
-    tags: ["Leadership", "Global"],
-    image: "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&q=80&w=400",
-  },
-  {
-    id: "r3",
-    title: "Design for Good – Remote",
-    category: "Volunteer",
-    deadline: "Aug 1, 2026",
-    tags: ["Design", "Social Good"],
-    image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&q=80&w=400",
-  },
-  {
-    id: "r4",
-    title: "AI Ethics Research Initiative",
-    category: "Program",
-    deadline: "Sep 10, 2026",
-    tags: ["AI/ML", "Ethics"],
-    image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&q=80&w=400",
-  },
-];
 
 // ─── Sub-components ──────────────────────────────────────────────────────────
 
@@ -216,6 +114,30 @@ export function StudentOpportunitiesView() {
   const [searchQuery, setSearchQuery] = useState("");
   const [savedIds, setSavedIds] = useState<string[]>([]);
   const [selectedOpp, setSelectedOpp] = useState<OppCard | null>(null);
+  
+  const [opportunities, setOpportunities] = useState<OppCard[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchOpps = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/opportunities");
+        const data = await res.json();
+        if (res.ok) {
+          // Map _id to id
+          const mapped = data.opportunities
+            .filter((o: any) => o.status === "Published")
+            .map((o: any) => ({ ...o, id: o._id }));
+          setOpportunities(mapped);
+        }
+      } catch (err) {
+        console.error("Failed to load opportunities", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchOpps();
+  }, []);
 
   const toggleSave = (id: string) =>
     setSavedIds((prev) =>
@@ -227,7 +149,7 @@ export function StudentOpportunitiesView() {
       <StudentOpportunityDetailView 
         opp={selectedOpp} 
         onBack={() => setSelectedOpp(null)} 
-        relatedOpps={SCHOLARSHIPS.filter(s => s.id !== selectedOpp.id)}
+        relatedOpps={opportunities.filter(s => s.id !== selectedOpp.id)}
       />
     );
   }
@@ -303,7 +225,7 @@ export function StudentOpportunitiesView() {
         </div>
         <div className="flex flex-row md:flex-col gap-[8px] shrink-0 w-full md:w-auto">
           <button 
-            onClick={() => setSelectedOpp(REMOTE_PROGRAMS[0])}
+            onClick={() => opportunities.length > 0 && setSelectedOpp(opportunities[0])}
             className="flex-1 md:flex-none px-[18px] py-[9px] bg-[#f14f98] hover:bg-[#cf3478] text-white text-[12px] font-extrabold rounded-[20px] transition-colors whitespace-nowrap"
           >
             View details
@@ -314,56 +236,62 @@ export function StudentOpportunitiesView() {
         </div>
       </motion.div>
 
-      {/* ── Scholarships ── */}
-      <div className="mb-[22px]">
-        <SectionHeader icon={GraduationCap} title="Scholarships" count={12} />
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-[12px]">
-          {SCHOLARSHIPS.map((opp, i) => (
-            <OpportunityCard
-              key={opp.id}
-              opp={opp}
-              saved={savedIds.includes(opp.id)}
-              onToggle={() => toggleSave(opp.id)}
-              onClick={() => setSelectedOpp(opp)}
-              delay={i * 0.06}
-            />
-          ))}
-        </div>
-      </div>
+      {loading ? (
+        <div className="py-20 text-center text-[#8b7e85] font-bold">Loading opportunities...</div>
+      ) : (
+        <>
+          {/* ── Scholarships ── */}
+          <div className="mb-[22px]">
+            <SectionHeader icon={GraduationCap} title="Scholarships" count={opportunities.filter(o => o.category === "Scholarship").length} />
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-[12px]">
+              {opportunities.filter(o => o.category === "Scholarship").map((opp, i) => (
+                <OpportunityCard
+                  key={opp.id}
+                  opp={opp}
+                  saved={savedIds.includes(opp.id)}
+                  onToggle={() => toggleSave(opp.id)}
+                  onClick={() => setSelectedOpp(opp)}
+                  delay={i * 0.06}
+                />
+              ))}
+            </div>
+          </div>
 
-      {/* ── Internships ── */}
-      <div className="mb-[22px]">
-        <SectionHeader icon={MapPin} title="Internships" count={8} />
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-[12px]">
-          {INTERNSHIPS.map((opp, i) => (
-            <OpportunityCard
-              key={opp.id}
-              opp={opp}
-              saved={savedIds.includes(opp.id)}
-              onToggle={() => toggleSave(opp.id)}
-              onClick={() => setSelectedOpp(opp)}
-              delay={i * 0.06}
-            />
-          ))}
-        </div>
-      </div>
+          {/* ── Internships ── */}
+          <div className="mb-[22px]">
+            <SectionHeader icon={MapPin} title="Internships" count={opportunities.filter(o => o.category === "Paid Internship").length} />
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-[12px]">
+              {opportunities.filter(o => o.category === "Paid Internship").map((opp, i) => (
+                <OpportunityCard
+                  key={opp.id}
+                  opp={opp}
+                  saved={savedIds.includes(opp.id)}
+                  onToggle={() => toggleSave(opp.id)}
+                  onClick={() => setSelectedOpp(opp)}
+                  delay={i * 0.06}
+                />
+              ))}
+            </div>
+          </div>
 
-      {/* ── Remote Programs ── */}
-      <div className="mb-[22px]">
-        <SectionHeader icon={Globe} title="Remote Programs" count={5} />
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-[12px]">
-          {REMOTE_PROGRAMS.map((opp, i) => (
-            <OpportunityCard
-              key={opp.id}
-              opp={opp}
-              saved={savedIds.includes(opp.id)}
-              onToggle={() => toggleSave(opp.id)}
-              onClick={() => setSelectedOpp(opp)}
-              delay={i * 0.06}
-            />
-          ))}
-        </div>
-      </div>
+          {/* ── Remote Programs ── */}
+          <div className="mb-[22px]">
+            <SectionHeader icon={Globe} title="Other Programs" count={opportunities.filter(o => !["Scholarship", "Paid Internship"].includes(o.category)).length} />
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-[12px]">
+              {opportunities.filter(o => !["Scholarship", "Paid Internship"].includes(o.category)).map((opp, i) => (
+                <OpportunityCard
+                  key={opp.id}
+                  opp={opp}
+                  saved={savedIds.includes(opp.id)}
+                  onToggle={() => toggleSave(opp.id)}
+                  onClick={() => setSelectedOpp(opp)}
+                  delay={i * 0.06}
+                />
+              ))}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
