@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import {
   Shield,
   Users,
@@ -19,9 +20,29 @@ interface AdminSidebarProps {
 }
 
 export function AdminSidebar({ activeTab, setActiveTab }: AdminSidebarProps) {
+  const [memberCount, setMemberCount] = useState<string>("...");
+
+  useEffect(() => {
+    const fetchMemberCount = async () => {
+      try {
+        const token = localStorage.getItem("goc_token");
+        const res = await fetch("http://localhost:5000/api/users", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (res.ok) {
+          setMemberCount(data.count.toString());
+        }
+      } catch (err) {
+        setMemberCount("0");
+      }
+    };
+    fetchMemberCount();
+  }, []);
+
   const tabs = [
     { id: "Overview",     label: "Overview",       icon: Shield },
-    { id: "Members",      label: "Members",        icon: Users,      badge: "12.4k" },
+    { id: "Members",      label: "Members",        icon: Users,      badge: memberCount },
     { id: "Opportunities",label: "Opportunities",  icon: FileText,   badge: "20" },
     { id: "Submissions",  label: "Submissions",    icon: Inbox,      badge: "6" },
     { id: "Extension",    label: "Extension Data", icon: Puzzle },
