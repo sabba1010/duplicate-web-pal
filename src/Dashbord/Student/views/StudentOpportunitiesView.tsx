@@ -1,7 +1,7 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Search, Bookmark, Users, GraduationCap, Globe, MapPin } from "lucide-react";
 import { useState } from "react";
-
+import { StudentOpportunityDetailView } from "./StudentOpportunityDetailView";
 // ─── Data ────────────────────────────────────────────────────────────────────
 
 const FILTERS = ["All", "Scholarships", "Internships", "Remote Programs", "Near You"];
@@ -126,11 +126,13 @@ function OpportunityCard({
   opp,
   saved,
   onToggle,
+  onClick,
   delay = 0,
 }: {
   opp: OppCard;
   saved: boolean;
   onToggle: () => void;
+  onClick?: () => void;
   delay?: number;
 }) {
   return (
@@ -138,6 +140,7 @@ function OpportunityCard({
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.3 }}
+      onClick={onClick}
       className="bg-white border border-[#f1e4e9] rounded-[14px] overflow-hidden hover:shadow-[0_1px_3px_rgba(207,52,120,0.04),_0_6px_18px_rgba(207,52,120,0.05)] hover:-translate-y-[2px] transition-all flex flex-col cursor-pointer"
     >
       {/* Image */}
@@ -212,11 +215,22 @@ export function StudentOpportunitiesView() {
   const [activeFilter, setActiveFilter] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [savedIds, setSavedIds] = useState<string[]>([]);
+  const [selectedOpp, setSelectedOpp] = useState<OppCard | null>(null);
 
   const toggleSave = (id: string) =>
     setSavedIds((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
+
+  if (selectedOpp) {
+    return (
+      <StudentOpportunityDetailView 
+        opp={selectedOpp} 
+        onBack={() => setSelectedOpp(null)} 
+        relatedOpps={SCHOLARSHIPS.filter(s => s.id !== selectedOpp.id)}
+      />
+    );
+  }
 
   return (
     <div className="space-y-5">
@@ -288,7 +302,10 @@ export function StudentOpportunitiesView() {
           </div>
         </div>
         <div className="flex flex-row md:flex-col gap-[8px] shrink-0 w-full md:w-auto">
-          <button className="flex-1 md:flex-none px-[18px] py-[9px] bg-[#f14f98] hover:bg-[#cf3478] text-white text-[12px] font-extrabold rounded-[20px] transition-colors whitespace-nowrap">
+          <button 
+            onClick={() => setSelectedOpp(REMOTE_PROGRAMS[0])}
+            className="flex-1 md:flex-none px-[18px] py-[9px] bg-[#f14f98] hover:bg-[#cf3478] text-white text-[12px] font-extrabold rounded-[20px] transition-colors whitespace-nowrap"
+          >
             View details
           </button>
           <button className="flex-1 md:flex-none px-[18px] py-[9px] bg-white border border-[#fde8f1] text-[#cf3478] text-[12px] font-extrabold rounded-[20px] transition-colors flex items-center justify-center gap-2 whitespace-nowrap">
@@ -307,6 +324,7 @@ export function StudentOpportunitiesView() {
               opp={opp}
               saved={savedIds.includes(opp.id)}
               onToggle={() => toggleSave(opp.id)}
+              onClick={() => setSelectedOpp(opp)}
               delay={i * 0.06}
             />
           ))}
@@ -323,6 +341,7 @@ export function StudentOpportunitiesView() {
               opp={opp}
               saved={savedIds.includes(opp.id)}
               onToggle={() => toggleSave(opp.id)}
+              onClick={() => setSelectedOpp(opp)}
               delay={i * 0.06}
             />
           ))}
@@ -339,6 +358,7 @@ export function StudentOpportunitiesView() {
               opp={opp}
               saved={savedIds.includes(opp.id)}
               onToggle={() => toggleSave(opp.id)}
+              onClick={() => setSelectedOpp(opp)}
               delay={i * 0.06}
             />
           ))}

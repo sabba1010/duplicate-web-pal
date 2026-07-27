@@ -106,7 +106,7 @@ function SignupForm() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!fullName.trim() || !email.trim() || !username.trim() || !password) {
       setError("Please fill in all required fields!");
@@ -122,26 +122,41 @@ function SignupForm() {
     }
 
     setError("");
-    setSuccess(true);
+    
+    try {
+      const res = await fetch("http://localhost:5000/api/users/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: fullName.trim(),
+          username: username.trim().toLowerCase(),
+          email: email.trim(),
+          password,
+          role,
+        })
+      });
+      const data = await res.json();
 
-    const userObj = {
-      name: fullName.trim(),
-      username: username.trim().toLowerCase(),
-      email: email.trim(),
-      role,
-    };
-
-    localStorage.setItem("goc_user", JSON.stringify(userObj));
-
-    setTimeout(() => {
-      if (role === "admin") {
-        window.location.href = "/admin";
-      } else if (role === "mentor") {
-        window.location.href = "/mentor";
-      } else {
-        window.location.href = "/dashboard";
+      if (!res.ok) {
+        throw new Error(data.message || "Registration failed");
       }
-    }, 1200);
+
+      setSuccess(true);
+      localStorage.setItem("goc_token", data.token);
+      localStorage.setItem("goc_user", JSON.stringify(data.user));
+
+      setTimeout(() => {
+        if (role === "admin") {
+          window.location.href = "/admin";
+        } else if (role === "mentor") {
+          window.location.href = "/mentor";
+        } else {
+          window.location.href = "/dashboard";
+        }
+      }, 1200);
+    } catch (err: any) {
+      setError(err.message);
+    }
   };
 
   return (

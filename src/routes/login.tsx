@@ -119,41 +119,58 @@ function LoginForm() {
   const [role, setRole] = useState<"student" | "admin" | "mentor">("student");
   const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const cleanUser = username.trim().toLowerCase();
+    const cleanEmail = username.trim().toLowerCase();
 
-    if (password !== "123456") {
-      setError("Invalid password! Password for all roles is: 123456");
+    if (!cleanEmail || !password) {
+      setError("Please enter both email and password");
       return;
     }
 
-    if (cleanUser === "admin" || role === "admin") {
-      localStorage.setItem("goc_user", JSON.stringify({ name: "System Admin", username: cleanUser || "admin", role: "admin" }));
-      window.location.href = "/admin";
-    } else if (cleanUser === "mentor" || role === "mentor") {
-      localStorage.setItem("goc_user", JSON.stringify({ name: "Dr. Sarah (Mentor)", username: cleanUser || "mentor", role: "mentor" }));
-      window.location.href = "/mentor";
-    } else if (cleanUser === "student" || cleanUser === "studetn" || cleanUser.includes("student") || role === "student") {
-      localStorage.setItem("goc_user", JSON.stringify({ name: "Karla", username: cleanUser || "student", role: "student" }));
-      window.location.href = "/dashboard";
-    } else {
-      setError("Invalid credentials! Try student, admin, or mentor with pass: 123456");
+    try {
+      const res = await fetch("http://localhost:5000/api/users/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: cleanEmail, password })
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Login failed");
+      }
+
+      setError("");
+      localStorage.setItem("goc_token", data.token);
+      localStorage.setItem("goc_user", JSON.stringify(data.user));
+
+      const userRole = data.user.role;
+      if (userRole === "admin") {
+        window.location.href = "/admin";
+      } else if (userRole === "mentor") {
+        window.location.href = "/mentor";
+      } else {
+        window.location.href = "/dashboard";
+      }
+    } catch (err: any) {
+      setError(err.message);
     }
   };
 
+  // Keep quick login for testing purposes without backend
   const handleRoleQuickLogin = (selectedRole: "student" | "admin" | "mentor") => {
     if (selectedRole === "admin") {
-      localStorage.setItem("goc_user", JSON.stringify({ name: "System Admin", username: "admin", role: "admin" }));
+      localStorage.setItem("goc_user", JSON.stringify({ name: "System Admin", username: "admin", email: "admin@test.com", role: "admin" }));
       window.location.href = "/admin";
     } else if (selectedRole === "mentor") {
-      localStorage.setItem("goc_user", JSON.stringify({ name: "Dr. Sarah (Mentor)", username: "mentor", role: "mentor" }));
+      localStorage.setItem("goc_user", JSON.stringify({ name: "Dr. Sarah (Mentor)", username: "mentor", email: "mentor@test.com", role: "mentor" }));
       window.location.href = "/mentor";
     } else {
-      localStorage.setItem("goc_user", JSON.stringify({ name: "Karla", username: "student", role: "student" }));
+      localStorage.setItem("goc_user", JSON.stringify({ name: "Karla", username: "student", email: "student@test.com", role: "student" }));
       window.location.href = "/dashboard";
     }
   };
+
 
   return (
     <div className="relative w-full max-w-md mx-auto">
