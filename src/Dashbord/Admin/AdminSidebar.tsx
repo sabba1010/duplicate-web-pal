@@ -21,6 +21,7 @@ interface AdminSidebarProps {
 
 export function AdminSidebar({ activeTab, setActiveTab }: AdminSidebarProps) {
   const [memberCount, setMemberCount] = useState<string>("...");
+  const [opportunityCount, setOpportunityCount] = useState<string>("...");
 
   useEffect(() => {
     const fetchMemberCount = async () => {
@@ -37,13 +38,27 @@ export function AdminSidebar({ activeTab, setActiveTab }: AdminSidebarProps) {
         setMemberCount("0");
       }
     };
+    
+    const fetchOpportunityCount = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/opportunities");
+        const data = await res.json();
+        if (res.ok) {
+          setOpportunityCount(data.count.toString());
+        }
+      } catch (err) {
+        setOpportunityCount("0");
+      }
+    };
+
     fetchMemberCount();
+    fetchOpportunityCount();
   }, []);
 
   const tabs = [
     { id: "Overview",     label: "Overview",       icon: Shield },
     { id: "Members",      label: "Members",        icon: Users,      badge: memberCount },
-    { id: "Opportunities",label: "Opportunities",  icon: FileText,   badge: "20" },
+    { id: "Opportunities",label: "Opportunities",  icon: FileText,   badge: opportunityCount },
     { id: "Submissions",  label: "Submissions",    icon: Inbox,      badge: "6" },
     { id: "Extension",    label: "Extension Data", icon: Puzzle },
     { id: "Analytics",    label: "Analytics",      icon: BarChart3 },
