@@ -308,7 +308,7 @@ function StatItem({
         )}
       </motion.span>
       <motion.span
-        className="text-[13px] text-ink/55 font-normal text-center leading-relaxed max-w-[130px]"
+        className="text-[17px] text-ink/55 font-normal text-center leading-relaxed max-w-[160px]"
         initial={{ opacity: 0 }}
         animate={{ opacity: visible ? 1 : 0 }}
         transition={{ duration: 0.5, delay: 0.7, ease: "easeOut" }}
