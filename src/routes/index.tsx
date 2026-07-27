@@ -138,40 +138,69 @@ function Nav() {
 
 function Hero() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-[#fbf4ff]/40 via-white to-white">
-      {/* Floating Coquette Theme Stickers */}
-      <div className="absolute left-6 top-8 text-3xl md:text-4xl animate-bounce duration-1000 select-none filter drop-shadow opacity-80">
+    <section
+      className="relative overflow-hidden"
+      style={{
+        background: "linear-gradient(135deg, oklch(0.96 0.03 270) 0%, oklch(0.98 0.01 300) 40%, oklch(0.97 0.03 20) 100%)",
+      }}
+    >
+      {/* Dot grid pattern */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage: `radial-gradient(circle, oklch(0.70 0.05 280 / 0.25) 1.5px, transparent 1.5px)`,
+          backgroundSize: "32px 32px",
+        }}
+      />
+
+      {/* Top-left decorative blob */}
+      <div
+        className="absolute -left-24 -top-24 w-96 h-96 rounded-full opacity-30 blur-3xl pointer-events-none"
+        style={{ background: "oklch(0.85 0.10 270)" }}
+      />
+      {/* Bottom-right decorative blob */}
+      <div
+        className="absolute -right-24 bottom-0 w-80 h-80 rounded-full opacity-25 blur-3xl pointer-events-none"
+        style={{ background: "oklch(0.88 0.10 10)" }}
+      />
+
+      {/* Floating stickers */}
+      <div className="absolute left-6 top-8 text-4xl md:text-5xl animate-bounce select-none opacity-80 drop-shadow-sm">
         🎀
       </div>
-      <div className="absolute right-10 top-10 text-3xl md:text-4xl animate-pulse select-none opacity-80">
+      <div className="absolute right-10 top-10 text-4xl md:text-5xl animate-pulse select-none opacity-70">
         ☁️
       </div>
 
-      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-6 py-16 md:grid-cols-2 md:py-24 relative z-10">
-        <div className="max-w-xl">
-          <h1 className="text-5xl font-bold leading-[1.05] tracking-tight text-ink md:text-6xl">
+      <div className="relative z-10 mx-auto grid max-w-7xl grid-cols-1 gap-10 px-6 py-20 md:grid-cols-2 md:py-32">
+        {/* Left: Text */}
+        <div className="flex flex-col justify-center max-w-2xl">
+          <h1
+            className="text-6xl font-bold leading-[1.04] tracking-tight text-ink md:text-7xl lg:text-8xl"
+          >
             Less gatekeeping,
             <br />
-            more <span className="font-display text-pink">access.</span>
+            more{" "}
+            <span className="font-display text-pink italic">access.</span>
           </h1>
-          <p className="mt-6 max-w-md text-base leading-relaxed text-ink/70">
+          <p className="mt-7 max-w-lg text-lg leading-relaxed text-ink/65 md:text-xl">
             Scholarships, internships, paid programs, career advice, and student
             resources — curated for girls building their future.
           </p>
-          <div className="mt-8 flex flex-wrap items-center gap-3">
-            <button className="rounded-full bg-pink px-6 py-3 text-sm font-medium text-white shadow-md hover:bg-pink-deep hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5">
+          <div className="mt-9 flex flex-wrap items-center gap-4">
+            <button className="rounded-full bg-pink px-8 py-4 text-base font-semibold text-white shadow-lg hover:bg-pink-deep hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5">
               Add to Chrome
             </button>
-            <button className="rounded-full border border-ink/20 bg-white px-6 py-3 text-sm font-medium text-ink hover:border-pink hover:text-pink transition-all duration-300 shadow-sm">
+            <button className="rounded-full border border-ink/20 bg-white/80 backdrop-blur-sm px-8 py-4 text-base font-semibold text-ink hover:border-pink hover:text-pink transition-all duration-300 shadow-sm">
               Explore Opportunities
             </button>
           </div>
-          <div className="mt-6 flex items-center gap-3">
+          <div className="mt-8 flex items-center gap-3">
             <div className="flex -space-x-2">
               {["#f472b6", "#c4b5fd", "#60a5fa", "#f9a8d4"].map((c, i) => (
                 <div
                   key={i}
-                  className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-white text-[10px] font-semibold text-white shadow-sm transition-transform hover:scale-110"
+                  className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white text-[11px] font-bold text-white shadow-sm transition-transform hover:scale-110"
                   style={{ backgroundColor: c }}
                 >
                   {["J", "M", "P", "L"][i]}
@@ -179,17 +208,18 @@ function Hero() {
               ))}
             </div>
             <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-green-500 animate-ping" />
-              <span className="text-xs font-medium text-ink/70">10k+ girls in the community</span>
+              <span className="h-2.5 w-2.5 rounded-full bg-green-500 animate-ping" />
+              <span className="text-sm font-medium text-ink/70">10k+ girls in the community</span>
             </div>
           </div>
         </div>
 
+        {/* Right: Logo / Visual */}
         <div className="relative flex items-center justify-center">
-          <div className="absolute right-8 top-0 h-40 w-40 rounded-2xl bg-lilac/50 blur-sm animate-pulse" />
-          <div className="absolute left-4 top-16 h-44 w-44 rotate-[-6deg] rounded-2xl bg-pink-soft/60 shadow-sm transition-transform hover:rotate-0 duration-500" />
-          <div className="relative z-10 transition-transform duration-500 hover:scale-105">
-            <Logo className="text-6xl md:text-7xl" />
+          <div className="absolute right-8 top-0 h-48 w-48 rounded-3xl bg-lilac/50 blur-md animate-pulse" />
+          <div className="absolute left-4 top-16 h-52 w-52 rotate-[-6deg] rounded-3xl bg-pink-soft/60 shadow-sm transition-transform hover:rotate-0 duration-500" />
+          <div className="relative z-10 transition-transform duration-500 hover:scale-105 drop-shadow-xl">
+            <Logo className="text-7xl md:text-8xl" />
           </div>
         </div>
       </div>
