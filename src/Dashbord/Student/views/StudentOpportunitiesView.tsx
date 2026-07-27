@@ -112,37 +112,63 @@ function SectionHeader({
 export function StudentOpportunitiesView() {
   const [activeFilter, setActiveFilter] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
-  const [savedIds, setSavedIds] = useState<string[]>([]);
   const [selectedOpp, setSelectedOpp] = useState<OppCard | null>(null);
   
   const [opportunities, setOpportunities] = useState<OppCard[]>([]);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<any>(null);
+
+  const fetchOppsAndUser = async () => {
+    try {
+      const token = localStorage.getItem("goc_token");
+      
+      const [oppsRes, userRes] = await Promise.all([
+        fetch("http://localhost:5000/api/opportunities"),
+        fetch("http://localhost:5000/api/users/me", {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+      ]);
+
+      if (oppsRes.ok) {
+        const data = await oppsRes.json();
+        const mapped = data.opportunities
+          .filter((o: any) => o.status === "Published")
+          .map((o: any) => ({ ...o, id: o._id }));
+        setOpportunities(mapped);
+      }
+
+      if (userRes.ok) {
+        const data = await userRes.json();
+        setUser(data.user);
+      }
+    } catch (err) {
+      console.error("Failed to load data", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchOpps = async () => {
-      try {
-        const res = await fetch("http://localhost:5000/api/opportunities");
-        const data = await res.json();
-        if (res.ok) {
-          // Map _id to id
-          const mapped = data.opportunities
-            .filter((o: any) => o.status === "Published")
-            .map((o: any) => ({ ...o, id: o._id }));
-          setOpportunities(mapped);
-        }
-      } catch (err) {
-        console.error("Failed to load opportunities", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchOpps();
+    fetchOppsAndUser();
   }, []);
 
-  const toggleSave = (id: string) =>
-    setSavedIds((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
-    );
+  const savedIds = user?.savedOpportunities?.map((o: any) => o._id) || [];
+  const appliedIds = user?.appliedOpportunities?.map((o: any) => o._id) || [];
+
+  const toggleSave = async (id: string) => {
+    try {
+      const token = localStorage.getItem("goc_token");
+      const res = await fetch(`http://localhost:5000/api/users/save-opportunity/${id}`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        fetchOppsAndUser(); // refresh user data to reflect changes
+      }
+    } catch (error) {
+      console.error("Failed to toggle save", error);
+    }
+  };
 
   if (selectedOpp) {
     return (
@@ -150,6 +176,9 @@ export function StudentOpportunitiesView() {
         opp={selectedOpp} 
         onBack={() => setSelectedOpp(null)} 
         relatedOpps={opportunities.filter(s => s.id !== selectedOpp.id)}
+        isSaved={savedIds.includes(selectedOpp.id)}
+        isApplied={appliedIds.includes(selectedOpp.id)}
+        onInteraction={fetchOppsAndUser}
       />
     );
   }

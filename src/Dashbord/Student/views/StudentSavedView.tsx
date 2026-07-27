@@ -1,9 +1,46 @@
-import { useState } from "react";
-import { SAVED_ITEMS } from "@/lib/mock-data";
-import { Search, Filter, MoreHorizontal, ExternalLink, Calendar, Trash2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Search, Filter, ExternalLink, Calendar, Trash2 } from "lucide-react";
 
 export function StudentSavedView() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [savedOpportunities, setSavedOpportunities] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchUser = async () => {
+    try {
+      const token = localStorage.getItem("goc_token");
+      const res = await fetch("http://localhost:5000/api/users/me", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setSavedOpportunities(data.user.savedOpportunities || []);
+      }
+    } catch (err) {
+      console.error("Failed to load user data", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
+  const handleUnsave = async (id: string) => {
+    try {
+      const token = localStorage.getItem("goc_token");
+      const res = await fetch(`http://localhost:5000/api/users/save-opportunity/${id}`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        fetchUser();
+      }
+    } catch (error) {
+      console.error("Failed to remove saved opportunity", error);
+    }
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -54,45 +91,39 @@ export function StudentSavedView() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {SAVED_ITEMS.map((item) => (
-              <tr key={item.id} className="hover:bg-slate-50 transition-colors group">
+            {loading ? (
+              <tr><td colSpan={5} className="py-10 text-center text-slate-500 font-bold">Loading...</td></tr>
+            ) : savedOpportunities.length === 0 ? (
+              <tr><td colSpan={5} className="py-10 text-center text-slate-500 font-bold">No saved opportunities yet.</td></tr>
+            ) : savedOpportunities.map((item) => (
+              <tr key={item._id} className="hover:bg-slate-50 transition-colors group">
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3 max-w-[300px]">
-                    <img src={item.opportunity.image} alt="" className="w-10 h-10 rounded-lg object-cover border border-slate-200 shrink-0" />
+                    <img src={item.image || "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&q=80&w=300"} alt="" className="w-10 h-10 rounded-lg object-cover border border-slate-200 shrink-0" />
                     <div className="truncate">
-                      <div className="font-bold text-slate-900 truncate">{item.opportunity.title}</div>
-                      <div className="text-xs text-slate-500 truncate">{item.opportunity.organization}</div>
+                      <div className="font-bold text-slate-900 truncate">{item.title}</div>
+                      <div className="text-xs text-slate-500 truncate">{item.organization || item.category}</div>
                     </div>
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-slate-600">
-                  <span className="font-medium">{item.opportunity.deadline}</span>
+                  <span className="font-medium">{item.deadline}</span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wide uppercase ${getStatusColor(item.status)}`}>
-                    {item.status}
+                  <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wide uppercase ${getStatusColor("Saved")}`}>
+                    Saved
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-slate-600">
-                  {item.reminder ? (
-                    <div className="flex items-center gap-1.5 text-amber-600 text-xs font-semibold">
-                      <Calendar className="h-3.5 w-3.5" />
-                      {item.reminder}
-                    </div>
-                  ) : (
-                    <span className="text-slate-400 text-xs italic">Not set</span>
-                  )}
+                  <span className="text-slate-400 text-xs italic">Not set</span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right">
                   <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button className="p-1.5 text-slate-400 hover:text-[#e04f96] rounded bg-white border border-slate-200 shadow-sm transition-colors">
                       <ExternalLink className="h-4 w-4" />
                     </button>
-                    <button className="p-1.5 text-slate-400 hover:text-rose-600 rounded bg-white border border-slate-200 shadow-sm transition-colors">
+                    <button onClick={() => handleUnsave(item._id)} className="p-1.5 text-slate-400 hover:text-rose-600 rounded bg-white border border-slate-200 shadow-sm transition-colors">
                       <Trash2 className="h-4 w-4" />
-                    </button>
-                    <button className="p-1.5 text-slate-400 hover:text-slate-900 rounded bg-white border border-slate-200 shadow-sm transition-colors">
-                      <MoreHorizontal className="h-4 w-4" />
                     </button>
                   </div>
                 </td>

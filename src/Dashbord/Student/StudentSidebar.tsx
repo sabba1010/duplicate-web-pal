@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
 
 export type TabType =
   | "Dashboard"
@@ -30,13 +31,36 @@ interface StudentSidebarProps {
 }
 
 export function StudentSidebar({ activeTab, setActiveTab }: StudentSidebarProps) {
+  const [savedCount, setSavedCount] = useState<string>("0");
+  const [appliedCount, setAppliedCount] = useState<string>("0");
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const token = localStorage.getItem("goc_token");
+        if (!token) return;
+        const res = await fetch("http://localhost:5000/api/users/me", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setSavedCount((data.user?.savedOpportunities?.length || 0).toString());
+          setAppliedCount((data.user?.appliedOpportunities?.length || 0).toString());
+        }
+      } catch (err) {
+        console.error("Failed to load user sidebar counts", err);
+      }
+    };
+    fetchUser();
+  }, []);
+
   const tabs = [
     { id: "Dashboard", label: "Dashboard", icon: LayoutGrid },
     { id: "Opportunities", label: "Opportunities", icon: Search },
-    { id: "Saved", label: "Saved", icon: Heart, badge: "24" },
-    { id: "Shared", label: "Shared", icon: Share2, badge: "12" },
+    { id: "Saved", label: "Saved", icon: Heart, badge: savedCount !== "0" ? savedCount : undefined },
+    { id: "Shared", label: "Shared", icon: Share2 }, // We don't have a shared array in DB yet, so leaving this without a mock badge for now
     { id: "Calendar", label: "Calendar", icon: CalendarIcon },
-    { id: "Applications", label: "Applications", icon: FileText, badge: "6" },
+    { id: "Applications", label: "Applications", icon: FileText, badge: appliedCount !== "0" ? appliedCount : undefined },
     { id: "Mentors", label: "Mentors", icon: UserCheck },
     { id: "Resources", label: "Resources", icon: BookOpen },
     { id: "Settings", label: "Settings", icon: Settings },

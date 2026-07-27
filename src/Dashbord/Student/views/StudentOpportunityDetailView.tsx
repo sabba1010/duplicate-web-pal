@@ -14,14 +14,18 @@ interface OppCard {
 export function StudentOpportunityDetailView({ 
   opp, 
   onBack,
-  relatedOpps 
+  relatedOpps,
+  isSaved,
+  isApplied,
+  onInteraction
 }: { 
   opp: OppCard; 
   onBack: () => void;
   relatedOpps: OppCard[];
+  isSaved?: boolean;
+  isApplied?: boolean;
+  onInteraction?: () => void;
 }) {
-  const [applied, setApplied] = useState(false);
-  const [saved, setSaved] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -29,6 +33,36 @@ export function StudentOpportunityDetailView({
     navigator.clipboard.writeText(window.location.href);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleApply = async () => {
+    try {
+      const token = localStorage.getItem("goc_token");
+      const res = await fetch(`http://localhost:5000/api/users/apply-opportunity/${opp.id}`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok && onInteraction) {
+        onInteraction();
+      }
+    } catch (error) {
+      console.error("Failed to apply", error);
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      const token = localStorage.getItem("goc_token");
+      const res = await fetch(`http://localhost:5000/api/users/save-opportunity/${opp.id}`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok && onInteraction) {
+        onInteraction();
+      }
+    } catch (error) {
+      console.error("Failed to save", error);
+    }
   };
 
   return (
@@ -87,26 +121,26 @@ export function StudentOpportunityDetailView({
           {/* Actions */}
           <div className="flex flex-wrap items-center gap-3 border-b border-[#e5e7eb] pb-10">
             <button 
-              onClick={() => setApplied(!applied)}
+              onClick={handleApply}
               className={`px-6 py-2.5 rounded-full text-[13px] font-extrabold transition-all shadow-sm ${
-                applied 
+                isApplied 
                   ? "bg-[#cf3478] text-white" 
                   : "bg-[#cf3478] text-white hover:bg-[#b82d69]"
               }`}
             >
-              {applied ? "Application started ✓" : "Apply Now"}
+              {isApplied ? "Application started ✓" : "Apply Now"}
             </button>
             
             <button 
-              onClick={() => setSaved(!saved)}
+              onClick={handleSave}
               className={`px-5 py-2.5 rounded-full text-[13px] font-extrabold border transition-all flex items-center gap-2 ${
-                saved 
+                isSaved 
                   ? "border-[#cf3478] text-[#cf3478] bg-[#fde8f1]" 
                   : "border-[#e5e7eb] text-[#4b5563] hover:border-[#cf3478] hover:text-[#cf3478]"
               }`}
             >
-              <Bookmark className="h-4 w-4" fill={saved ? "currentColor" : "none"} /> 
-              {saved ? "Saved" : "Save"}
+              <Bookmark className="h-4 w-4" fill={isSaved ? "currentColor" : "none"} /> 
+              {isSaved ? "Saved" : "Save"}
             </button>
             
             <button 

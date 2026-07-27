@@ -1,48 +1,10 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FileText, CheckCircle2, Clock, Eye } from "lucide-react";
 
 // ─── Data ────────────────────────────────────────────────────────────────────
 
 type AppStatus = "IN PROGRESS" | "SUBMITTED" | "IN REVIEW" | "DRAFT";
-
-interface Application {
-  id: string;
-  title: string;
-  subtitle: string;
-  progress: number;
-  status: AppStatus;
-}
-
-const APPLICATIONS: Application[] = [
-  {
-    id: "a1",
-    title: "Google STEP Internship 2026",
-    subtitle: "Essay + 2 short answers remaining",
-    progress: 65,
-    status: "IN PROGRESS",
-  },
-  {
-    id: "a2",
-    title: "$2,500 Women in Business Scholarship",
-    subtitle: "Working on recommendation letter",
-    progress: 80,
-    status: "IN PROGRESS",
-  },
-  {
-    id: "a3",
-    title: "Public Policy Fellowship",
-    subtitle: "Submitted Jun 18, 2026",
-    progress: 100,
-    status: "SUBMITTED",
-  },
-  {
-    id: "a4",
-    title: "Fully Funded Summer Program",
-    subtitle: "Under review by admissions",
-    progress: 100,
-    status: "IN REVIEW",
-  },
-];
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -107,6 +69,29 @@ function AppIcon({ status }: { status: AppStatus }) {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function StudentApplicationsView() {
+  const [applications, setApplications] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchUser = async () => {
+    try {
+      const token = localStorage.getItem("goc_token");
+      const res = await fetch("http://localhost:5000/api/users/me", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setApplications(data.user.appliedOpportunities || []);
+      }
+    } catch (err) {
+      console.error("Failed to load user data", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
   return (
     <div className="space-y-5">
       {/* ── Plain header (no card wrapper) ── */}
@@ -132,16 +117,20 @@ export function StudentApplicationsView() {
 
         {/* Application rows */}
         <div className="divide-y divide-pink-50/60">
-          {APPLICATIONS.map((app, i) => (
+          {loading ? (
+            <div className="px-6 py-10 text-center text-sm font-medium text-slate-500">Loading...</div>
+          ) : applications.length === 0 ? (
+            <div className="px-6 py-10 text-center text-sm font-medium text-slate-500">No applications yet. Start exploring opportunities!</div>
+          ) : applications.map((app, i) => (
             <motion.div
-              key={app.id}
+              key={app._id}
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 + i * 0.07 }}
               className="flex items-center gap-4 px-6 py-4 hover:bg-pink-50/20 transition-colors cursor-pointer group"
             >
               {/* Icon */}
-              <AppIcon status={app.status} />
+              <AppIcon status="SUBMITTED" />
 
               {/* Title + subtitle */}
               <div className="flex-1 min-w-0">
@@ -149,7 +138,7 @@ export function StudentApplicationsView() {
                   {app.title}
                 </p>
                 <p className="text-[11px] text-gray-400 mt-0.5 truncate">
-                  {app.subtitle}
+                  Submitted via GOC
                 </p>
               </div>
 
@@ -158,19 +147,19 @@ export function StudentApplicationsView() {
                 <div className="flex-1 h-1.5 bg-pink-100 rounded-full overflow-hidden">
                   <motion.div
                     initial={{ width: 0 }}
-                    animate={{ width: `${app.progress}%` }}
+                    animate={{ width: "100%" }}
                     transition={{ delay: 0.2 + i * 0.07, duration: 0.6, ease: "easeOut" }}
-                    className="h-full bg-[#e04f96] rounded-full"
+                    className="h-full bg-emerald-400 rounded-full"
                   />
                 </div>
                 <span className="text-[10px] font-semibold text-gray-400 whitespace-nowrap">
-                  {app.progress}% complete
+                  100% complete
                 </span>
               </div>
 
               {/* Status badge */}
               <div className="shrink-0 w-28 flex justify-end">
-                <StatusBadge status={app.status} />
+                <StatusBadge status="SUBMITTED" />
               </div>
             </motion.div>
           ))}
