@@ -68,7 +68,6 @@ function Nav() {
 
   const links: { label: string; to: string }[] = [
     { label: "Home", to: "/" },
-    { label: "Dashboard", to: "/dashboard" },
     { label: "$1500 Social Science Excellence", to: "/social-science-excellence" },
     { label: "Meet the team", to: "/meet-the-team" },
     { label: "Partners", to: "/partners" },
