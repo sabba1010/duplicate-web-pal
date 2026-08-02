@@ -38,7 +38,7 @@ export function StudentOpportunityDetailView({
   const handleApply = async () => {
     try {
       const token = localStorage.getItem("goc_token");
-      const res = await fetch(`http://localhost:5000/api/users/apply-opportunity/${opp.id}`, {
+      const res = await fetch(`https://goc-backend-swart.vercel.app/api/users/apply-opportunity/${opp.id}`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -54,7 +54,7 @@ export function StudentOpportunityDetailView({
   const handleSave = async () => {
     try {
       const token = localStorage.getItem("goc_token");
-      const res = await fetch(`http://localhost:5000/api/users/save-opportunity/${opp.id}`, {
+      const res = await fetch(`https://goc-backend-swart.vercel.app/api/users/save-opportunity/${opp.id}`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` }
       });

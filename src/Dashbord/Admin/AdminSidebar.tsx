@@ -27,7 +27,7 @@ export function AdminSidebar({ activeTab, setActiveTab }: AdminSidebarProps) {
     const fetchMemberCount = async () => {
       try {
         const token = localStorage.getItem("goc_token");
-        const res = await fetch("http://localhost:5000/api/users", {
+        const res = await fetch("https://goc-backend-swart.vercel.app/api/users", {
           headers: { Authorization: `Bearer ${token}` }
         });
         const data = await res.json();
@@ -41,7 +41,7 @@ export function AdminSidebar({ activeTab, setActiveTab }: AdminSidebarProps) {
     
     const fetchOpportunityCount = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/opportunities");
+        const res = await fetch("https://goc-backend-swart.vercel.app/api/opportunities");
         const data = await res.json();
         if (res.ok) {
           setOpportunityCount(data.count.toString());

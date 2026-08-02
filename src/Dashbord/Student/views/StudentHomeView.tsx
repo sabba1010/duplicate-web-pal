@@ -17,8 +17,8 @@ export function StudentHomeView({ onNavigate }: StudentHomeViewProps) {
     try {
       const token = localStorage.getItem("goc_token");
       const [oppsRes, userRes] = await Promise.all([
-        fetch("http://localhost:5000/api/opportunities"),
-        fetch("http://localhost:5000/api/users/me", {
+        fetch("https://goc-backend-swart.vercel.app/api/opportunities"),
+        fetch("https://goc-backend-swart.vercel.app/api/users/me", {
           headers: { Authorization: `Bearer ${token}` }
         })
       ]);
@@ -50,7 +50,7 @@ export function StudentHomeView({ onNavigate }: StudentHomeViewProps) {
   const toggleBookmark = async (id: string) => {
     try {
       const token = localStorage.getItem("goc_token");
-      const res = await fetch(`http://localhost:5000/api/users/save-opportunity/${id}`, {
+      const res = await fetch(`https://goc-backend-swart.vercel.app/api/users/save-opportunity/${id}`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` }
       });

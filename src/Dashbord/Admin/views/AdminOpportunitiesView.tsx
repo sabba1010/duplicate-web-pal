@@ -26,7 +26,7 @@ export function AdminOpportunitiesView() {
 
   const fetchOpportunities = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/opportunities");
+      const res = await fetch("https://goc-backend-swart.vercel.app/api/opportunities");
       const data = await res.json();
       if (res.ok) {
         setOpportunities(data.opportunities);
@@ -78,7 +78,7 @@ export function AdminOpportunitiesView() {
     if (!confirm("Are you sure you want to delete this opportunity?")) return;
     try {
       const token = localStorage.getItem("goc_token");
-      const res = await fetch(`http://localhost:5000/api/opportunities/${id}`, {
+      const res = await fetch(`https://goc-backend-swart.vercel.app/api/opportunities/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -105,7 +105,7 @@ export function AdminOpportunitiesView() {
         const uploadData = new FormData();
         uploadData.append("image", imageFile);
         
-        const uploadRes = await fetch("http://localhost:5000/api/upload", {
+        const uploadRes = await fetch("https://goc-backend-swart.vercel.app/api/upload", {
           method: "POST",
           headers: { Authorization: `Bearer ${token}` },
           body: uploadData
@@ -113,7 +113,7 @@ export function AdminOpportunitiesView() {
         
         const uploadResult = await uploadRes.json();
         if (uploadRes.ok) {
-          finalImageUrl = `http://localhost:5000${uploadResult.imageUrl}`;
+          finalImageUrl = `https://goc-backend-swart.vercel.app${uploadResult.imageUrl}`;
         } else {
           alert("Image upload failed: " + uploadResult.message);
           setIsSubmitting(false);
@@ -141,8 +141,8 @@ export function AdminOpportunitiesView() {
 
     try {
       const url = editingId 
-        ? `http://localhost:5000/api/opportunities/${editingId}`
-        : "http://localhost:5000/api/opportunities";
+        ? `https://goc-backend-swart.vercel.app/api/opportunities/${editingId}`
+        : "https://goc-backend-swart.vercel.app/api/opportunities";
       const method = editingId ? "PUT" : "POST";
 
       const res = await fetch(url, {

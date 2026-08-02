@@ -41,7 +41,7 @@ export function StudentSettingsView() {
     setLoading(true);
     try {
       const token = localStorage.getItem("goc_token");
-      const res = await fetch("http://localhost:5000/api/users/me", {
+      const res = await fetch("https://goc-backend-swart.vercel.app/api/users/me", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

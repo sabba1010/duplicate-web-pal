@@ -13,7 +13,7 @@ export function StudentSavedView() {
   const fetchUser = async () => {
     try {
       const token = localStorage.getItem("goc_token");
-      const res = await fetch("http://localhost:5000/api/users/me", {
+      const res = await fetch("https://goc-backend-swart.vercel.app/api/users/me", {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
@@ -34,7 +34,7 @@ export function StudentSavedView() {
   const handleUnsave = async (id: string) => {
     try {
       const token = localStorage.getItem("goc_token");
-      const res = await fetch(`http://localhost:5000/api/users/save-opportunity/${id}`, {
+      const res = await fetch(`https://goc-backend-swart.vercel.app/api/users/save-opportunity/${id}`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` }
       });

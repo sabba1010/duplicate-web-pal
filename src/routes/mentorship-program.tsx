@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { Navbar as Nav } from "../components/Navbar";
 import { UserCircle2, MessageCircle, CheckCircle2, Heart, Sparkles, Star } from "lucide-react";
 
 export const Route = createFileRoute("/mentorship-program")({
@@ -23,46 +24,7 @@ export const Route = createFileRoute("/mentorship-program")({
   component: MentorshipPage,
 });
 
-function Nav() {
-  const links: { label: string; to: string }[] = [
-    { label: "Home", to: "/" },
-    { label: "$1500 Social Science Excellence", to: "/social-science-excellence" },
-    { label: "Meet the team", to: "/meet-the-team" },
-    { label: "Partners", to: "/partners" },
-    { label: "Member Page", to: "/" },
-    { label: "Mentorship Program", to: "/mentorship-program" },
-  ];
-  return (
-    <header className="w-full bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-pink-soft/30">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 text-sm">
-        <nav className="hidden items-center gap-7 text-ink/80 md:flex">
-          {links.map((l) => (
-            <Link
-              key={l.label}
-              to={l.to}
-              activeOptions={{ exact: l.to === "/" }}
-              activeProps={{
-                className: "font-bold text-pink-deep",
-              }}
-              className="transition-colors hover:text-pink-deep text-ink/80"
-            >
-              {l.label}
-            </Link>
-          ))}
-        </nav>
-        <div className="flex items-center gap-3">
-          <button className="rounded-full bg-pink px-5 py-2 text-sm font-medium text-white shadow-md hover:bg-pink-deep hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5">
-            Add to Chrome
-          </button>
-          <a href="#" className="flex items-center gap-1.5 text-ink/80 hover:text-pink transition-colors">
-            <UserCircle2 className="h-5 w-5 text-pink" />
-            <span className="text-sm font-medium">Log In</span>
-          </a>
-        </div>
-      </div>
-    </header>
-  );
-}
+
 
 function FloatingStickers() {
   return (

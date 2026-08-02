@@ -10,7 +10,7 @@ export function AdminMembersView() {
   const fetchMembers = async () => {
     try {
       const token = localStorage.getItem("goc_token");
-      const res = await fetch("http://localhost:5000/api/users", {
+      const res = await fetch("https://goc-backend-swart.vercel.app/api/users", {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -37,7 +37,7 @@ export function AdminMembersView() {
       const token = localStorage.getItem("goc_token");
       const newStatus = currentStatus === "Active" ? "Suspended" : "Active";
       
-      const res = await fetch(`http://localhost:5000/api/users/${id}/status`, {
+      const res = await fetch(`https://goc-backend-swart.vercel.app/api/users/${id}/status`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

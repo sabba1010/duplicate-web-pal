@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { UserCircle2, LogOut } from "lucide-react";
+import { UserCircle2, LogOut, LayoutGrid } from "lucide-react";
 import { useState, useEffect } from "react";
 
 export function Navbar() {
@@ -49,7 +49,14 @@ export function Navbar() {
           ))}
         </nav>
         <div className="flex items-center gap-3">
-          <button className="rounded-full bg-pink px-4 py-1.5 text-xs font-medium text-white shadow-md hover:bg-pink-deep hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5">
+          <Link
+            to="/dashboard"
+            className="flex items-center gap-1.5 font-bold text-white bg-pink px-4 py-2 rounded-full shadow-sm hover:bg-pink-deep transition-all duration-200 transform hover:-translate-y-0.5"
+          >
+            <LayoutGrid className="h-4 w-4" />
+            <span className="text-xs">Dashboard</span>
+          </Link>
+          <button className="rounded-full border border-pink text-pink px-4 py-1.5 text-xs font-medium hover:bg-pink-soft/40 transition-all duration-300">
             Add to Chrome
           </button>
           {user ? (

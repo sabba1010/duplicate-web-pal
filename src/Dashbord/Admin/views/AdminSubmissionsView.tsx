@@ -14,7 +14,7 @@ export function AdminSubmissionsView() {
     setLoading(true);
     try {
       const token = localStorage.getItem("goc_token");
-      const res = await fetch("http://localhost:5000/api/users/submissions", {
+      const res = await fetch("https://goc-backend-swart.vercel.app/api/users/submissions", {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {

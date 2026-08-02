@@ -39,7 +39,7 @@ export function StudentSidebar({ activeTab, setActiveTab }: StudentSidebarProps)
       try {
         const token = localStorage.getItem("goc_token");
         if (!token) return;
-        const res = await fetch("http://localhost:5000/api/users/me", {
+        const res = await fetch("https://goc-backend-swart.vercel.app/api/users/me", {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (res.ok) {
