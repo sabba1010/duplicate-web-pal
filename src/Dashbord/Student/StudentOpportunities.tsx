@@ -2,7 +2,7 @@ import { Bookmark, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 
 export interface OpportunityItem {
-  id: number;
+  id: string;
   title: string;
   category: string;
   deadline: string;
@@ -13,8 +13,8 @@ export interface OpportunityItem {
 
 interface StudentOpportunitiesProps {
   opportunities: OpportunityItem[];
-  savedIds: number[];
-  toggleBookmark: (id: number) => void;
+  savedIds: string[];
+  toggleBookmark: (id: string) => void;
   onViewAll?: () => void;
 }
 

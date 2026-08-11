@@ -2,7 +2,9 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BookOpen, FileText, ExternalLink, Loader2, Search, X } from "lucide-react";
 
-const API_BASE = "http://localhost:5000";
+const API_BASE = typeof window !== "undefined" && window.location.hostname === "localhost"
+  ? "http://localhost:5000"
+  : "https://goc-backend-swart.vercel.app";
 
 const CATEGORY_COLORS: Record<string, string> = {
   SCHOLARSHIPS: "#f14f98",
