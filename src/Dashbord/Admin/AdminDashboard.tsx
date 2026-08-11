@@ -14,7 +14,10 @@ import { AdminResourcesView } from "./views/AdminResourcesView";
 
 export function AdminDashboard() {
   const [activeTab, setActiveTabState] = useState<AdminTabType>(() => {
-    return (localStorage.getItem("goc_admin_tab") as AdminTabType) || "Overview";
+    if (typeof window !== "undefined") {
+      return (localStorage.getItem("goc_admin_tab") as AdminTabType) || "Overview";
+    }
+    return "Overview";
   });
 
   const setActiveTab = (tab: AdminTabType) => {

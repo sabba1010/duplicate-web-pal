@@ -13,6 +13,7 @@ import {
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
+import { API_BASE } from "../../lib/api";
 
 export type TabType =
   | "Dashboard"
@@ -39,7 +40,7 @@ export function StudentSidebar({ activeTab, setActiveTab }: StudentSidebarProps)
       try {
         const token = localStorage.getItem("goc_token");
         if (!token) return;
-        const res = await fetch("https://goc-backend-swart.vercel.app/api/users/me", {
+        const res = await fetch(`${API_BASE}/api/users/me`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (res.ok) {

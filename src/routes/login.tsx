@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Navbar as Nav } from "../components/Navbar";
 import { UserCircle2, Mail, Lock, Eye, EyeOff, Sparkles, ArrowRight } from "lucide-react";
 import { useState, useEffect } from "react";
+import { API_BASE } from "../lib/api";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -56,7 +57,7 @@ function LoginForm() {
     }
 
     try {
-      const res = await fetch("https://goc-backend-swart.vercel.app/api/users/login", {
+      const res = await fetch(`${API_BASE}/api/users/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: cleanEmail, password })

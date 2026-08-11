@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { API_BASE } from "../../../lib/api";
 import { ArrowRight, Search } from "lucide-react";
 import { TabType } from "../StudentSidebar";
 import { StudentMetrics } from "../StudentMetrics";
@@ -17,8 +18,8 @@ export function StudentHomeView({ onNavigate }: StudentHomeViewProps) {
     try {
       const token = localStorage.getItem("goc_token");
       const [oppsRes, userRes] = await Promise.all([
-        fetch("https://goc-backend-swart.vercel.app/api/opportunities"),
-        fetch("https://goc-backend-swart.vercel.app/api/users/me", {
+        fetch(`${API_BASE}/api/opportunities`),
+        fetch(`${API_BASE}/api/users/me`, {
           headers: { Authorization: `Bearer ${token}` }
         })
       ]);
@@ -50,7 +51,7 @@ export function StudentHomeView({ onNavigate }: StudentHomeViewProps) {
   const toggleBookmark = async (id: string) => {
     try {
       const token = localStorage.getItem("goc_token");
-      const res = await fetch(`https://goc-backend-swart.vercel.app/api/users/save-opportunity/${id}`, {
+      const res = await fetch(`${API_BASE}/api/users/save-opportunity/${id}`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` }
       });

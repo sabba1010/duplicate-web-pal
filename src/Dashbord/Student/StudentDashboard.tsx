@@ -18,7 +18,10 @@ import { StudentHeader } from "./StudentHeader";
 export function StudentDashboard() {
   const [user, setUser] = useState<{ name: string; username: string } | null>(null);
   const [activeTab, setActiveTabState] = useState<TabType>(() => {
-    return (localStorage.getItem("goc_student_tab") as TabType) || "Dashboard";
+    if (typeof window !== "undefined") {
+      return (localStorage.getItem("goc_student_tab") as TabType) || "Dashboard";
+    }
+    return "Dashboard";
   });
 
   const setActiveTab = (tab: TabType) => {
@@ -50,6 +53,7 @@ export function StudentDashboard() {
 
   const handleLogout = () => {
     localStorage.removeItem("goc_user");
+    localStorage.removeItem("goc_token");
     window.location.href = "/login";
   };
 
