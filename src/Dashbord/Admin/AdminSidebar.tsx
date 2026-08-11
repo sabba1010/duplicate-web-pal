@@ -8,11 +8,12 @@ import {
   BarChart3,
   LifeBuoy,
   Settings,
+  BookOpen,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 
-export type AdminTabType = "Overview" | "Members" | "Opportunities" | "Submissions" | "Extension" | "Analytics" | "Support" | "Settings";
+export type AdminTabType = "Overview" | "Members" | "Opportunities" | "Submissions" | "Extension" | "Analytics" | "Resources" | "Support" | "Settings";
 
 interface AdminSidebarProps {
   activeTab: AdminTabType;
@@ -60,6 +61,7 @@ export function AdminSidebar({ activeTab, setActiveTab }: AdminSidebarProps) {
     { id: "Members",      label: "Members",        icon: Users,      badge: memberCount },
     { id: "Opportunities",label: "Opportunities",  icon: FileText,   badge: opportunityCount },
     { id: "Submissions",  label: "Submissions",    icon: Inbox,      badge: "6" },
+    { id: "Resources",    label: "Resources",      icon: BookOpen },
     { id: "Extension",    label: "Extension Data", icon: Puzzle },
     { id: "Analytics",    label: "Analytics",      icon: BarChart3 },
     { id: "Support",      label: "Support",        icon: LifeBuoy,   badge: "2" },

@@ -10,6 +10,7 @@ import { AdminAnalyticsView } from "./views/AdminAnalyticsView";
 import { AdminExtensionView } from "./views/AdminExtensionView";
 import { AdminSubmissionsView } from "./views/AdminSubmissionsView";
 import { AdminSystemSettingsView } from "./views/AdminSystemSettingsView";
+import { AdminResourcesView } from "./views/AdminResourcesView";
 
 export function AdminDashboard() {
   const [activeTab, setActiveTabState] = useState<AdminTabType>(() => {
@@ -29,6 +30,7 @@ export function AdminDashboard() {
       case "Submissions":  return <AdminSubmissionsView />;
       case "Extension":    return <AdminExtensionView />;
       case "Analytics":    return <AdminAnalyticsView />;
+      case "Resources":    return <AdminResourcesView />;
       case "Settings":     return <AdminSystemSettingsView />;
       default:             return <AdminOverviewView />;
     }
