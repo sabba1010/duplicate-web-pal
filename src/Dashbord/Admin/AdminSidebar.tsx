@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
+import { API_BASE } from "../../lib/api";
 
 export type AdminTabType = "Overview" | "Members" | "Opportunities" | "Submissions" | "Extension" | "Analytics" | "Resources" | "Support" | "Settings";
 
@@ -23,12 +24,13 @@ interface AdminSidebarProps {
 export function AdminSidebar({ activeTab, setActiveTab }: AdminSidebarProps) {
   const [memberCount, setMemberCount] = useState<string>("...");
   const [opportunityCount, setOpportunityCount] = useState<string>("...");
+  const [submissionCount, setSubmissionCount] = useState<string>("...");
 
   useEffect(() => {
     const fetchMemberCount = async () => {
       try {
         const token = localStorage.getItem("goc_token");
-        const res = await fetch("https://goc-backend-swart.vercel.app/api/users", {
+        const res = await fetch(`${API_BASE}/api/users`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const data = await res.json();
@@ -42,7 +44,7 @@ export function AdminSidebar({ activeTab, setActiveTab }: AdminSidebarProps) {
     
     const fetchOpportunityCount = async () => {
       try {
-        const res = await fetch("https://goc-backend-swart.vercel.app/api/opportunities");
+        const res = await fetch(`${API_BASE}/api/opportunities`);
         const data = await res.json();
         if (res.ok) {
           setOpportunityCount(data.count.toString());
@@ -52,15 +54,31 @@ export function AdminSidebar({ activeTab, setActiveTab }: AdminSidebarProps) {
       }
     };
 
+    const fetchSubmissionCount = async () => {
+      try {
+        const token = localStorage.getItem("goc_token");
+        const res = await fetch(`${API_BASE}/api/users/submissions`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (res.ok) {
+          setSubmissionCount((data.submissions?.length || 0).toString());
+        }
+      } catch (err) {
+        setSubmissionCount("0");
+      }
+    };
+
     fetchMemberCount();
     fetchOpportunityCount();
+    fetchSubmissionCount();
   }, []);
 
   const tabs = [
     { id: "Overview",     label: "Overview",       icon: Shield },
     { id: "Members",      label: "Members",        icon: Users,      badge: memberCount },
     { id: "Opportunities",label: "Opportunities",  icon: FileText,   badge: opportunityCount },
-    { id: "Submissions",  label: "Submissions",    icon: Inbox,      badge: "6" },
+    { id: "Submissions",  label: "Submissions",    icon: Inbox,      badge: submissionCount },
     { id: "Resources",    label: "Resources",      icon: BookOpen },
     { id: "Extension",    label: "Extension Data", icon: Puzzle },
     { id: "Analytics",    label: "Analytics",      icon: BarChart3 },
