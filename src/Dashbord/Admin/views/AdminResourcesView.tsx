@@ -12,6 +12,11 @@ import {
   CheckCircle,
   AlertCircle,
   Loader2,
+  ExternalLink,
+  Calendar,
+  MapPin,
+  Tag,
+  Globe,
 } from "lucide-react";
 import { API_BASE } from "../../../lib/api";
 
@@ -39,6 +44,24 @@ const CATEGORY_COLORS: Record<string, string> = {
   GENERAL: "#8b7e85",
 };
 
+const RESOURCE_TYPE_OPTIONS = [
+  "Scholarship",
+  "Internship",
+  "Fellowship",
+  "Program",
+  "Event",
+  "Guide",
+  "Article",
+  "General Resource",
+];
+
+const LOCATION_TYPE_OPTIONS = [
+  "Virtual",
+  "In-person",
+  "Hybrid",
+  "Location-specific",
+];
+
 interface Resource {
   _id: string;
   title: string;
@@ -47,6 +70,11 @@ interface Resource {
   image: string;
   pdfFile: string;
   pdfOriginalName: string;
+  externalLink?: string;
+  deadline?: string;
+  resourceType?: string;
+  locationType?: string;
+  locationAddress?: string;
   uploadedBy: { name: string };
   status: string;
   createdAt: string;
@@ -63,6 +91,12 @@ export function AdminResourcesView() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("GENERAL");
+  const [externalLink, setExternalLink] = useState("");
+  const [deadline, setDeadline] = useState("");
+  const [resourceType, setResourceType] = useState("General Resource");
+  const [locationType, setLocationType] = useState("Virtual");
+  const [locationAddress, setLocationAddress] = useState("");
+
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
   const [pdfFile, setPdfFile] = useState<File | null>(null);
@@ -119,6 +153,11 @@ export function AdminResourcesView() {
     setTitle("");
     setDescription("");
     setCategory("GENERAL");
+    setExternalLink("");
+    setDeadline("");
+    setResourceType("General Resource");
+    setLocationType("Virtual");
+    setLocationAddress("");
     setImageFile(null);
     setImagePreview("");
     setPdfFile(null);
@@ -140,6 +179,11 @@ export function AdminResourcesView() {
       formData.append("title", title.trim());
       formData.append("description", description.trim());
       formData.append("category", category);
+      formData.append("externalLink", externalLink.trim());
+      formData.append("deadline", deadline);
+      formData.append("resourceType", resourceType);
+      formData.append("locationType", locationType);
+      formData.append("locationAddress", locationAddress.trim());
       if (imageFile) formData.append("image", imageFile);
       if (pdfFile) formData.append("pdf", pdfFile);
 
@@ -221,7 +265,7 @@ export function AdminResourcesView() {
             Resources
           </h1>
           <p className="text-[13px] text-gray-400 font-semibold mt-[2px]">
-            Upload guides, PDFs, and articles for students
+            Upload scholarships, programs, guides, PDFs, and links for students
           </p>
         </div>
         <motion.button
@@ -283,6 +327,92 @@ export function AdminResourcesView() {
                       </option>
                     ))}
                   </select>
+                </div>
+              </div>
+
+              {/* Resource Type + Location Type row */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-[12px] font-black text-gray-600 uppercase tracking-wider flex items-center gap-1.5">
+                    <Tag className="h-3.5 w-3.5 text-[#4f46e5]" />
+                    Resource Type
+                  </label>
+                  <select
+                    value={resourceType}
+                    onChange={(e) => setResourceType(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 text-[13px] font-semibold text-[#111827] outline-none focus:border-[#4f46e5] focus:ring-2 focus:ring-[#4f46e5]/10 transition-all bg-white cursor-pointer"
+                  >
+                    {RESOURCE_TYPE_OPTIONS.map((type) => (
+                      <option key={type} value={type}>
+                        {type}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[12px] font-black text-gray-600 uppercase tracking-wider flex items-center gap-1.5">
+                    <Globe className="h-3.5 w-3.5 text-[#4f46e5]" />
+                    Location Type
+                  </label>
+                  <select
+                    value={locationType}
+                    onChange={(e) => setLocationType(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 text-[13px] font-semibold text-[#111827] outline-none focus:border-[#4f46e5] focus:ring-2 focus:ring-[#4f46e5]/10 transition-all bg-white cursor-pointer"
+                  >
+                    {LOCATION_TYPE_OPTIONS.map((loc) => (
+                      <option key={loc} value={loc}>
+                        {loc}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Location Address (if In-person, Hybrid, or Location-specific) */}
+              {locationType !== "Virtual" && (
+                <div className="space-y-1.5">
+                  <label className="text-[12px] font-black text-gray-600 uppercase tracking-wider flex items-center gap-1.5">
+                    <MapPin className="h-3.5 w-3.5 text-[#4f46e5]" />
+                    Location / Address Details
+                  </label>
+                  <input
+                    type="text"
+                    value={locationAddress}
+                    onChange={(e) => setLocationAddress(e.target.value)}
+                    placeholder="e.g. Dhaka, Bangladesh or 123 Campus Way..."
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 text-[13px] font-semibold text-[#111827] outline-none focus:border-[#4f46e5] focus:ring-2 focus:ring-[#4f46e5]/10 transition-all"
+                  />
+                </div>
+              )}
+
+              {/* External Link + Deadline row */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-[12px] font-black text-gray-600 uppercase tracking-wider flex items-center gap-1.5">
+                    <ExternalLink className="h-3.5 w-3.5 text-[#4f46e5]" />
+                    External Link (optional)
+                  </label>
+                  <input
+                    type="url"
+                    value={externalLink}
+                    onChange={(e) => setExternalLink(e.target.value)}
+                    placeholder="https://..."
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 text-[13px] font-semibold text-[#111827] outline-none focus:border-[#4f46e5] focus:ring-2 focus:ring-[#4f46e5]/10 transition-all"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[12px] font-black text-gray-600 uppercase tracking-wider flex items-center gap-1.5">
+                    <Calendar className="h-3.5 w-3.5 text-[#4f46e5]" />
+                    Deadline (optional)
+                  </label>
+                  <input
+                    type="date"
+                    value={deadline}
+                    onChange={(e) => setDeadline(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 text-[13px] font-semibold text-[#111827] outline-none focus:border-[#4f46e5] focus:ring-2 focus:ring-[#4f46e5]/10 transition-all bg-white cursor-pointer"
+                  />
                 </div>
               </div>
 
@@ -437,7 +567,7 @@ export function AdminResourcesView() {
                   className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all group flex flex-col"
                 >
                   {/* Image */}
-                  <div className="h-[150px] bg-gradient-to-br from-[#eef2ff] to-[#f5f3ff] overflow-hidden shrink-0">
+                  <div className="h-[150px] bg-gradient-to-br from-[#eef2ff] to-[#f5f3ff] overflow-hidden shrink-0 relative">
                     {resource.image ? (
                       <img
                         src={`${API_BASE}${resource.image}`}
@@ -449,31 +579,69 @@ export function AdminResourcesView() {
                         <BookOpen className="h-10 w-10 text-[#c7d2fe]" />
                       </div>
                     )}
+                    {/* Resource Type Badge */}
+                    {resource.resourceType && (
+                      <span className="absolute top-3 left-3 bg-black/60 backdrop-blur-md text-white text-[10px] font-black px-2.5 py-1 rounded-lg">
+                        {resource.resourceType}
+                      </span>
+                    )}
                   </div>
 
                   {/* Body */}
                   <div className="p-4 flex flex-col flex-1">
-                    {/* Category badge */}
-                    <span
-                      className="text-[9px] font-black tracking-[0.1em] uppercase mb-2 inline-block"
-                      style={{ color: CATEGORY_COLORS[resource.category] ?? "#8b7e85" }}
-                    >
-                      {resource.category}
-                    </span>
+                    {/* Category & Location Badges */}
+                    <div className="flex items-center justify-between mb-2">
+                      <span
+                        className="text-[9px] font-black tracking-[0.1em] uppercase"
+                        style={{ color: CATEGORY_COLORS[resource.category] ?? "#8b7e85" }}
+                      >
+                        {resource.category}
+                      </span>
+                      {resource.locationType && (
+                        <span className="flex items-center gap-1 text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-md">
+                          <MapPin className="h-3 w-3 text-gray-400" />
+                          {resource.locationType}
+                          {resource.locationAddress ? `: ${resource.locationAddress}` : ""}
+                        </span>
+                      )}
+                    </div>
+
                     <h3 className="text-[13px] font-black text-[#111827] leading-[1.4] mb-1 line-clamp-2">
                       {resource.title}
                     </h3>
-                    <p className="text-[11px] text-gray-400 font-semibold line-clamp-2 mb-auto">
+                    <p className="text-[11px] text-gray-400 font-semibold line-clamp-2 mb-2">
                       {resource.description}
                     </p>
 
-                    {/* PDF Indicator */}
-                    {resource.pdfFile && (
-                      <div className="flex items-center gap-1.5 mt-3 bg-[#eef2ff] px-2.5 py-1.5 rounded-lg w-fit">
-                        <FileText className="h-3 w-3 text-[#4f46e5]" />
-                        <span className="text-[10px] font-black text-[#4f46e5]">PDF attached</span>
+                    {/* Deadline & PDF/Link indicators */}
+                    <div className="mt-auto space-y-1.5 pt-2">
+                      {resource.deadline && (
+                        <div className="flex items-center gap-1.5 text-[10.5px] font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-100">
+                          <Calendar className="h-3 w-3 text-amber-500 shrink-0" />
+                          Deadline: {new Date(resource.deadline).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                        </div>
+                      )}
+
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {resource.pdfFile && (
+                          <div className="flex items-center gap-1 bg-[#eef2ff] px-2.5 py-1 rounded-lg">
+                            <FileText className="h-3 w-3 text-[#4f46e5]" />
+                            <span className="text-[10px] font-black text-[#4f46e5]">PDF</span>
+                          </div>
+                        )}
+                        {resource.externalLink && (
+                          <a
+                            href={resource.externalLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1 bg-emerald-50 px-2.5 py-1 rounded-lg hover:bg-emerald-100 transition-colors"
+                          >
+                            <ExternalLink className="h-3 w-3 text-emerald-600" />
+                            <span className="text-[10px] font-black text-emerald-600">Link</span>
+                          </a>
+                        )}
                       </div>
-                    )}
+                    </div>
 
                     {/* Footer */}
                     <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-50">
@@ -522,3 +690,4 @@ export function AdminResourcesView() {
     </div>
   );
 }
+
