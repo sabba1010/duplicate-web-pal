@@ -8,13 +8,14 @@ import {
   BarChart3,
   LifeBuoy,
   Settings,
+  MessageSquare,
   BookOpen,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { API_BASE } from "../../lib/api";
 
-export type AdminTabType = "Overview" | "Members" | "Opportunities" | "Submissions" | "Extension" | "Analytics" | "Resources" | "Support" | "Settings";
+export type AdminTabType = "Overview" | "Live Chat" | "Members" | "Opportunities" | "Submissions" | "Extension" | "Analytics" | "Resources" | "Support" | "Settings";
 
 interface AdminSidebarProps {
   activeTab: AdminTabType;
@@ -25,6 +26,7 @@ export function AdminSidebar({ activeTab, setActiveTab }: AdminSidebarProps) {
   const [memberCount, setMemberCount] = useState<string>("...");
   const [opportunityCount, setOpportunityCount] = useState<string>("...");
   const [submissionCount, setSubmissionCount] = useState<string>("...");
+  const [pendingReportCount, setPendingReportCount] = useState<string>("0");
 
   useEffect(() => {
     const fetchMemberCount = async () => {
@@ -69,13 +71,30 @@ export function AdminSidebar({ activeTab, setActiveTab }: AdminSidebarProps) {
       }
     };
 
+    const fetchReportCount = async () => {
+      try {
+        const token = localStorage.getItem("goc_token");
+        const res = await fetch(`${API_BASE}/api/admin/chat/reports?status=Pending`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (res.ok && Array.isArray(data)) {
+          setPendingReportCount(data.length.toString());
+        }
+      } catch (err) {
+        setPendingReportCount("0");
+      }
+    };
+
     fetchMemberCount();
     fetchOpportunityCount();
     fetchSubmissionCount();
+    fetchReportCount();
   }, []);
 
   const tabs = [
     { id: "Overview",     label: "Overview",       icon: Shield },
+    { id: "Live Chat",    label: "Live Chat",      icon: MessageSquare, badge: pendingReportCount !== "0" ? pendingReportCount : undefined },
     { id: "Members",      label: "Members",        icon: Users,      badge: memberCount },
     { id: "Opportunities",label: "Opportunities",  icon: FileText,   badge: opportunityCount },
     { id: "Submissions",  label: "Submissions",    icon: Inbox,      badge: submissionCount },

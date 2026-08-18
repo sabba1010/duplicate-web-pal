@@ -11,6 +11,7 @@ import { AdminExtensionView } from "./views/AdminExtensionView";
 import { AdminSubmissionsView } from "./views/AdminSubmissionsView";
 import { AdminSystemSettingsView } from "./views/AdminSystemSettingsView";
 import { AdminResourcesView } from "./views/AdminResourcesView";
+import { AdminLiveChatView } from "./views/AdminLiveChatView";
 
 export function AdminDashboard() {
   const [activeTab, setActiveTabState] = useState<AdminTabType>(() => {
@@ -28,6 +29,7 @@ export function AdminDashboard() {
   const renderActiveTab = () => {
     switch (activeTab) {
       case "Overview":     return <AdminOverviewView />;
+      case "Live Chat":    return <AdminLiveChatView />;
       case "Members":      return <AdminMembersView />;
       case "Opportunities":return <AdminOpportunitiesView />;
       case "Submissions":  return <AdminSubmissionsView />;
