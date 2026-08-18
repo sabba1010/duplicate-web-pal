@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Search, Filter, ExternalLink, Calendar, Trash2, Check, Share2, X, Copy } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { API_BASE } from "../../../lib/api";
 
 export function StudentSavedView() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -13,7 +14,7 @@ export function StudentSavedView() {
   const fetchUser = async () => {
     try {
       const token = localStorage.getItem("goc_token");
-      const res = await fetch("https://goc-backend-swart.vercel.app/api/users/me", {
+      const res = await fetch(`${API_BASE}/api/users/me`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
@@ -34,7 +35,7 @@ export function StudentSavedView() {
   const handleUnsave = async (id: string) => {
     try {
       const token = localStorage.getItem("goc_token");
-      const res = await fetch(`https://goc-backend-swart.vercel.app/api/users/save-opportunity/${id}`, {
+      const res = await fetch(`${API_BASE}/api/users/save-opportunity/${id}`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` }
       });

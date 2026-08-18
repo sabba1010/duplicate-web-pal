@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Search, Plus, Filter, MoreHorizontal, Edit, Trash2, X, Image as ImageIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { API_BASE } from "../../../lib/api";
 
 export function AdminOpportunitiesView() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -26,7 +27,7 @@ export function AdminOpportunitiesView() {
 
   const fetchOpportunities = async () => {
     try {
-      const res = await fetch("https://goc-backend-swart.vercel.app/api/opportunities");
+      const res = await fetch(`${API_BASE}/api/opportunities`);
       const data = await res.json();
       if (res.ok) {
         setOpportunities(data.opportunities);
@@ -78,7 +79,7 @@ export function AdminOpportunitiesView() {
     if (!confirm("Are you sure you want to delete this opportunity?")) return;
     try {
       const token = localStorage.getItem("goc_token");
-      const res = await fetch(`https://goc-backend-swart.vercel.app/api/opportunities/${id}`, {
+      const res = await fetch(`${API_BASE}/api/opportunities/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -105,7 +106,7 @@ export function AdminOpportunitiesView() {
         const uploadData = new FormData();
         uploadData.append("image", imageFile);
         
-        const uploadRes = await fetch("https://goc-backend-swart.vercel.app/api/upload", {
+        const uploadRes = await fetch(`${API_BASE}/api/upload`, {
           method: "POST",
           headers: { Authorization: `Bearer ${token}` },
           body: uploadData
@@ -113,7 +114,7 @@ export function AdminOpportunitiesView() {
         
         const uploadResult = await uploadRes.json();
         if (uploadRes.ok) {
-          finalImageUrl = `https://goc-backend-swart.vercel.app${uploadResult.imageUrl}`;
+          finalImageUrl = `${API_BASE}${uploadResult.imageUrl}`;
         } else {
           alert("Image upload failed: " + uploadResult.message);
           setIsSubmitting(false);
@@ -141,8 +142,8 @@ export function AdminOpportunitiesView() {
 
     try {
       const url = editingId 
-        ? `https://goc-backend-swart.vercel.app/api/opportunities/${editingId}`
-        : "https://goc-backend-swart.vercel.app/api/opportunities";
+        ? `${API_BASE}/api/opportunities/${editingId}`
+        : `${API_BASE}/api/opportunities`;
       const method = editingId ? "PUT" : "POST";
 
       const res = await fetch(url, {

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FileText, CheckCircle2, Clock, Eye } from "lucide-react";
+import { API_BASE } from "../../../lib/api";
 
 // ─── Data ────────────────────────────────────────────────────────────────────
 
@@ -75,7 +76,7 @@ export function StudentApplicationsView() {
   const fetchUser = async () => {
     try {
       const token = localStorage.getItem("goc_token");
-      const res = await fetch("https://goc-backend-swart.vercel.app/api/users/me", {
+      const res = await fetch(`${API_BASE}/api/users/me`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Check } from "lucide-react";
+import { API_BASE } from "../../../lib/api";
 
 export function StudentSettingsView() {
   const [profile, setProfile] = useState({
@@ -41,7 +42,7 @@ export function StudentSettingsView() {
     setLoading(true);
     try {
       const token = localStorage.getItem("goc_token");
-      const res = await fetch("https://goc-backend-swart.vercel.app/api/users/me", {
+      const res = await fetch(`${API_BASE}/api/users/me`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

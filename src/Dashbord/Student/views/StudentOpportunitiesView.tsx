@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Search, Bookmark, Users, GraduationCap, Globe, MapPin } from "lucide-react";
 import { useState, useEffect } from "react";
 import { StudentOpportunityDetailView } from "./StudentOpportunityDetailView";
+import { API_BASE } from "../../../lib/api";
 
 // ─── Data ────────────────────────────────────────────────────────────────────
 
@@ -123,8 +124,8 @@ export function StudentOpportunitiesView() {
       const token = localStorage.getItem("goc_token");
       
       const [oppsRes, userRes] = await Promise.all([
-        fetch("https://goc-backend-swart.vercel.app/api/opportunities"),
-        fetch("https://goc-backend-swart.vercel.app/api/users/me", {
+        fetch(`${API_BASE}/api/opportunities`),
+        fetch(`${API_BASE}/api/users/me`, {
           headers: { Authorization: `Bearer ${token}` }
         })
       ]);
@@ -158,7 +159,7 @@ export function StudentOpportunitiesView() {
   const toggleSave = async (id: string) => {
     try {
       const token = localStorage.getItem("goc_token");
-      const res = await fetch(`https://goc-backend-swart.vercel.app/api/users/save-opportunity/${id}`, {
+      const res = await fetch(`${API_BASE}/api/users/save-opportunity/${id}`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` }
       });

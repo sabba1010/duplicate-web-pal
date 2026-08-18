@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Eye, X, CheckCircle2, Clock, Search, ExternalLink } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { API_BASE } from "../../../lib/api";
 
 export function AdminSubmissionsView() {
   const [submissions, setSubmissions] = useState<any[]>([]);
@@ -14,7 +15,7 @@ export function AdminSubmissionsView() {
     setLoading(true);
     try {
       const token = localStorage.getItem("goc_token");
-      const res = await fetch("https://goc-backend-swart.vercel.app/api/users/submissions", {
+      const res = await fetch(`${API_BASE}/api/users/submissions`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Search, Filter, MoreHorizontal, UserCheck, UserX, Shield } from "lucide-react";
+import { API_BASE } from "../../../lib/api";
 
 export function AdminMembersView() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -10,7 +11,7 @@ export function AdminMembersView() {
   const fetchMembers = async () => {
     try {
       const token = localStorage.getItem("goc_token");
-      const res = await fetch("https://goc-backend-swart.vercel.app/api/users", {
+      const res = await fetch(`${API_BASE}/api/users`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -37,7 +38,7 @@ export function AdminMembersView() {
       const token = localStorage.getItem("goc_token");
       const newStatus = currentStatus === "Active" ? "Suspended" : "Active";
       
-      const res = await fetch(`https://goc-backend-swart.vercel.app/api/users/${id}/status`, {
+      const res = await fetch(`${API_BASE}/api/users/${id}/status`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
