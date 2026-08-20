@@ -1,27 +1,8 @@
-import { EXTENSION_SAVES } from "@/lib/mock-admin-data";
-import { Chrome, Search, ExternalLink, CheckCircle, AlertCircle, RefreshCw } from "lucide-react";
+import { Chrome, Search } from "lucide-react";
 import { useState } from "react";
 
 export function AdminExtensionView() {
   const [searchQuery, setSearchQuery] = useState("");
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Verified": return "bg-emerald-50 text-emerald-700 border-emerald-200";
-      case "Needs Review": return "bg-amber-50 text-amber-700 border-amber-200";
-      case "Duplicate": return "bg-rose-50 text-rose-700 border-rose-200";
-      default: return "bg-slate-50 text-slate-700 border-slate-200";
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "Verified": return <CheckCircle className="h-3 w-3 mr-1 inline-block -mt-0.5" />;
-      case "Needs Review": return <AlertCircle className="h-3 w-3 mr-1 inline-block -mt-0.5" />;
-      case "Duplicate": return <RefreshCw className="h-3 w-3 mr-1 inline-block -mt-0.5" />;
-      default: return null;
-    }
-  };
 
   return (
     <div className="bg-white rounded-3xl border border-slate-200 shadow-sm h-full flex flex-col overflow-hidden">
@@ -48,50 +29,20 @@ export function AdminExtensionView() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-auto">
-        <table className="w-full text-left text-sm whitespace-nowrap">
-          <thead className="bg-slate-50 border-b border-slate-100 sticky top-0 z-10 text-slate-500 font-bold text-[10px] uppercase tracking-wider">
-            <tr>
-              <th className="px-6 py-4">Extracted Title</th>
-              <th className="px-6 py-4">Source Domain</th>
-              <th className="px-6 py-4">Total Saves</th>
-              <th className="px-6 py-4">Status</th>
-              <th className="px-6 py-4 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100">
-            {EXTENSION_SAVES.map((item) => (
-              <tr key={item.id} className="hover:bg-slate-50/80 transition-colors group">
-                <td className="px-6 py-4">
-                  <div className="font-bold text-slate-900">{item.title}</div>
-                  <div className="text-xs text-slate-500 mt-0.5">{item.organization}</div>
-                </td>
-                <td className="px-6 py-4">
-                  <a href={item.url} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 text-indigo-600 hover:text-indigo-800 text-xs font-medium">
-                    {new URL(item.url).hostname}
-                    <ExternalLink className="h-3 w-3" />
-                  </a>
-                </td>
-                <td className="px-6 py-4">
-                  <span className="font-semibold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-lg">
-                    {item.savedBy} students
-                  </span>
-                </td>
-                <td className="px-6 py-4">
-                  <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border ${getStatusColor(item.status)}`}>
-                    {getStatusIcon(item.status)}
-                    {item.status}
-                  </span>
-                </td>
-                <td className="px-6 py-4 text-right">
-                  <button className="px-3 py-1.5 text-xs font-semibold text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 shadow-sm transition-colors opacity-0 group-hover:opacity-100">
-                    Review Details
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      {/* Empty State — Extension saves not yet integrated */}
+      <div className="flex-1 flex flex-col items-center justify-center gap-4 px-6 py-16 text-center">
+        <div className="w-16 h-16 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center">
+          <Chrome className="h-8 w-8 text-indigo-400" />
+        </div>
+        <div>
+          <h3 className="text-[17px] font-bold text-slate-800 mb-1">No extension saves yet</h3>
+          <p className="text-sm text-slate-500 max-w-sm">
+            When students use the GOC browser extension to save opportunities from external sites, they'll appear here for review and verification.
+          </p>
+        </div>
+        <span className="inline-block mt-2 px-4 py-1.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-xs font-bold uppercase tracking-wide">
+          Coming Soon
+        </span>
       </div>
     </div>
   );

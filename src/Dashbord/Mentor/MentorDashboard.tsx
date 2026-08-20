@@ -15,7 +15,6 @@ import {
   Users,
   GraduationCap
 } from "lucide-react";
-import { MENTOR_MEETING_REQUESTS, MENTOR_LIVE_CHAT } from "@/lib/mock-mentor-data";
 
 export function MentorDashboard() {
   const [extensionOn, setExtensionOn] = useState(true);
@@ -66,7 +65,7 @@ export function MentorDashboard() {
               <div>
                 <h2 className="text-[28px] font-extrabold text-[#111827] tracking-tight">Mentor Portal</h2>
                 <p className="text-[13px] font-medium text-gray-500 mt-1">
-                  Simulated login as Dr. Priya Nandan — see requests from your mentees.
+                  Mentor dashboard — coming soon with full functionality.
                 </p>
               </div>
               <Link to="/dashboard" className="px-5 py-2 rounded-full border-2 border-[#fde8f1] text-[#f14f98] text-[13px] font-bold hover:bg-[#fde8f1] transition-colors whitespace-nowrap flex items-center gap-2">
@@ -77,20 +76,16 @@ export function MentorDashboard() {
             {/* Profile Card */}
             <div className="bg-white rounded-[24px] border border-gray-200 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 shadow-sm">
               <div className="flex items-center gap-4">
-                <img 
-                  src="https://i.pravatar.cc/150?u=priya" 
-                  alt="Dr. Priya Nandan" 
-                  className="w-16 h-16 rounded-full object-cover border-4 border-gray-50"
-                />
+                <div className="w-16 h-16 rounded-full bg-[#fde8f1] flex items-center justify-center text-[#f14f98] text-2xl font-black shrink-0">M</div>
                 <div>
                   <div className="text-[10px] font-black text-[#f14f98] tracking-widest uppercase mb-1">
-                    LOGGED IN AS
+                    MENTOR PORTAL
                   </div>
                   <h3 className="text-[18px] font-extrabold text-[#111827] leading-none mb-1.5">
-                    Dr. Priya Nandan
+                    Mentor Dashboard
                   </h3>
                   <p className="text-[13px] font-medium text-gray-500">
-                    Senior Product Manager, Google - Computer Science
+                    Full mentor profile management coming soon.
                   </p>
                 </div>
               </div>
@@ -107,7 +102,7 @@ export function MentorDashboard() {
                   <Mail className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="text-[20px] font-black text-[#111827] leading-none mb-1">4</div>
+                  <div className="text-[20px] font-black text-[#111827] leading-none mb-1">—</div>
                   <div className="text-[11px] font-medium text-gray-600 leading-tight">Meeting requests<br/>received so far</div>
                 </div>
               </div>
@@ -117,7 +112,7 @@ export function MentorDashboard() {
                   <Clock className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="text-[20px] font-black text-[#111827] leading-none mb-1">3</div>
+                  <div className="text-[20px] font-black text-[#111827] leading-none mb-1">—</div>
                   <div className="text-[11px] font-medium text-gray-500 leading-tight">Awaiting your<br/>response</div>
                 </div>
               </div>
@@ -127,7 +122,7 @@ export function MentorDashboard() {
                   <Check className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="text-[20px] font-black text-[#111827] leading-none mb-1">1</div>
+                  <div className="text-[20px] font-black text-[#111827] leading-none mb-1">—</div>
                   <div className="text-[11px] font-medium text-gray-500 leading-tight">Sessions<br/>accepted</div>
                 </div>
               </div>
@@ -137,7 +132,7 @@ export function MentorDashboard() {
                   <Star className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="text-[20px] font-black text-[#111827] leading-none mb-1">4.9</div>
+                  <div className="text-[20px] font-black text-[#111827] leading-none mb-1">—</div>
                   <div className="text-[11px] font-medium text-gray-500 leading-tight">Your mentor<br/>rating</div>
                 </div>
               </div>
@@ -145,36 +140,17 @@ export function MentorDashboard() {
 
             {/* Meeting Requests */}
             <h3 className="text-[16px] font-bold text-[#111827] mb-4">Meeting requests</h3>
-            <div className="bg-white rounded-[24px] border border-gray-100 p-2 shadow-sm space-y-2">
-              {MENTOR_MEETING_REQUESTS.map(req => (
-                <div key={req.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-[20px] border border-gray-100 hover:border-gray-200 transition-colors gap-4">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-xl bg-[#fde8f1] text-[#f14f98] flex items-center justify-center shrink-0">
-                      <User className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <div className="font-extrabold text-[14px] text-[#111827] mb-0.5">{req.name}</div>
-                      <div className="text-[12px] font-medium text-gray-500">{req.topic} · {req.date}</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-end">
-                    {req.status === "Accepted" ? (
-                      <span className="bg-[#ecfdf5] text-[#059669] text-[11px] font-black px-4 py-1.5 rounded-full tracking-wider">
-                        ACCEPTED
-                      </span>
-                    ) : (
-                      <div className="flex items-center gap-3">
-                        <button className="px-5 py-2 rounded-full text-[13px] font-bold text-[#f14f98] hover:bg-[#fde8f1] transition-colors">
-                          Decline
-                        </button>
-                        <button className="px-5 py-2 rounded-full text-[13px] font-bold bg-[#f14f98] text-white hover:bg-[#e03b83] shadow-md shadow-pink-500/20 transition-all">
-                          Accept
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
+            <div className="bg-white rounded-[24px] border border-gray-100 p-8 shadow-sm text-center">
+              <div className="w-12 h-12 rounded-2xl bg-pink-50 border border-pink-100 flex items-center justify-center mx-auto mb-3">
+                <Mail className="w-6 h-6 text-[#f14f98]" />
+              </div>
+              <p className="text-[14px] font-bold text-gray-700 mb-1">No meeting requests yet</p>
+              <p className="text-[12px] text-gray-400 font-medium">
+                When students request mentoring sessions, they'll appear here.
+              </p>
+              <span className="inline-block mt-3 px-4 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-bold uppercase tracking-wide">
+                Coming Soon
+              </span>
             </div>
 
           </div>
@@ -198,25 +174,12 @@ export function MentorDashboard() {
           </div>
 
           {/* Chat Messages */}
-          <div className="flex-1 overflow-y-auto p-5 space-y-6">
-            {MENTOR_LIVE_CHAT.map((msg, idx) => (
-              <div key={msg.id} className="flex gap-3">
-                <img src={msg.sender.avatar} alt={msg.sender.name} className="w-8 h-8 rounded-full object-cover shrink-0 mt-1" />
-                <div>
-                  <div className="text-[12px] font-bold text-[#111827] mb-1">{msg.sender.name}</div>
-                  <div className="bg-[#fde8f1] text-[#111827] text-[13px] p-3.5 rounded-[20px] rounded-tl-sm leading-relaxed mb-1.5 shadow-sm">
-                    {msg.content}
-                  </div>
-                  <div className="text-[10px] font-medium text-gray-400 flex items-center gap-1">
-                    {msg.timestamp}
-                    {msg.isRead && (
-                      <span className="text-gray-400">✓✓</span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
+          <div className="flex-1 overflow-y-auto p-5 flex flex-col items-center justify-center text-center gap-3">
+            <MessageSquare className="w-10 h-10 text-pink-200" />
+            <p className="text-[13px] font-bold text-gray-500">No messages yet</p>
+            <p className="text-[11px] text-gray-400">Mentor live chat coming soon.</p>
           </div>
+
 
           {/* Chat Input */}
           <div className="p-4 border-t border-gray-100 shrink-0">

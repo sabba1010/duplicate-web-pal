@@ -1,5 +1,7 @@
-import { Search, Bookmark, Share2, Calendar as CalendarIcon } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Search, Bookmark, FileText, Calendar as CalendarIcon } from "lucide-react";
 import { motion } from "framer-motion";
+import { API_BASE } from "../../lib/api";
 
 interface MetricCardProps {
   icon: React.ElementType;
@@ -28,12 +30,70 @@ function MetricCard({ icon: Icon, value, label, delay = 0 }: MetricCardProps) {
 }
 
 export function StudentMetrics() {
+  const [savedCount, setSavedCount] = useState(0);
+  const [appliedCount, setAppliedCount] = useState(0);
+  const [newThisWeek, setNewThisWeek] = useState(0);
+  const [upcomingDeadlines, setUpcomingDeadlines] = useState(0);
+
+  useEffect(() => {
+    const fetchMetrics = async () => {
+      try {
+        const token = localStorage.getItem("goc_token");
+
+        const [userRes, oppsRes] = await Promise.all([
+          fetch(`${API_BASE}/api/users/me`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          fetch(`${API_BASE}/api/opportunities`),
+        ]);
+
+        if (userRes.ok) {
+          const data = await userRes.json();
+          setSavedCount(data.user?.savedOpportunities?.length || 0);
+          setAppliedCount(data.user?.appliedOpportunities?.length || 0);
+        }
+
+        if (oppsRes.ok) {
+          const data = await oppsRes.json();
+          const opps: any[] = data.opportunities || [];
+
+          // Count opportunities published in the last 7 days
+          const oneWeekAgo = new Date();
+          oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+          const thisWeek = opps.filter(
+            (o) => o.status === "Published" && new Date(o.createdAt) >= oneWeekAgo
+          ).length;
+          setNewThisWeek(thisWeek);
+
+          // Count upcoming deadlines (within next 30 days)
+          const now = new Date();
+          const in30 = new Date();
+          in30.setDate(in30.getDate() + 30);
+          const deadlines = opps.filter((o) => {
+            if (!o.deadline || o.status !== "Published") return false;
+            const d = new Date(o.deadline);
+            return d >= now && d <= in30;
+          }).length;
+          setUpcomingDeadlines(deadlines);
+        }
+      } catch (err) {
+        console.error("Failed to load metrics", err);
+      }
+    };
+
+    fetchMetrics();
+
+    // Refresh when user data changes (e.g., after save/apply)
+    window.addEventListener("goc_user_updated", fetchMetrics);
+    return () => window.removeEventListener("goc_user_updated", fetchMetrics);
+  }, []);
+
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-      <MetricCard icon={Search} value={36} label="New opportunities this week" delay={0} />
-      <MetricCard icon={Bookmark} value={24} label="Saved opportunities" delay={0.05} />
-      <MetricCard icon={Share2} value={12} label="Shared with others" delay={0.1} />
-      <MetricCard icon={CalendarIcon} value={7} label="Upcoming deadlines" delay={0.15} />
+      <MetricCard icon={Search} value={newThisWeek} label="New opportunities this week" delay={0} />
+      <MetricCard icon={Bookmark} value={savedCount} label="Saved opportunities" delay={0.05} />
+      <MetricCard icon={FileText} value={appliedCount} label="Applications submitted" delay={0.1} />
+      <MetricCard icon={CalendarIcon} value={upcomingDeadlines} label="Upcoming deadlines" delay={0.15} />
     </div>
   );
 }

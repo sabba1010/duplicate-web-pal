@@ -70,7 +70,7 @@ export function StudentHomeView({ onNavigate }: StudentHomeViewProps) {
       <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 flex-wrap">
         <div className="flex flex-col">
           <h1 className="text-[24px] font-black text-[#2a2026] tracking-[-0.01em] leading-tight">
-            Hi, Karla! <span className="text-[#f14f98]">💕</span>
+            Hi, {user?.name?.split(" ")[0] || "there"}! <span className="text-[#f14f98]">💕</span>
           </h1>
           <p className="text-[13px] text-[#8b7e85] font-semibold mt-[2px]">
             Let's find your next opportunity.
