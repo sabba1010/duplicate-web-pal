@@ -3,7 +3,7 @@ import { UserCircle2, LogOut, LayoutGrid } from "lucide-react";
 import { useState, useEffect } from "react";
 
 export function Navbar() {
-  const [user, setUser] = useState<{ name: string; username: string } | null>(null);
+  const [user, setUser] = useState<{ name: string; username: string; role?: string } | null>(null);
 
   useEffect(() => {
     const stored = localStorage.getItem("goc_user");
@@ -18,9 +18,20 @@ export function Navbar() {
 
   const handleLogout = () => {
     localStorage.removeItem("goc_user");
+    localStorage.removeItem("goc_token");
     setUser(null);
-    window.location.reload();
+    window.location.href = "/";
   };
+
+  // Returns the correct dashboard route based on logged-in user's role
+  const getDashboardPath = (): "/dashboard" | "/admin" | "/mentor" => {
+    if (!user) return "/dashboard";
+    if (user.role === "admin") return "/admin";
+    if (user.role === "mentor") return "/mentor";
+    return "/dashboard";
+  };
+
+  const dashboardPath = getDashboardPath();
 
   const links: { label: string; to: string }[] = [
     { label: "Home", to: "/" },
@@ -50,7 +61,7 @@ export function Navbar() {
         </nav>
         <div className="flex items-center gap-3">
           <Link
-            to="/dashboard"
+            to={dashboardPath}
             className="flex items-center gap-1.5 font-bold text-white bg-pink px-4 py-2 rounded-full shadow-sm hover:bg-pink-deep transition-all duration-200 transform hover:-translate-y-0.5"
           >
             <LayoutGrid className="h-4 w-4" />
@@ -62,11 +73,11 @@ export function Navbar() {
           {user ? (
             <div className="flex items-center gap-2 ml-1">
               <Link
-                to="/dashboard"
+                to={dashboardPath}
                 className="flex items-center gap-1.5 font-bold text-pink-deep hover:text-pink transition-colors bg-pink-soft/60 px-3 py-1.5 rounded-full border border-pink/30 text-xs"
               >
                 <UserCircle2 className="h-4 w-4 text-pink" />
-                <span>Hi, {user.name || "Student"}</span>
+                <span>Hi, {user.name?.split(" ")[0] || "User"}</span>
               </Link>
               <button
                 onClick={handleLogout}
@@ -90,3 +101,4 @@ export function Navbar() {
     </header>
   );
 }
+
