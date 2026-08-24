@@ -1,6 +1,4 @@
 export const API_BASE =
-  import.meta.env.VITE_API_BASE_URL ||
-  (typeof window !== "undefined" && window.location.hostname === "localhost"
-    ? "http://localhost:5000"
-    : "https://goc-backend-swart.vercel.app");
+  import.meta.env.VITE_API_BASE_URL || "https://goc-backend-swart.vercel.app";
+
 
