@@ -11,6 +11,7 @@ interface OppCard {
   tags: string[];
   image: string;
   organization?: string;
+  pdfFile?: string;
 }
 
 export function StudentOpportunityDetailView({ 
@@ -157,7 +158,11 @@ export function StudentOpportunityDetailView({
           </h1>
 
           <div className="flex items-center gap-2 text-[13px] font-bold text-[#6b7280] mb-4">
-            <Calendar className="h-4 w-4 text-[#cf3478]" /> Deadline: <span className="text-[#111827]">{opp.deadline}</span>
+            <Calendar className="h-4 w-4 text-[#cf3478]" /> Deadline: <span className="text-[#111827]">
+              {opp.deadline && !isNaN(new Date(opp.deadline).getTime()) 
+                ? new Date(opp.deadline).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+                : opp.deadline}
+            </span>
           </div>
           
           {/* Tags */}
@@ -216,6 +221,18 @@ export function StudentOpportunityDetailView({
             >
               <Share2 className="h-4 w-4" /> Share
             </button>
+
+            {opp.pdfFile && (
+              <a 
+                href={opp.pdfFile} 
+                target="_blank" 
+                rel="noreferrer"
+                download={`${opp.title.replace(/\s+/g, "_")}_document.pdf`}
+                className="px-6 py-3 rounded-full text-[13px] font-extrabold border border-indigo-200 text-indigo-700 bg-indigo-50 hover:bg-indigo-100 transition-all flex items-center gap-2 cursor-pointer shadow-xs"
+              >
+                <FileText className="h-4 w-4" /> View PDF Prospectus
+              </a>
+            )}
           </div>
         </div>
 

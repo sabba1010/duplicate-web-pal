@@ -53,6 +53,7 @@ export function AdminOpportunitiesView() {
       deadline: "",
       tags: "",
       image: "",
+      pdfFile: "",
       description: "",
       status: "Published"
     });
@@ -69,10 +70,24 @@ export function AdminOpportunitiesView() {
       deadline: opp.deadline,
       tags: opp.tags.join(", "),
       image: opp.image,
+      pdfFile: opp.pdfFile || "",
       description: opp.description,
       status: opp.status
     });
     setShowModal(true);
+  };
+
+  const handlePdfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          setFormData(prev => ({ ...prev, pdfFile: event.target!.result as string }));
+        }
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleDelete = async (id: string) => {
@@ -244,7 +259,9 @@ export function AdminOpportunitiesView() {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-slate-600 font-medium">
-                    {opp.deadline}
+                    {opp.deadline && !isNaN(new Date(opp.deadline).getTime()) 
+                      ? new Date(opp.deadline).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+                      : opp.deadline}
                   </td>
                   <td className="px-6 py-4">
                     <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wide uppercase border ${
@@ -348,9 +365,8 @@ export function AdminOpportunitiesView() {
                     <div className="space-y-1.5">
                       <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Deadline *</label>
                       <input 
-                        required type="text" value={formData.deadline} onChange={e => setFormData({...formData, deadline: e.target.value})}
+                        required type="date" value={formData.deadline} onChange={e => setFormData({...formData, deadline: e.target.value})}
                         className="w-full bg-white border border-slate-200 text-sm rounded-xl px-4 py-2.5 outline-none focus:border-indigo-500" 
-                        placeholder="e.g. Oct 1, 2026"
                       />
                     </div>
                   </div>
@@ -387,6 +403,21 @@ export function AdminOpportunitiesView() {
                         ></div>
                       )}
                     </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">PDF Document (Optional)</label>
+                    <input 
+                      type="file" 
+                      accept="application/pdf"
+                      onChange={handlePdfChange}
+                      className="w-full bg-white border border-slate-200 text-sm rounded-xl py-2 px-3 outline-none focus:border-indigo-500 file:mr-4 file:py-1.5 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" 
+                    />
+                    {formData.pdfFile && (
+                      <div className="text-xs font-bold text-emerald-600 flex items-center gap-1.5 mt-1">
+                        <FileText className="h-3.5 w-3.5" /> PDF attached successfully
+                      </div>
+                    )}
                   </div>
 
                   <div className="space-y-1.5">
