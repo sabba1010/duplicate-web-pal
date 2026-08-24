@@ -34,30 +34,47 @@ interface StudentSidebarProps {
 export function StudentSidebar({ activeTab, setActiveTab }: StudentSidebarProps) {
   const [savedCount, setSavedCount] = useState<string>("0");
   const [appliedCount, setAppliedCount] = useState<string>("0");
+  const [calendarCount, setCalendarCount] = useState<string>("0");
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchCounts = async () => {
       try {
         const token = localStorage.getItem("goc_token");
         if (!token) return;
-        const res = await fetch(`${API_BASE}/api/users/me`, {
+        const res = await fetch(`${API_BASE}/api/users/reminders`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (res.ok) {
           const data = await res.json();
-          setSavedCount((data.user?.savedOpportunities?.length || 0).toString());
-          setAppliedCount((data.user?.appliedOpportunities?.length || 0).toString());
+          setSavedCount((data.savedOpportunities?.length || 0).toString());
+          setAppliedCount((data.appliedOpportunities?.length || 0).toString());
+
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+
+          let count = 0;
+          if (data.reminders) {
+            count += data.reminders.filter((r: any) => new Date(r.date) >= today && !r.isCompleted).length;
+          }
+          if (data.savedOpportunities) {
+            count += data.savedOpportunities.filter((o: any) => o.deadline && new Date(o.deadline) >= today).length;
+          }
+          if (data.appliedOpportunities) {
+            count += data.appliedOpportunities.filter((o: any) => o.deadline && new Date(o.deadline) >= today).length;
+          }
+
+          setCalendarCount(count > 0 ? count.toString() : "0");
         }
       } catch (err) {
         console.error("Failed to load user sidebar counts", err);
       }
     };
-    fetchUser();
+    fetchCounts();
 
-    // Listen for custom event to refetch user when save/apply happens
-    window.addEventListener("goc_user_updated", fetchUser);
+    // Listen for custom event to refetch user when save/apply/reminder happens
+    window.addEventListener("goc_user_updated", fetchCounts);
     return () => {
-      window.removeEventListener("goc_user_updated", fetchUser);
+      window.removeEventListener("goc_user_updated", fetchCounts);
     };
   }, []);
 
@@ -65,8 +82,8 @@ export function StudentSidebar({ activeTab, setActiveTab }: StudentSidebarProps)
     { id: "Dashboard", label: "Dashboard", icon: LayoutGrid },
     { id: "Opportunities", label: "Opportunities", icon: Search },
     { id: "Saved", label: "Saved", icon: Heart, badge: savedCount !== "0" ? savedCount : undefined },
-    { id: "Shared", label: "Shared", icon: Share2 }, // We don't have a shared array in DB yet, so leaving this without a mock badge for now
-    { id: "Calendar", label: "Calendar", icon: CalendarIcon },
+    { id: "Shared", label: "Shared", icon: Share2 },
+    { id: "Calendar", label: "Calendar", icon: CalendarIcon, badge: calendarCount !== "0" ? calendarCount : undefined },
     { id: "Applications", label: "Applications", icon: FileText, badge: appliedCount !== "0" ? appliedCount : undefined },
     { id: "Mentors", label: "Mentors", icon: UserCheck },
     { id: "Resources", label: "Resources", icon: BookOpen },
