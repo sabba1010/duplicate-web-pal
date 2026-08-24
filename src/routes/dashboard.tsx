@@ -12,7 +12,8 @@ export const Route = createFileRoute("/dashboard")({
     ],
   }),
   beforeLoad: () => {
-    // Redirect to correct dashboard based on user role
+    // Only runs in browser — localStorage doesn't exist on the server
+    if (typeof window === 'undefined') return;
     const stored = localStorage.getItem("goc_user");
     if (stored) {
       try {
@@ -24,9 +25,7 @@ export const Route = createFileRoute("/dashboard")({
           throw redirect({ to: "/mentor" });
         }
       } catch (e: any) {
-        // If it's a redirect, re-throw it
         if (e?.isRedirect) throw e;
-        // Otherwise it was a JSON parse error — ignore
       }
     }
   },

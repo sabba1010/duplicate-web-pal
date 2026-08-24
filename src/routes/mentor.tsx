@@ -12,6 +12,7 @@ export const Route = createFileRoute("/mentor")({
     ],
   }),
   beforeLoad: () => {
+    if (typeof window === 'undefined') return;
     const stored = localStorage.getItem("goc_user");
     if (stored) {
       try {
