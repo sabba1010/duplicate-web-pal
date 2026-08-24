@@ -114,7 +114,9 @@ export function AdminOpportunitiesView() {
         
         const uploadResult = await uploadRes.json();
         if (uploadRes.ok) {
-          finalImageUrl = `${API_BASE}${uploadResult.imageUrl}`;
+          finalImageUrl = uploadResult.imageUrl.startsWith("data:") || uploadResult.imageUrl.startsWith("http")
+            ? uploadResult.imageUrl
+            : `${API_BASE}${uploadResult.imageUrl}`;
         } else {
           alert("Image upload failed: " + uploadResult.message);
           setIsSubmitting(false);
