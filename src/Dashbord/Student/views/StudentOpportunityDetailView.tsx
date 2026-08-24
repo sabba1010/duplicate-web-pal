@@ -225,12 +225,12 @@ export function StudentOpportunityDetailView({
             {opp.pdfFile && (
               <a 
                 href={opp.pdfFile} 
-                target="_blank" 
+                download={`${opp.title.replace(/\s+/g, "_")}_Document.pdf`}
+                target="_blank"
                 rel="noreferrer"
-                download={`${opp.title.replace(/\s+/g, "_")}_document.pdf`}
-                className="px-6 py-3 rounded-full text-[13px] font-extrabold border border-indigo-200 text-indigo-700 bg-indigo-50 hover:bg-indigo-100 transition-all flex items-center gap-2 cursor-pointer shadow-xs"
+                className="px-6 py-3 rounded-full text-[13px] font-extrabold border border-indigo-200 text-indigo-600 bg-indigo-50 hover:bg-indigo-100 transition-all flex items-center gap-2 cursor-pointer shadow-xs"
               >
-                <FileText className="h-4 w-4" /> View PDF Prospectus
+                <FileText className="h-4 w-4" /> Download PDF Document
               </a>
             )}
           </div>

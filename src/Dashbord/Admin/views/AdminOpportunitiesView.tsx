@@ -21,6 +21,7 @@ export function AdminOpportunitiesView() {
     deadline: "",
     tags: "",
     image: "",
+    pdfFile: "",
     description: "",
     status: "Published"
   });
@@ -75,19 +76,6 @@ export function AdminOpportunitiesView() {
       status: opp.status
     });
     setShowModal(true);
-  };
-
-  const handlePdfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        if (event.target?.result) {
-          setFormData(prev => ({ ...prev, pdfFile: event.target!.result as string }));
-        }
-      };
-      reader.readAsDataURL(file);
-    }
   };
 
   const handleDelete = async (id: string) => {
@@ -398,24 +386,41 @@ export function AdminOpportunitiesView() {
                       </div>
                       {(imageFile || formData.image) && (
                         <div 
-                          className="w-12 h-12 rounded-lg border border-slate-200 shrink-0 bg-cover bg-center shadow-sm" 
+                          className="w-10 h-10 rounded-lg bg-cover bg-center border border-slate-200 shrink-0"
                           style={{ backgroundImage: `url('${imageFile ? URL.createObjectURL(imageFile) : formData.image}')` }}
                         ></div>
                       )}
                     </div>
                   </div>
 
+                  {/* PDF Attachment Field */}
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">PDF Document (Optional)</label>
-                    <input 
-                      type="file" 
-                      accept="application/pdf"
-                      onChange={handlePdfChange}
-                      className="w-full bg-white border border-slate-200 text-sm rounded-xl py-2 px-3 outline-none focus:border-indigo-500 file:mr-4 file:py-1.5 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" 
-                    />
+                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                      Attachment PDF Document (Optional)
+                    </label>
+                    <div className="flex items-center gap-3">
+                      <input 
+                        type="file" 
+                        accept=".pdf,application/pdf"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          if (file.type !== "application/pdf") {
+                            alert("Please select a valid PDF file.");
+                            return;
+                          }
+                          const reader = new FileReader();
+                          reader.onload = () => {
+                            setFormData(prev => ({ ...prev, pdfFile: reader.result as string }));
+                          };
+                          reader.readAsDataURL(file);
+                        }}
+                        className="w-full bg-white border border-slate-200 text-sm rounded-xl py-2 px-3 outline-none focus:border-indigo-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer" 
+                      />
+                    </div>
                     {formData.pdfFile && (
-                      <div className="text-xs font-bold text-emerald-600 flex items-center gap-1.5 mt-1">
-                        <FileText className="h-3.5 w-3.5" /> PDF attached successfully
+                      <div className="text-[11px] font-bold text-emerald-600 flex items-center gap-1 mt-1">
+                        ✓ PDF Document Attached ({formData.pdfFile.startsWith("data:") ? "Base64 Ready" : "File Attached"})
                       </div>
                     )}
                   </div>
