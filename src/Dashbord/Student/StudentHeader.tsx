@@ -2,6 +2,8 @@ import { Bell, MoreVertical, Calendar, Clock, X, Check } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { API_BASE } from "../../lib/api";
+import { getSocket } from "../../lib/socket";
+import { toast } from "sonner";
 
 interface StudentHeaderProps {
   user: { name: string; username: string } | null;
@@ -31,12 +33,19 @@ export function StudentHeader({ user, onLogout }: StudentHeaderProps) {
         if (data.reminders) {
           data.reminders.forEach((r: any) => {
             const d = new Date(r.date);
-            if (d >= today && !r.isCompleted) {
+            if (!r.isCompleted) {
+              let displayType = "Personal Reminder";
+              if (r.type === "application_status") displayType = "Application Status";
+              else if (r.type === "saved_deadline") displayType = "Saved Deadline";
+              else if (r.type === "application_deadline") displayType = "Application Deadline";
+
               items.push({
                 id: r._id,
                 title: r.title,
                 date: d,
-                type: "Personal Reminder"
+                type: displayType,
+                notes: r.notes || "",
+                status: r.status
               });
             }
           });
@@ -74,7 +83,7 @@ export function StudentHeader({ user, onLogout }: StudentHeaderProps) {
           });
         }
 
-        items.sort((a, b) => a.date.getTime() - b.date.getTime());
+        items.sort((a, b) => b.date.getTime() - a.date.getTime());
         setNotifications(items);
       }
     } catch (err) {
@@ -87,7 +96,32 @@ export function StudentHeader({ user, onLogout }: StudentHeaderProps) {
 
     const handleUpdate = () => fetchNotifications();
     window.addEventListener("goc_user_updated", handleUpdate);
-    return () => window.removeEventListener("goc_user_updated", handleUpdate);
+
+    // Socket notification listener
+    const socket = getSocket();
+    const handleNewNotification = (data: any) => {
+      fetchNotifications();
+      window.dispatchEvent(new Event("goc_user_updated"));
+      
+      if (data.status === "Approved") {
+        toast.success(data.title, { description: data.notes });
+      } else if (data.status === "Rejected") {
+        toast.error(data.title, { description: data.notes });
+      } else {
+        toast.info(data.title, { description: data.notes });
+      }
+    };
+
+    if (socket) {
+      socket.on("notification:new", handleNewNotification);
+    }
+
+    return () => {
+      window.removeEventListener("goc_user_updated", handleUpdate);
+      if (socket) {
+        socket.off("notification:new", handleNewNotification);
+      }
+    };
   }, []);
 
   return (
@@ -179,6 +213,11 @@ export function StudentHeader({ user, onLogout }: StudentHeaderProps) {
                           <p className="text-xs font-bold text-[#2a2026] leading-snug">
                             {item.title}
                           </p>
+                          {item.notes && (
+                            <p className="text-[11px] font-medium text-slate-600 leading-snug mt-0.5">
+                              {item.notes}
+                            </p>
+                          )}
                         </div>
                       ))
                     )}
