@@ -49,18 +49,24 @@ export function StudentHomeView({ onNavigate }: StudentHomeViewProps) {
   const savedIds = user?.savedOpportunities?.map((o: any) => o._id) || [];
 
   const toggleBookmark = async (id: string) => {
+    if (!user) return;
+    const isCurrentlySaved = savedIds.includes(id);
+    const updatedSavedOpps = isCurrentlySaved
+      ? (user.savedOpportunities || []).filter((o: any) => (o._id || o) !== id)
+      : [...(user.savedOpportunities || []), { _id: id }];
+
+    setUser((prev: any) => ({ ...prev, savedOpportunities: updatedSavedOpps }));
+    window.dispatchEvent(new Event("goc_user_updated"));
+
     try {
       const token = localStorage.getItem("goc_token");
-      const res = await fetch(`${API_BASE}/api/users/save-opportunity/${id}`, {
+      await fetch(`${API_BASE}/api/users/save-opportunity/${id}`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` }
       });
-      if (res.ok) {
-        window.dispatchEvent(new Event("goc_user_updated"));
-        fetchData();
-      }
     } catch (err) {
       console.error("Failed to save", err);
+      fetchData();
     }
   };
 

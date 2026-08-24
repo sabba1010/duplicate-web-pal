@@ -157,18 +157,24 @@ export function StudentOpportunitiesView() {
   const appliedIds = user?.appliedOpportunities?.map((o: any) => o._id) || [];
 
   const toggleSave = async (id: string) => {
+    if (!user) return;
+    const isCurrentlySaved = savedIds.includes(id);
+    const updatedSavedOpps = isCurrentlySaved
+      ? user.savedOpportunities.filter((o: any) => (o._id || o) !== id)
+      : [...(user.savedOpportunities || []), { _id: id }];
+
+    setUser((prev: any) => ({ ...prev, savedOpportunities: updatedSavedOpps }));
+    window.dispatchEvent(new Event("goc_user_updated"));
+
     try {
       const token = localStorage.getItem("goc_token");
-      const res = await fetch(`${API_BASE}/api/users/save-opportunity/${id}`, {
+      await fetch(`${API_BASE}/api/users/save-opportunity/${id}`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` }
       });
-      if (res.ok) {
-        window.dispatchEvent(new Event("goc_user_updated"));
-        fetchOppsAndUser(); // refresh user data to reflect changes
-      }
     } catch (error) {
       console.error("Failed to toggle save", error);
+      fetchOppsAndUser();
     }
   };
 
