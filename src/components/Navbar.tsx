@@ -23,9 +23,9 @@ export function Navbar() {
     window.location.href = "/";
   };
 
-  // Returns the correct dashboard route based on logged-in user's role
-  const getDashboardPath = (): "/dashboard" | "/admin" | "/mentor" => {
-    if (!user) return "/dashboard";
+  // Returns the correct dashboard route based on logged-in user's role (or /login if not logged in)
+  const getDashboardPath = (): "/login" | "/dashboard" | "/admin" | "/mentor" => {
+    if (!user) return "/login";
     if (user.role === "admin") return "/admin";
     if (user.role === "mentor") return "/mentor";
     return "/dashboard";

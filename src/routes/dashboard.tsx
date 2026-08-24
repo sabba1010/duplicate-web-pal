@@ -15,18 +15,19 @@ export const Route = createFileRoute("/dashboard")({
     // Only runs in browser — localStorage doesn't exist on the server
     if (typeof window === 'undefined') return;
     const stored = localStorage.getItem("goc_user");
-    if (stored) {
-      try {
-        const user = JSON.parse(stored);
-        if (user?.role === "admin") {
-          throw redirect({ to: "/admin" });
-        }
-        if (user?.role === "mentor") {
-          throw redirect({ to: "/mentor" });
-        }
-      } catch (e: any) {
-        if (e?.isRedirect) throw e;
+    if (!stored) {
+      throw redirect({ to: "/login" });
+    }
+    try {
+      const user = JSON.parse(stored);
+      if (user?.role === "admin") {
+        throw redirect({ to: "/admin" });
       }
+      if (user?.role === "mentor") {
+        throw redirect({ to: "/mentor" });
+      }
+    } catch (e: any) {
+      if (e?.isRedirect) throw e;
     }
   },
   component: DashboardPage,
