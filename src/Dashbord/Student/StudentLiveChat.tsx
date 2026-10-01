@@ -28,6 +28,8 @@ import {
   Sparkles,
   UserX,
   Lock,
+  Paperclip,
+  FileText,
 } from "lucide-react";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -65,6 +67,9 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
   const {
     messages,
     room,
+    conversations,
+    circles,
+    activeRoomId,
     pinnedMessage,
     unreadCount,
     loading,
@@ -73,6 +78,9 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
     slowModeCountdown,
     isConnected,
     fetchOlderMessages,
+    switchRoom,
+    startDirectConversation,
+    joinCircle,
     sendMessage,
     toggleReaction,
     deleteMessage,
@@ -87,15 +95,28 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
   const [showHeaderMenu, setShowHeaderMenu] = useState<boolean>(false);
   const [notificationsMuted, setNotificationsMuted] = useState<boolean>(false);
 
+  // DM & Circles Channel state
+  const [showNewDmModal, setShowNewDmModal] = useState<boolean>(false);
+  const [userSearchQuery, setUserSearchQuery] = useState<string>("");
+  const [foundUsers, setFoundUsers] = useState<any[]>([]);
+  const [isSearchingUsers, setIsSearchingUsers] = useState<boolean>(false);
+  const [chatChannelTab, setChatChannelTab] = useState<"all" | "dms" | "circles">("all");
+
   // Message Input & Reply state
   const [newMsgText, setNewMsgText] = useState("");
   const [replyTarget, setReplyTarget] = useState<LiveChatMessageItem | null>(null);
 
-  // Opportunity Attachment state
+  // Opportunity Attachment & View state
   const [showOpportunityModal, setShowOpportunityModal] = useState<boolean>(false);
   const [publishedOpps, setPublishedOpps] = useState<ChatOpportunityRef[]>([]);
   const [selectedOpp, setSelectedOpp] = useState<ChatOpportunityRef | null>(null);
   const [loadingOpps, setLoadingOpps] = useState<boolean>(false);
+  const [viewingOppDetail, setViewingOppDetail] = useState<ChatOpportunityRef | null>(null);
+
+  // File Attachment state
+  const [selectedFileAttachment, setSelectedFileAttachment] = useState<{ url: string; name: string; type: string } | null>(null);
+  const [isUploadingFile, setIsUploadingFile] = useState<boolean>(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Menus & Popovers
   const [activeActionMenuId, setActiveActionMenuId] = useState<string | null>(null);
@@ -208,20 +229,99 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
       }
     } catch (err) {
       toast.error("Failed to load opportunities");
-    } fontally: {
+    } finally {
       setLoadingOpps(false);
+    }
+  };
+
+  // Search users for starting Direct Message
+  const handleSearchUsers = async (q: string) => {
+    setUserSearchQuery(q);
+    if (!q.trim()) {
+      setFoundUsers([]);
+      return;
+    }
+    try {
+      setIsSearchingUsers(true);
+      const token = localStorage.getItem("goc_token");
+      const res = await fetch(`${API_BASE}/api/chat/users/search?q=${encodeURIComponent(q)}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setFoundUsers(data || []);
+      }
+    } catch {
+      toast.error("Error searching users");
+    } finally {
+      setIsSearchingUsers(false);
+    }
+  };
+
+  // Start Direct Message with user
+  const handleStartDmWithUser = async (targetUserId: string, targetName: string) => {
+    const res = await startDirectConversation(targetUserId);
+    if (res.success) {
+      toast.success(`Connected with ${targetName}`);
+      setShowNewDmModal(false);
+      setUserSearchQuery("");
+      setFoundUsers([]);
+      setActiveTab("chat");
+    } else {
+      toast.error(res.error || "Failed to start direct conversation");
+    }
+  };
+
+  // Upload File Attachment (Real Backend)
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setIsUploadingFile(true);
+      const formData = new FormData();
+      formData.append("image", file);
+
+      const token = localStorage.getItem("goc_token");
+      const res = await fetch(`${API_BASE}/api/upload`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setSelectedFileAttachment({
+          url: data.imageUrl,
+          name: data.filename || file.name,
+          type: data.fileType || file.type,
+        });
+        toast.success("File attached successfully");
+      } else {
+        toast.error("Failed to upload file");
+      }
+    } catch {
+      toast.error("Error uploading file");
+    } finally {
+      setIsUploadingFile(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
   // Send Message (Real Backend + Socket.IO)
   const handleSendChat = async (e: React.FormEvent) => {
     e.preventDefault();
-    if ((!newMsgText.trim() && !selectedOpp) || room?.isPaused || slowModeCountdown > 0) return;
+    if ((!newMsgText.trim() && !selectedOpp && !selectedFileAttachment) || room?.isPaused || slowModeCountdown > 0) return;
 
     const res = await sendMessage({
       content: newMsgText.trim(),
       replyToId: replyTarget?._id,
       linkedOpportunityId: selectedOpp?._id,
+      attachmentUrl: selectedFileAttachment?.url,
+      attachmentType: selectedFileAttachment?.type,
+      attachmentName: selectedFileAttachment?.name,
       mentions: selectedMentions,
     });
 
@@ -229,6 +329,7 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
       setNewMsgText("");
       setReplyTarget(null);
       setSelectedOpp(null);
+      setSelectedFileAttachment(null);
       setSelectedMentions([]);
     } else if (res.error) {
       toast.error(res.error);
@@ -424,6 +525,57 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
         </div>
       </div>
 
+      {/* ── 1.5 CONVERSATIONS & CHANNELS BAR ── */}
+      {activeTab === "chat" && (
+        <div className="px-3 py-2 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between gap-2 overflow-x-auto shrink-0 scrollbar-none">
+          <div className="flex items-center gap-1.5 overflow-x-auto py-0.5">
+            <button
+              onClick={() => switchRoom("global")}
+              className={`px-3 py-1 rounded-full text-[11px] font-extrabold flex items-center gap-1 shrink-0 transition-all cursor-pointer ${
+                activeRoomId === "global" || !activeRoomId || room?.type === "global"
+                  ? "bg-[#4f46e5] text-white shadow-xs"
+                  : "bg-white text-gray-600 border border-gray-200 hover:border-indigo-300"
+              }`}
+            >
+              <span>🌐</span> Global Chat
+            </button>
+
+            {conversations.map((c) => {
+              if (c.type === "global") return null;
+              const isActive = activeRoomId === c.roomId || room?._id === c.roomId;
+              return (
+                <button
+                  key={c.roomId}
+                  onClick={() => switchRoom(c.roomId)}
+                  className={`px-3 py-1 rounded-full text-[11px] font-extrabold flex items-center gap-1.5 shrink-0 transition-all cursor-pointer ${
+                    isActive
+                      ? "bg-[#4f46e5] text-white shadow-xs"
+                      : "bg-white text-gray-600 border border-gray-200 hover:border-indigo-300"
+                  }`}
+                >
+                  <span>{c.type === "circle" ? c.icon || "💬" : "👤"}</span>
+                  <span className="truncate max-w-[100px]">{c.name}</span>
+                  {c.unreadCount > 0 && !isActive && (
+                    <span className="bg-red-500 text-white text-[9px] font-black px-1.5 py-0.2 rounded-full">
+                      {c.unreadCount}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          <button
+            onClick={() => setShowNewDmModal(true)}
+            className="px-2.5 py-1 rounded-full text-[11px] font-black bg-indigo-50 hover:bg-indigo-100 text-[#4f46e5] border border-indigo-200 shrink-0 flex items-center gap-1 cursor-pointer transition-colors"
+            title="Start Private Chat"
+          >
+            <Plus className="w-3.5 h-3.5 stroke-[3]" />
+            <span className="hidden sm:inline">New DM</span>
+          </button>
+        </div>
+      )}
+
       {/* ── 2. PINNED ANNOUNCEMENT AREA ── */}
       {pinnedMessage && activeTab === "chat" && (
         <div className="bg-amber-50/60 border-b border-amber-200/60 px-3.5 py-2 flex items-center justify-between gap-2 shrink-0">
@@ -610,10 +762,36 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
                                     <span className="text-gray-400 font-medium">
                                       Deadline: {msg.linkedOpportunityId.deadline || "TBA"}
                                     </span>
-                                    <button className="font-extrabold text-[#4f46e5] hover:underline flex items-center gap-0.5 cursor-pointer">
+                                    <button
+                                      type="button"
+                                      onClick={() => setViewingOppDetail(msg.linkedOpportunityId!)}
+                                      className="font-extrabold text-[#4f46e5] hover:underline flex items-center gap-0.5 cursor-pointer"
+                                    >
                                       View Opportunity <ExternalLink className="h-2.5 w-2.5" />
                                     </button>
                                   </div>
+                                </div>
+                              )}
+
+                              {/* File/Image Attachment */}
+                              {msg.attachmentUrl && (
+                                <div className="mt-2">
+                                  {msg.attachmentType?.startsWith("image/") || msg.attachmentUrl.startsWith("data:image") ? (
+                                    <a href={msg.attachmentUrl} target="_blank" rel="noopener noreferrer" className="block max-w-xs overflow-hidden rounded-xl border border-gray-200 hover:opacity-95 transition-opacity">
+                                      <img src={msg.attachmentUrl} alt={msg.attachmentName || "Attachment"} className="max-h-48 w-full object-cover" />
+                                    </a>
+                                  ) : (
+                                    <a
+                                      href={msg.attachmentUrl}
+                                      download={msg.attachmentName || "attachment"}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="p-2 bg-[#4f46e5]/10 border border-[#4f46e5]/20 rounded-xl flex items-center gap-2 text-xs font-bold text-[#4f46e5] hover:bg-[#4f46e5]/20 transition-colors"
+                                    >
+                                      <FileText className="w-4 h-4 shrink-0" />
+                                      <span className="truncate">{msg.attachmentName || "Download File"}</span>
+                                    </a>
+                                  )}
                                 </div>
                               )}
                             </>
@@ -773,19 +951,32 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
               transition={{ duration: 0.15 }}
               className="space-y-4"
             >
-              <span className="text-[13px] font-black text-gray-900">Your Circles</span>
+              <div className="flex items-center justify-between">
+                <span className="text-[13px] font-black text-gray-900">Community Circles</span>
+                <span className="text-[10px] font-extrabold text-[#4f46e5] bg-indigo-50 px-2 py-0.5 rounded-full">
+                  {circles.length} Circles
+                </span>
+              </div>
               <div className="space-y-2">
-                {CIRCLES.map((c, i) => (
-                  <div key={i} className="p-3 border border-gray-200 rounded-xl bg-white flex items-center justify-between text-xs">
+                {circles.map((c) => (
+                  <div key={c._id} className="p-3 border border-gray-200 rounded-xl bg-white flex items-center justify-between text-xs hover:border-indigo-200 transition-colors">
                     <div className="flex items-center gap-2.5">
-                      <span className="text-lg">{c.icon}</span>
+                      <span className="text-lg">{c.icon || "🔬"}</span>
                       <div>
                         <div className="font-bold text-gray-900">{c.name}</div>
-                        <div className="text-[10px] text-gray-400">{c.desc}</div>
+                        <div className="text-[10px] text-gray-400">{c.description || "Community circle for students"}</div>
+                        <div className="text-[9.5px] font-extrabold text-indigo-600 mt-0.5">{c.membersCount} members</div>
                       </div>
                     </div>
-                    <button className="text-[11px] font-bold text-[#4f46e5] bg-indigo-50 px-2.5 py-1 rounded-full">
-                      Open
+                    <button
+                      onClick={async () => {
+                        if (!c.isMember) await joinCircle(c._id);
+                        switchRoom(c.roomId);
+                        setActiveTab("chat");
+                      }}
+                      className="text-[11px] font-extrabold text-white bg-[#4f46e5] hover:bg-indigo-700 px-3 py-1 rounded-full cursor-pointer transition-colors shadow-xs"
+                    >
+                      {c.isMember ? "Open" : "Join & Chat"}
                     </button>
                   </div>
                 ))}
@@ -803,7 +994,15 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
               transition={{ duration: 0.15 }}
               className="space-y-3"
             >
-              <span className="text-[13px] font-black text-gray-900">Quick Message a Mentor</span>
+              <div className="flex items-center justify-between">
+                <span className="text-[13px] font-black text-gray-900">Direct Message a Mentor</span>
+                <button
+                  onClick={() => setShowNewDmModal(true)}
+                  className="text-[10px] font-extrabold text-[#4f46e5] bg-indigo-50 px-2 py-0.5 rounded-full hover:bg-indigo-100 cursor-pointer"
+                >
+                  Find Member
+                </button>
+              </div>
               {MENTORS_QUICK.map((m, i) => (
                 <div key={i} className="p-3 border border-gray-200 rounded-xl bg-white flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2.5">
@@ -813,7 +1012,10 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
                       <div className="text-[10px] text-gray-400">{m.role}</div>
                     </div>
                   </div>
-                  <button className="text-[11px] font-bold text-[#4f46e5] bg-indigo-50 px-2.5 py-1 rounded-full">
+                  <button
+                    onClick={() => handleSearchUsers(m.name)}
+                    className="text-[11px] font-bold text-[#4f46e5] bg-indigo-50 hover:bg-indigo-100 px-2.5 py-1 rounded-full cursor-pointer"
+                  >
                     Message
                   </button>
                 </div>
@@ -868,11 +1070,31 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
               <div className="flex items-center gap-2 truncate">
                 <Share2 className="h-3.5 w-3.5 text-[#4f46e5] shrink-0" />
                 <span className="font-bold text-gray-900 truncate">
-                  Attached: {selectedOpp.title}
+                  Attached Opp: {selectedOpp.title}
                 </span>
               </div>
               <button
+                type="button"
                 onClick={() => setSelectedOpp(null)}
+                className="text-gray-400 hover:text-gray-700 p-0.5 cursor-pointer"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          )}
+
+          {/* Selected File Attachment Bar */}
+          {selectedFileAttachment && (
+            <div className="px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-xl flex items-center justify-between text-[11px]">
+              <div className="flex items-center gap-2 truncate">
+                <Paperclip className="h-3.5 w-3.5 text-blue-600 shrink-0" />
+                <span className="font-bold text-gray-900 truncate">
+                  Attached File: {selectedFileAttachment.name}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedFileAttachment(null)}
                 className="text-gray-400 hover:text-gray-700 p-0.5 cursor-pointer"
               >
                 <X className="h-3.5 w-3.5" />
@@ -891,10 +1113,27 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
           {/* Message Form */}
           <form onSubmit={handleSendChat} className="relative flex items-center">
             <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileUpload}
+              className="hidden"
+            />
+            <input
               type="text"
               value={newMsgText}
               disabled={room?.isPaused || slowModeCountdown > 0}
               onChange={(e) => handleInputChange(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  if (mentionQuery !== null && mentionUsers.length > 0) {
+                    e.preventDefault();
+                    selectMentionUser(mentionUsers[0]);
+                  } else {
+                    e.preventDefault();
+                    handleSendChat(e);
+                  }
+                }
+              }}
               placeholder={
                 room?.isPaused
                   ? "Chat room is currently paused..."
@@ -902,9 +1141,19 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
                   ? `Wait ${slowModeCountdown}s...`
                   : "Type @ to mention or message..."
               }
-              className="w-full bg-gray-50 border border-gray-200 text-[12px] text-gray-900 rounded-full py-2.5 pl-4 pr-20 outline-none focus:bg-white focus:border-[#4f46e5] focus:ring-2 focus:ring-[#4f46e5]/10 transition-all placeholder:text-gray-400 disabled:opacity-50"
+              className="w-full bg-gray-50 border border-gray-200 text-[12px] text-gray-900 rounded-full py-2.5 pl-4 pr-24 outline-none focus:bg-white focus:border-[#4f46e5] focus:ring-2 focus:ring-[#4f46e5]/10 transition-all placeholder:text-gray-400 disabled:opacity-50"
             />
             <div className="absolute right-1.5 flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={room?.isPaused || isUploadingFile}
+                className="text-gray-400 hover:text-[#4f46e5] p-1 cursor-pointer transition-colors disabled:opacity-50"
+                title="Attach File or Image"
+              >
+                {isUploadingFile ? <Loader2 className="h-4 w-4 animate-spin text-[#4f46e5]" /> : <Paperclip className="h-4 w-4" />}
+              </button>
+
               <button
                 type="button"
                 onClick={openOpportunityModal}
@@ -918,7 +1167,7 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
               <button
                 type="submit"
                 disabled={
-                  (!newMsgText.trim() && !selectedOpp) ||
+                  (!newMsgText.trim() && !selectedOpp && !selectedFileAttachment) ||
                   room?.isPaused ||
                   slowModeCountdown > 0
                 }
@@ -1000,6 +1249,73 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
                     </button>
                   </div>
                 ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── 7.5 VIEW OPPORTUNITY DETAIL MODAL ── */}
+      {viewingOppDetail && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-2xl max-w-md w-full p-5 text-gray-900 space-y-4 max-h-[85vh] overflow-y-auto">
+            <div className="flex items-start justify-between border-b border-gray-100 pb-3">
+              <div>
+                <span className="bg-indigo-50 text-[#4f46e5] text-[10px] font-extrabold px-2 py-0.5 rounded-md uppercase">
+                  {viewingOppDetail.category || "Opportunity"}
+                </span>
+                <h3 className="font-extrabold text-base text-gray-900 mt-1">
+                  {viewingOppDetail.title}
+                </h3>
+                <p className="text-xs text-gray-500 font-semibold">{viewingOppDetail.organization}</p>
+              </div>
+              <button
+                onClick={() => setViewingOppDetail(null)}
+                className="text-gray-400 hover:text-gray-700 p-1 rounded-lg hover:bg-gray-100 cursor-pointer"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {viewingOppDetail.image && (
+              <img
+                src={viewingOppDetail.image}
+                alt={viewingOppDetail.title}
+                className="w-full h-44 object-cover rounded-xl border border-gray-100"
+              />
+            )}
+
+            <div className="space-y-2 text-xs text-gray-700 leading-relaxed">
+              <p>{viewingOppDetail.description || "Explore this opportunity on the Girls on Campus platform."}</p>
+              
+              {viewingOppDetail.location && (
+                <div className="flex items-center gap-2 text-gray-600 font-medium">
+                  <span className="font-bold text-gray-900">Location:</span> {viewingOppDetail.location}
+                </div>
+              )}
+              {viewingOppDetail.deadline && (
+                <div className="flex items-center gap-2 text-gray-600 font-medium">
+                  <span className="font-bold text-gray-900">Deadline:</span> {viewingOppDetail.deadline}
+                </div>
+              )}
+            </div>
+
+            <div className="pt-3 border-t border-gray-100 flex items-center justify-end gap-2 text-xs">
+              <button
+                onClick={() => setViewingOppDetail(null)}
+                className="px-4 py-2 rounded-xl border border-gray-200 font-bold text-gray-600 hover:bg-gray-50 cursor-pointer"
+              >
+                Close
+              </button>
+              {viewingOppDetail.link && (
+                <a
+                  href={viewingOppDetail.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2 rounded-xl bg-[#4f46e5] hover:bg-indigo-700 text-white font-bold flex items-center gap-1.5 cursor-pointer shadow-xs"
+                >
+                  Apply Now <ExternalLink className="h-3.5 w-3.5" />
+                </a>
               )}
             </div>
           </div>
@@ -1089,6 +1405,68 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
               >
                 Block Member
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── 10. NEW DIRECT MESSAGE MODAL ── */}
+      {showNewDmModal && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-xl max-w-sm w-full p-5 text-gray-900 space-y-4">
+            <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+              <h3 className="font-extrabold text-[14px] flex items-center gap-2 text-gray-900">
+                <MessageSquare className="h-4 w-4 text-[#4f46e5]" /> New Private Chat
+              </h3>
+              <button onClick={() => setShowNewDmModal(false)} className="text-gray-400 hover:text-gray-700 cursor-pointer">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <div className="relative">
+                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <input
+                  type="text"
+                  value={userSearchQuery}
+                  onChange={(e) => handleSearchUsers(e.target.value)}
+                  placeholder="Search student or mentor by name..."
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl py-2.5 pl-9 pr-4 text-xs outline-none focus:bg-white focus:border-[#4f46e5] font-semibold"
+                />
+              </div>
+
+              <div className="max-h-60 overflow-y-auto space-y-1 pr-1">
+                {isSearchingUsers ? (
+                  <div className="flex justify-center py-6">
+                    <Loader2 className="h-5 w-5 text-[#4f46e5] animate-spin" />
+                  </div>
+                ) : foundUsers.length === 0 ? (
+                  <div className="text-center py-6 text-xs text-gray-400 font-medium">
+                    {userSearchQuery.trim() ? "No members found." : "Type a name to search members..."}
+                  </div>
+                ) : (
+                  foundUsers.map((u) => (
+                    <div
+                      key={u._id}
+                      onClick={() => handleStartDmWithUser(u._id, u.name)}
+                      className="p-2.5 hover:bg-indigo-50/60 rounded-xl flex items-center justify-between cursor-pointer transition-colors border border-transparent hover:border-indigo-100"
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="w-8 h-8 rounded-full bg-indigo-100 text-[#4f46e5] font-black text-xs flex items-center justify-center shrink-0">
+                          {u.name ? u.name.charAt(0).toUpperCase() : "U"}
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-xs font-black text-gray-900 truncate">{u.name}</div>
+                          <div className="text-[10px] text-gray-400 font-bold">@{u.username} · {u.role || "student"}</div>
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-black text-[#4f46e5] bg-white border border-indigo-200 px-2 py-0.5 rounded-full">
+                        Chat
+                      </span>
+                    </div>
+                  ))
+                )}
+              </div>
             </div>
           </div>
         </div>

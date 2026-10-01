@@ -4,16 +4,24 @@ import { API_BASE } from "./api";
 let socketInstance: Socket | null = null;
 
 export const getSocket = (): Socket => {
-  if (!socketInstance) {
-    const token = typeof window !== "undefined" ? localStorage.getItem("goc_token") : "";
+  const token = typeof window !== "undefined" ? localStorage.getItem("goc_token") : "";
 
+  if (!socketInstance) {
     socketInstance = io(API_BASE, {
       auth: { token },
       autoConnect: true,
       reconnection: true,
-      reconnectionAttempts: 10,
-      reconnectionDelay: 2000,
+      reconnectionAttempts: 20,
+      reconnectionDelay: 1000,
+      transports: ["websocket", "polling"],
     });
+  } else {
+    if (socketInstance.auth && (socketInstance.auth as any).token !== token) {
+      (socketInstance.auth as any).token = token;
+    }
+    if (!socketInstance.connected) {
+      socketInstance.connect();
+    }
   }
 
   return socketInstance;
