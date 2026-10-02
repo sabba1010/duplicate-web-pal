@@ -81,6 +81,7 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
     switchRoom,
     startDirectConversation,
     joinCircle,
+    createCircle,
     sendMessage,
     toggleReaction,
     deleteMessage,
@@ -102,6 +103,13 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
   const [isSearchingUsers, setIsSearchingUsers] = useState<boolean>(false);
   const [chatChannelTab, setChatChannelTab] = useState<"all" | "dms" | "circles">("all");
 
+  // Create Community Circle state
+  const [showCreateCircleModal, setShowCreateCircleModal] = useState<boolean>(false);
+  const [newCircleName, setNewCircleName] = useState<string>("");
+  const [newCircleDesc, setNewCircleDesc] = useState<string>("");
+  const [newCircleIcon, setNewCircleIcon] = useState<string>("🔬");
+  const [isCreatingCircle, setIsCreatingCircle] = useState<boolean>(false);
+
   // Message Input & Reply state
   const [newMsgText, setNewMsgText] = useState("");
   const [replyTarget, setReplyTarget] = useState<LiveChatMessageItem | null>(null);
@@ -112,11 +120,6 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
   const [selectedOpp, setSelectedOpp] = useState<ChatOpportunityRef | null>(null);
   const [loadingOpps, setLoadingOpps] = useState<boolean>(false);
   const [viewingOppDetail, setViewingOppDetail] = useState<ChatOpportunityRef | null>(null);
-
-  // File Attachment state
-  const [selectedFileAttachment, setSelectedFileAttachment] = useState<{ url: string; name: string; type: string } | null>(null);
-  const [isUploadingFile, setIsUploadingFile] = useState<boolean>(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Menus & Popovers
   const [activeActionMenuId, setActiveActionMenuId] = useState<string | null>(null);
@@ -272,56 +275,42 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
     }
   };
 
-  // Upload File Attachment (Real Backend)
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  // Create Community Circle Handler
+  const handleCreateCircleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newCircleName.trim()) {
+      toast.error("Please enter a circle name");
+      return;
+    }
 
     try {
-      setIsUploadingFile(true);
-      const formData = new FormData();
-      formData.append("image", file);
-
-      const token = localStorage.getItem("goc_token");
-      const res = await fetch(`${API_BASE}/api/upload`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        setSelectedFileAttachment({
-          url: data.imageUrl,
-          name: data.filename || file.name,
-          type: data.fileType || file.type,
-        });
-        toast.success("File attached successfully");
+      setIsCreatingCircle(true);
+      const res = await createCircle(newCircleName.trim(), newCircleDesc.trim(), newCircleIcon);
+      if (res.success) {
+        toast.success(`Community circle "${newCircleName}" created!`);
+        setShowCreateCircleModal(false);
+        setNewCircleName("");
+        setNewCircleDesc("");
+        setNewCircleIcon("🔬");
       } else {
-        toast.error("Failed to upload file");
+        toast.error(res.error || "Failed to create community circle");
       }
     } catch {
-      toast.error("Error uploading file");
+      toast.error("Error creating community circle");
     } finally {
-      setIsUploadingFile(false);
-      if (fileInputRef.current) fileInputRef.current.value = "";
+      setIsCreatingCircle(false);
     }
   };
 
   // Send Message (Real Backend + Socket.IO)
   const handleSendChat = async (e: React.FormEvent) => {
     e.preventDefault();
-    if ((!newMsgText.trim() && !selectedOpp && !selectedFileAttachment) || room?.isPaused || slowModeCountdown > 0) return;
+    if ((!newMsgText.trim() && !selectedOpp) || room?.isPaused || slowModeCountdown > 0) return;
 
     const res = await sendMessage({
       content: newMsgText.trim(),
       replyToId: replyTarget?._id,
       linkedOpportunityId: selectedOpp?._id,
-      attachmentUrl: selectedFileAttachment?.url,
-      attachmentType: selectedFileAttachment?.type,
-      attachmentName: selectedFileAttachment?.name,
       mentions: selectedMentions,
     });
 
@@ -329,7 +318,6 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
       setNewMsgText("");
       setReplyTarget(null);
       setSelectedOpp(null);
-      setSelectedFileAttachment(null);
       setSelectedMentions([]);
     } else if (res.error) {
       toast.error(res.error);
@@ -953,31 +941,45 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
             >
               <div className="flex items-center justify-between">
                 <span className="text-[13px] font-black text-gray-900">Community Circles</span>
-                <span className="text-[10px] font-extrabold text-[#4f46e5] bg-indigo-50 px-2 py-0.5 rounded-full">
-                  {circles.length} Circles
-                </span>
+                <button
+                  onClick={() => setShowCreateCircleModal(true)}
+                  className="text-[10px] font-extrabold text-[#4f46e5] bg-indigo-50 border border-indigo-200 px-2.5 py-1 rounded-full hover:bg-indigo-100 cursor-pointer flex items-center gap-1 transition-colors"
+                >
+                  <Plus className="w-3 h-3 stroke-[3]" /> Create Circle
+                </button>
               </div>
               <div className="space-y-2">
                 {circles.map((c) => (
                   <div key={c._id} className="p-3 border border-gray-200 rounded-xl bg-white flex items-center justify-between text-xs hover:border-indigo-200 transition-colors">
-                    <div className="flex items-center gap-2.5">
-                      <span className="text-lg">{c.icon || "🔬"}</span>
-                      <div>
-                        <div className="font-bold text-gray-900">{c.name}</div>
-                        <div className="text-[10px] text-gray-400">{c.description || "Community circle for students"}</div>
+                    <div className="flex items-center gap-2.5 min-w-0 pr-2">
+                      <span className="text-xl shrink-0">{c.icon || "🔬"}</span>
+                      <div className="min-w-0">
+                        <div className="font-bold text-gray-900 truncate">{c.name}</div>
+                        <div className="text-[10px] text-gray-400 truncate">{c.description || "Community circle for students"}</div>
                         <div className="text-[9.5px] font-extrabold text-indigo-600 mt-0.5">{c.membersCount} members</div>
                       </div>
                     </div>
-                    <button
-                      onClick={async () => {
-                        if (!c.isMember) await joinCircle(c._id);
-                        switchRoom(c.roomId);
-                        setActiveTab("chat");
-                      }}
-                      className="text-[11px] font-extrabold text-white bg-[#4f46e5] hover:bg-indigo-700 px-3 py-1 rounded-full cursor-pointer transition-colors shadow-xs"
-                    >
-                      {c.isMember ? "Open" : "Join & Chat"}
-                    </button>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <button
+                        onClick={() => joinCircle(c._id)}
+                        className={`text-[10.5px] font-extrabold px-2.5 py-1 rounded-full cursor-pointer transition-colors ${
+                          c.isMember
+                            ? "bg-gray-100 text-gray-700 hover:bg-red-50 hover:text-red-600 border border-gray-200"
+                            : "bg-indigo-50 text-[#4f46e5] hover:bg-indigo-100 border border-indigo-200"
+                        }`}
+                      >
+                        {c.isMember ? "Joined" : "+ Join"}
+                      </button>
+                      <button
+                        onClick={() => {
+                          switchRoom(c.roomId);
+                          setActiveTab("chat");
+                        }}
+                        className="text-[10.5px] font-extrabold text-white bg-[#4f46e5] hover:bg-indigo-700 px-3 py-1 rounded-full cursor-pointer transition-colors shadow-xs"
+                      >
+                        Open Chat
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -1083,25 +1085,6 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
             </div>
           )}
 
-          {/* Selected File Attachment Bar */}
-          {selectedFileAttachment && (
-            <div className="px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-xl flex items-center justify-between text-[11px]">
-              <div className="flex items-center gap-2 truncate">
-                <Paperclip className="h-3.5 w-3.5 text-blue-600 shrink-0" />
-                <span className="font-bold text-gray-900 truncate">
-                  Attached File: {selectedFileAttachment.name}
-                </span>
-              </div>
-              <button
-                type="button"
-                onClick={() => setSelectedFileAttachment(null)}
-                className="text-gray-400 hover:text-gray-700 p-0.5 cursor-pointer"
-              >
-                <X className="h-3.5 w-3.5" />
-              </button>
-            </div>
-          )}
-
           {/* Slow Mode Timer Warning */}
           {slowModeCountdown > 0 && (
             <div className="px-3 py-1 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl text-[10.5px] font-bold flex items-center gap-1.5">
@@ -1112,12 +1095,6 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
 
           {/* Message Form */}
           <form onSubmit={handleSendChat} className="relative flex items-center">
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileUpload}
-              className="hidden"
-            />
             <input
               type="text"
               value={newMsgText}
@@ -1141,19 +1118,9 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
                   ? `Wait ${slowModeCountdown}s...`
                   : "Type @ to mention or message..."
               }
-              className="w-full bg-gray-50 border border-gray-200 text-[12px] text-gray-900 rounded-full py-2.5 pl-4 pr-24 outline-none focus:bg-white focus:border-[#4f46e5] focus:ring-2 focus:ring-[#4f46e5]/10 transition-all placeholder:text-gray-400 disabled:opacity-50"
+              className="w-full bg-gray-50 border border-gray-200 text-[12px] text-gray-900 rounded-full py-2.5 pl-4 pr-16 outline-none focus:bg-white focus:border-[#4f46e5] focus:ring-2 focus:ring-[#4f46e5]/10 transition-all placeholder:text-gray-400 disabled:opacity-50"
             />
             <div className="absolute right-1.5 flex items-center gap-1">
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={room?.isPaused || isUploadingFile}
-                className="text-gray-400 hover:text-[#4f46e5] p-1 cursor-pointer transition-colors disabled:opacity-50"
-                title="Attach File or Image"
-              >
-                {isUploadingFile ? <Loader2 className="h-4 w-4 animate-spin text-[#4f46e5]" /> : <Paperclip className="h-4 w-4" />}
-              </button>
-
               <button
                 type="button"
                 onClick={openOpportunityModal}
@@ -1167,7 +1134,7 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
               <button
                 type="submit"
                 disabled={
-                  (!newMsgText.trim() && !selectedOpp && !selectedFileAttachment) ||
+                  (!newMsgText.trim() && !selectedOpp) ||
                   room?.isPaused ||
                   slowModeCountdown > 0
                 }
@@ -1468,6 +1435,84 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
                 )}
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── 11. CREATE COMMUNITY CIRCLE MODAL ── */}
+      {showCreateCircleModal && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-xl max-w-sm w-full p-5 text-gray-900 space-y-4">
+            <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+              <h3 className="font-extrabold text-[14px] flex items-center gap-2 text-gray-900">
+                <Users className="h-4 w-4 text-[#4f46e5]" /> Create Community Circle
+              </h3>
+              <button onClick={() => setShowCreateCircleModal(false)} className="text-gray-400 hover:text-gray-700 cursor-pointer">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateCircleSubmit} className="space-y-3.5 text-xs">
+              <div>
+                <label className="font-bold text-gray-700 block mb-1">Circle Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={newCircleName}
+                  onChange={(e) => setNewCircleName(e.target.value)}
+                  placeholder="e.g. AI & Tech Founders, STEM Squad"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 font-semibold text-gray-900 outline-none focus:bg-white focus:border-[#4f46e5]"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-gray-700 block mb-1">Description (Optional)</label>
+                <textarea
+                  rows={2}
+                  value={newCircleDesc}
+                  onChange={(e) => setNewCircleDesc(e.target.value)}
+                  placeholder="Briefly describe what this circle is about..."
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 font-medium text-gray-800 outline-none focus:bg-white focus:border-[#4f46e5]"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-gray-700 block mb-1">Select Icon</label>
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {["🔬", "🌱", "💻", "🚀", "🎨", "📚", "💡", "⚡", "🏆", "🌟"].map((emoji) => (
+                    <button
+                      key={emoji}
+                      type="button"
+                      onClick={() => setNewCircleIcon(emoji)}
+                      className={`w-9 h-9 text-lg rounded-xl flex items-center justify-center transition-all cursor-pointer ${
+                        newCircleIcon === emoji
+                          ? "bg-indigo-100 border-2 border-[#4f46e5] scale-110 shadow-xs"
+                          : "bg-gray-50 border border-gray-200 hover:bg-gray-100"
+                      }`}
+                    >
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2 border-t border-gray-100">
+                <button
+                  type="button"
+                  onClick={() => setShowCreateCircleModal(false)}
+                  className="px-4 py-2 rounded-xl border border-gray-200 font-bold text-gray-600 hover:bg-gray-50 cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isCreatingCircle || !newCircleName.trim()}
+                  className="px-4 py-2 rounded-xl bg-[#4f46e5] hover:bg-indigo-700 disabled:opacity-50 text-white font-bold cursor-pointer transition-colors shadow-xs"
+                >
+                  {isCreatingCircle ? "Creating..." : "Create Circle"}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

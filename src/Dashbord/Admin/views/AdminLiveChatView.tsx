@@ -21,13 +21,16 @@ import {
   Calendar,
   ChevronRight,
   Eye,
+  Users,
+  Plus,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { API_BASE } from "@/lib/api";
 
 export function AdminLiveChatView() {
   const [activeSubTab, setActiveSubTab] = useState<
-    "stream" | "search" | "reports" | "flags" | "members" | "audit"
+    "stream" | "search" | "reports" | "flags" | "members" | "audit" | "circles"
   >("stream");
 
   // Room config state
@@ -46,6 +49,15 @@ export function AdminLiveChatView() {
   const [filterSender, setFilterSender] = useState("");
   const [filterStartDate, setFilterStartDate] = useState("");
   const [filterEndDate, setFilterEndDate] = useState("");
+
+  // Community Circles state
+  const [circles, setCircles] = useState<any[]>([]);
+  const [loadingCircles, setLoadingCircles] = useState(false);
+  const [showCreateCircleModal, setShowCreateCircleModal] = useState(false);
+  const [newCircleName, setNewCircleName] = useState("");
+  const [newCircleDesc, setNewCircleDesc] = useState("");
+  const [newCircleIcon, setNewCircleIcon] = useState("🔬");
+  const [isCreatingCircle, setIsCreatingCircle] = useState(false);
 
   // Reports state
   const [reports, setReports] = useState<any[]>([]);
@@ -80,6 +92,92 @@ export function AdminLiveChatView() {
       Authorization: `Bearer ${token}`,
     };
   }, []);
+
+  // Fetch Community Circles
+  const fetchCircles = useCallback(async () => {
+    try {
+      setLoadingCircles(true);
+      const res = await fetch(`${API_BASE}/api/chat/circles`, { headers: getAdminHeaders() });
+      if (res.ok) {
+        const data = await res.json();
+        setCircles(data || []);
+      }
+    } catch (err) {
+      console.error("Error fetching circles:", err);
+    } finally {
+      setLoadingCircles(false);
+    }
+  }, [getAdminHeaders]);
+
+  useEffect(() => {
+    fetchCircles();
+  }, [fetchCircles]);
+
+  // Create Community Circle Submit Handler
+  const handleCreateCircleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newCircleName.trim()) {
+      toast.error("Please enter a circle name");
+      return;
+    }
+
+    try {
+      setIsCreatingCircle(true);
+      const res = await fetch(`${API_BASE}/api/chat/circles`, {
+        method: "POST",
+        headers: getAdminHeaders(),
+        body: JSON.stringify({
+          name: newCircleName.trim(),
+          description: newCircleDesc.trim(),
+          icon: newCircleIcon,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        toast.success(`Community circle "${newCircleName}" created successfully!`);
+        setShowCreateCircleModal(false);
+        setNewCircleName("");
+        setNewCircleDesc("");
+        setNewCircleIcon("🔬");
+        fetchCircles();
+      } else {
+        toast.error(data.message || "Failed to create community circle");
+      }
+    } catch (err) {
+      toast.error("Error creating community circle");
+    } finally {
+      setIsCreatingCircle(false);
+    }
+  };
+
+  // Delete Circle State
+  const [deleteTargetCircle, setDeleteTargetCircle] = useState<any | null>(null);
+  const [isDeletingCircle, setIsDeletingCircle] = useState(false);
+
+  // Delete Circle Handler
+  const handleDeleteCircleConfirm = async () => {
+    if (!deleteTargetCircle) return;
+    try {
+      setIsDeletingCircle(true);
+      const res = await fetch(`${API_BASE}/api/chat/circles/${deleteTargetCircle._id}`, {
+        method: "DELETE",
+        headers: getAdminHeaders(),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success(`Community circle "${deleteTargetCircle.name}" deleted successfully`);
+        setDeleteTargetCircle(null);
+        fetchCircles();
+      } else {
+        toast.error(data.message || "Failed to delete community circle");
+      }
+    } catch {
+      toast.error("Error deleting community circle");
+    } finally {
+      setIsDeletingCircle(false);
+    }
+  };
 
   // Fetch admin messages / stream
   const fetchAdminMessages = useCallback(async () => {
@@ -372,6 +470,15 @@ export function AdminLiveChatView() {
 
         {/* Global Controls */}
         <div className="flex flex-wrap items-center gap-2">
+          {/* Create Community Circle Button */}
+          <button
+            onClick={() => setShowCreateCircleModal(true)}
+            className="px-4 py-2 rounded-xl font-extrabold text-xs bg-[#4f46e5] hover:bg-indigo-700 text-white flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+          >
+            <Plus className="h-4 w-4 stroke-[3]" />
+            <span>Create Community Circle</span>
+          </button>
+
           {/* Pause / Resume Button */}
           <button
             onClick={() => {
@@ -414,6 +521,7 @@ export function AdminLiveChatView() {
       <div className="flex items-center gap-2 border-b border-gray-200 pb-2 overflow-x-auto">
         {[
           { id: "stream", label: "Live Stream", icon: MessageSquare },
+          { id: "circles", label: "Community Circles", icon: Users, badge: circles.length },
           { id: "search", label: "Search & Filter", icon: Search },
           { id: "reports", label: "Report Queue", icon: Flag, badge: reports.length },
           { id: "flags", label: "Automated Flags", icon: AlertTriangle, badge: flags.length },
@@ -834,6 +942,61 @@ export function AdminLiveChatView() {
         </div>
       )}
 
+      {/* ── COMMUNITY CIRCLES TAB ── */}
+      {activeSubTab === "circles" && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between bg-white p-4 rounded-2xl border border-gray-200 shadow-xs">
+            <div>
+              <h3 className="font-extrabold text-sm text-gray-900">Active Community Circles ({circles.length})</h3>
+              <p className="text-xs text-gray-500">Manage community topics where students can join and interact.</p>
+            </div>
+            <button
+              onClick={() => setShowCreateCircleModal(true)}
+              className="px-4 py-2 rounded-xl font-extrabold text-xs bg-[#4f46e5] hover:bg-indigo-700 text-white flex items-center gap-1.5 shadow-xs cursor-pointer"
+            >
+              <Plus className="h-4 w-4 stroke-[3]" />
+              <span>New Circle</span>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {loadingCircles ? (
+              <div className="col-span-full flex justify-center py-12">
+                <Loader2 className="h-6 w-6 text-[#4f46e5] animate-spin" />
+              </div>
+            ) : circles.length === 0 ? (
+              <div className="col-span-full text-center py-12 text-xs text-gray-500">No community circles created yet.</div>
+            ) : (
+              circles.map((c) => (
+                <div key={c._id} className="p-4 bg-white border border-gray-200 rounded-2xl shadow-xs space-y-2">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <span className="text-2xl p-2 bg-indigo-50 rounded-xl border border-indigo-100">{c.icon || "🔬"}</span>
+                      <div className="min-w-0 flex-1">
+                        <h4 className="font-extrabold text-sm text-gray-900 truncate">{c.name}</h4>
+                        <span className="text-[10px] font-extrabold text-[#4f46e5] bg-indigo-50 px-2 py-0.5 rounded-full">
+                          {c.membersCount || 0} Members Joined
+                        </span>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setDeleteTargetCircle(c)}
+                      className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer shrink-0"
+                      title="Delete Community Circle"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                  <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed">
+                    {c.description || "Community topic circle for student discussions and collaboration."}
+                  </p>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+
       {/* ── PAUSE ROOM MODAL ── */}
       {showPauseModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
@@ -869,6 +1032,112 @@ export function AdminLiveChatView() {
                   Confirm Pause Room
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── CREATE COMMUNITY CIRCLE MODAL ── */}
+      {showCreateCircleModal && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-xl max-w-sm w-full p-6 text-gray-900 space-y-4">
+            <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+              <h3 className="font-black text-base flex items-center gap-2 text-gray-900">
+                <Users className="h-5 w-5 text-[#4f46e5]" /> Create Community Circle
+              </h3>
+              <button onClick={() => setShowCreateCircleModal(false)} className="text-gray-400 hover:text-gray-700 cursor-pointer">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateCircleSubmit} className="space-y-3.5 text-xs">
+              <div>
+                <label className="font-bold text-gray-700 block mb-1">Circle Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={newCircleName}
+                  onChange={(e) => setNewCircleName(e.target.value)}
+                  placeholder="e.g. AI & Tech Founders, STEM Squad"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 font-semibold text-gray-900 outline-none focus:bg-white focus:border-[#4f46e5]"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-gray-700 block mb-1">Description (Optional)</label>
+                <textarea
+                  rows={2}
+                  value={newCircleDesc}
+                  onChange={(e) => setNewCircleDesc(e.target.value)}
+                  placeholder="Briefly describe what this circle is about..."
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 font-medium text-gray-800 outline-none focus:bg-white focus:border-[#4f46e5]"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-gray-700 block mb-1">Select Icon</label>
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {["🔬", "🌱", "💻", "🚀", "🎨", "📚", "💡", "⚡", "🏆", "🌟"].map((emoji) => (
+                    <button
+                      key={emoji}
+                      type="button"
+                      onClick={() => setNewCircleIcon(emoji)}
+                      className={`w-9 h-9 text-lg rounded-xl flex items-center justify-center transition-all cursor-pointer ${
+                        newCircleIcon === emoji
+                          ? "bg-indigo-100 border-2 border-[#4f46e5] scale-110 shadow-xs"
+                          : "bg-gray-50 border border-gray-200 hover:bg-gray-100"
+                      }`}
+                    >
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-3 border-t border-gray-100">
+                <button
+                  type="button"
+                  onClick={() => setShowCreateCircleModal(false)}
+                  className="px-4 py-2 rounded-xl border border-gray-200 font-bold text-gray-600 hover:bg-gray-50 cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isCreatingCircle || !newCircleName.trim()}
+                  className="px-4 py-2 rounded-xl bg-[#4f46e5] hover:bg-indigo-700 disabled:opacity-50 text-white font-bold cursor-pointer transition-colors shadow-xs"
+                >
+                  {isCreatingCircle ? "Creating..." : "Create Circle"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ── DELETE COMMUNITY CIRCLE CONFIRMATION MODAL ── */}
+      {deleteTargetCircle && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-xl max-w-xs w-full p-5 text-gray-900 space-y-3">
+            <h3 className="font-extrabold text-sm">Delete "{deleteTargetCircle.name}"?</h3>
+            <p className="text-xs text-gray-500 leading-relaxed">
+              Are you sure you want to delete this community circle? This action will remove the circle and its chat history for all students.
+            </p>
+
+            <div className="flex justify-end gap-2 pt-2 text-xs">
+              <button
+                onClick={() => setDeleteTargetCircle(null)}
+                className="px-4 py-2 rounded-xl border border-gray-200 font-bold text-gray-600 hover:bg-gray-50 cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteCircleConfirm}
+                disabled={isDeletingCircle}
+                className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold cursor-pointer"
+              >
+                {isDeletingCircle ? "Deleting..." : "Delete Circle"}
+              </button>
             </div>
           </div>
         </div>

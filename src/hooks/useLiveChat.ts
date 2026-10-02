@@ -258,6 +258,56 @@ export function useLiveChat() {
     [getHeaders, fetchCircles, fetchConversations]
   );
 
+  // Create new Community Circle
+  const createCircle = useCallback(
+    async (name: string, description?: string, icon?: string) => {
+      try {
+        const res = await fetch(`${API_BASE}/api/chat/circles`, {
+          method: "POST",
+          headers: getHeaders(),
+          body: JSON.stringify({ name, description, icon }),
+        });
+        const data = await res.json();
+        if (res.ok) {
+          await fetchCircles();
+          await fetchConversations();
+          return { success: true, circle: data };
+        }
+        return { success: false, error: data.message || "Failed to create circle" };
+      } catch (err) {
+        console.error("Error creating circle:", err);
+        return { success: false, error: "Network error creating circle" };
+      }
+    },
+    [getHeaders, fetchCircles, fetchConversations]
+  );
+
+  // Delete Community Circle
+  const deleteCircle = useCallback(
+    async (circleId: string) => {
+      try {
+        const res = await fetch(`${API_BASE}/api/chat/circles/${circleId}`, {
+          method: "DELETE",
+          headers: getHeaders(),
+        });
+        const data = await res.json();
+        if (res.ok) {
+          await fetchCircles();
+          await fetchConversations();
+          if (activeRoomId === circleId) {
+            switchRoom("global");
+          }
+          return { success: true };
+        }
+        return { success: false, error: data.message || "Failed to delete circle" };
+      } catch (err) {
+        console.error("Error deleting circle:", err);
+        return { success: false, error: "Network error deleting circle" };
+      }
+    },
+    [getHeaders, fetchCircles, fetchConversations, activeRoomId, switchRoom]
+  );
+
   // Fetch total unread count
   const fetchUnreadCount = useCallback(async () => {
     try {
@@ -684,6 +734,8 @@ export function useLiveChat() {
     switchRoom,
     startDirectConversation,
     joinCircle,
+    createCircle,
+    deleteCircle,
     sendMessage,
     toggleReaction,
     deleteMessage,
