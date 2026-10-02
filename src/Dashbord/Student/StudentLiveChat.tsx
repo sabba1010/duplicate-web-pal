@@ -520,7 +520,7 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
             <button
               onClick={() => switchRoom("global")}
               className={`px-3 py-1 rounded-full text-[11px] font-extrabold flex items-center gap-1 shrink-0 transition-all cursor-pointer ${
-                activeRoomId === "global" || !activeRoomId || room?.type === "global"
+                activeRoomId === "global" || !activeRoomId || (activeRoomId === room?._id && room?.type === "global")
                   ? "bg-[#4f46e5] text-white shadow-xs"
                   : "bg-white text-gray-600 border border-gray-200 hover:border-indigo-300"
               }`}
@@ -530,7 +530,7 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
 
             {conversations.map((c) => {
               if (c.type === "global") return null;
-              const isActive = activeRoomId === c.roomId || room?._id === c.roomId;
+              const isActive = activeRoomId === c.roomId || (room?._id === c.roomId && activeRoomId === room?._id);
               return (
                 <button
                   key={c.roomId}

@@ -98,6 +98,12 @@ export function useLiveChat() {
   const [conversations, setConversations] = useState<ConversationItem[]>([]);
   const [circles, setCircles] = useState<CircleItem[]>([]);
   const [activeRoomId, setActiveRoomId] = useState<string>("global");
+  const activeRoomIdRef = useRef<string>(activeRoomId);
+
+  useEffect(() => {
+    activeRoomIdRef.current = activeRoomId;
+  }, [activeRoomId]);
+
   const [pinnedMessage, setPinnedMessage] = useState<LiveChatMessageItem | null>(null);
   const [unreadCount, setUnreadCount] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
@@ -146,7 +152,7 @@ export function useLiveChat() {
   const fetchMessages = useCallback(async (targetRoomId?: string) => {
     try {
       setLoading(true);
-      const roomToFetch = targetRoomId || activeRoomId;
+      const roomToFetch = targetRoomId || activeRoomIdRef.current || "global";
       const url =
         roomToFetch === "global" || !roomToFetch
           ? `${API_BASE}/api/chat/rooms/global/messages?limit=30`
@@ -160,7 +166,6 @@ export function useLiveChat() {
         setNextCursor(data.nextCursor || null);
         if (data.room) {
           setRoom(data.room);
-          if (data.room._id) setActiveRoomId(data.room._id);
         }
       }
     } catch (err) {
@@ -168,7 +173,7 @@ export function useLiveChat() {
     } finally {
       setLoading(false);
     }
-  }, [getHeaders, activeRoomId]);
+  }, [getHeaders]);
 
   // Fetch older messages (pagination)
   const fetchOlderMessages = useCallback(async () => {
@@ -176,10 +181,11 @@ export function useLiveChat() {
 
     try {
       setLoadingOlder(true);
+      const currentRoom = activeRoomIdRef.current || "global";
       const url =
-        activeRoomId === "global"
+        currentRoom === "global"
           ? `${API_BASE}/api/chat/rooms/global/messages?cursor=${nextCursor}&limit=30`
-          : `${API_BASE}/api/chat/rooms/${activeRoomId}/messages?cursor=${nextCursor}&limit=30`;
+          : `${API_BASE}/api/chat/rooms/${currentRoom}/messages?cursor=${nextCursor}&limit=30`;
 
       const res = await fetch(url, { headers: getHeaders() });
 
@@ -194,12 +200,14 @@ export function useLiveChat() {
     } finally {
       setLoadingOlder(false);
     }
-  }, [hasMore, nextCursor, loadingOlder, getHeaders, activeRoomId]);
+  }, [hasMore, nextCursor, loadingOlder, getHeaders]);
 
   // Switch Room
   const switchRoom = useCallback(
     (targetRoomId: string) => {
       setActiveRoomId(targetRoomId);
+      activeRoomIdRef.current = targetRoomId;
+      setMessages([]);
       fetchMessages(targetRoomId);
       const socket = getSocket();
       if (socket && socket.connected) {
@@ -339,11 +347,6 @@ export function useLiveChat() {
     }, 1000);
   }, []);
 
-  const activeRoomIdRef = useRef<string>(activeRoomId);
-  useEffect(() => {
-    activeRoomIdRef.current = activeRoomId;
-  }, [activeRoomId]);
-
   // Connect Socket and listen to real-time events with auto-sync
   useEffect(() => {
     fetchMessages(activeRoomIdRef.current);
@@ -368,7 +371,8 @@ export function useLiveChat() {
     const onNewMessage = (msg: LiveChatMessageItem) => {
       setMessages((prev) => {
         const currentRoomId = activeRoomIdRef.current || "global";
-        const msgRoomId = typeof msg.roomId === "object" ? (msg.roomId as any)._id : msg.roomId;
+        const msgRoomId = (typeof msg.roomId === "object" ? (msg.roomId as any)?._id?.toString() : msg.roomId?.toString()) || "";
+        const activeRoomObjId = room?._id?.toString() || "";
 
         const tempIndex = prev.findIndex(
           (m) =>
@@ -386,7 +390,12 @@ export function useLiveChat() {
 
         if (prev.some((m) => m._id === msg._id)) return prev;
 
-        if (msgRoomId === currentRoomId || (!msgRoomId && currentRoomId === "global")) {
+        const belongsToCurrentRoom =
+          msgRoomId === currentRoomId ||
+          (activeRoomObjId && msgRoomId === activeRoomObjId) ||
+          (currentRoomId === "global" && (room?.type === "global" || !msgRoomId));
+
+        if (belongsToCurrentRoom) {
           return [...prev, msg];
         }
 
@@ -415,7 +424,13 @@ export function useLiveChat() {
     };
 
     const onRoomUpdate = (updatedRoom: ChatRoomData) => {
-      setRoom(updatedRoom);
+      const current = activeRoomIdRef.current || "global";
+      if (
+        updatedRoom._id === current ||
+        (current === "global" && updatedRoom.type === "global")
+      ) {
+        setRoom(updatedRoom);
+      }
     };
 
     const onPinnedUpdate = ({
@@ -450,6 +465,19 @@ export function useLiveChat() {
       }
     }, 3000);
 
+    const onCircleCreated = () => {
+      fetchCircles();
+      fetchConversations();
+    };
+
+    const onCircleDeleted = ({ circleId }: { circleId?: string }) => {
+      fetchCircles();
+      fetchConversations();
+      if (activeRoomIdRef.current === circleId) {
+        switchRoom("global");
+      }
+    };
+
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
     socket.on("chat:new", onNewMessage);
@@ -458,6 +486,8 @@ export function useLiveChat() {
     socket.on("chat:room:update", onRoomUpdate);
     socket.on("chat:pinned:update", onPinnedUpdate);
     socket.on("chat:error", onError);
+    socket.on("circle:created", onCircleCreated);
+    socket.on("circle:deleted", onCircleDeleted);
 
     if (socket.connected) {
       setIsConnected(true);
@@ -476,6 +506,8 @@ export function useLiveChat() {
       socket.off("chat:room:update", onRoomUpdate);
       socket.off("chat:pinned:update", onPinnedUpdate);
       socket.off("chat:error", onError);
+      socket.off("circle:created", onCircleCreated);
+      socket.off("circle:deleted", onCircleDeleted);
 
       if (timerRef.current) clearInterval(timerRef.current);
     };
@@ -495,7 +527,11 @@ export function useLiveChat() {
     }): Promise<{ success: boolean; error?: string; remainingSeconds?: number }> => {
       return new Promise((resolve) => {
         const socket = getSocket();
-        const targetRoomId = payload.roomId || room?._id || activeRoomId;
+        const targetRoomId =
+          payload.roomId ||
+          activeRoomIdRef.current ||
+          activeRoomId ||
+          "global";
         const sendPayload = { ...payload, roomId: targetRoomId };
 
         // Construct optimistic instant message object
