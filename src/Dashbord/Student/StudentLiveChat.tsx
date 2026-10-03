@@ -42,6 +42,8 @@ interface StudentLiveChatProps {
   isAdminView?: boolean;
 }
 
+
+
 const MENTORS_QUICK = [
   {
     name: "Dr. Priya Nandan",
@@ -53,11 +55,6 @@ const MENTORS_QUICK = [
     role: "Trial Attorney, DOJ Civil Division",
     img: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=80&q=80",
   },
-];
-
-const CIRCLES = [
-  { icon: "🔬", name: "STEM Squad", desc: "For future engineers & scientists", members: 34 },
-  { icon: "🌱", name: "First-Gen Founders", desc: "First-generation college-bound students", members: 21 },
 ];
 
 const EMOJI_OPTIONS = ["👍", "❤️", "😂", "😮", "🔥", "🎉", "👏", "💡"];
@@ -82,6 +79,7 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
     startDirectConversation,
     joinCircle,
     createCircle,
+    deleteCircle,
     sendMessage,
     toggleReaction,
     deleteMessage,
@@ -153,7 +151,7 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
       try {
         const payload = JSON.parse(atob(token.split(".")[1]));
         if (payload.id) setCurrentUserId(payload.id);
-      } catch {}
+      } catch { }
     }
   }, []);
 
@@ -201,7 +199,7 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
           const data = await res.json();
           setMentionUsers(data);
         }
-      } catch {}
+      } catch { }
     } else {
       setMentionQuery(null);
       setMentionUsers([]);
@@ -394,16 +392,15 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
 
   return (
     <aside className="xl:sticky xl:top-4 xl:h-[calc(100vh-2rem)] bg-white rounded-2xl border border-gray-200 shadow-sm flex flex-col overflow-hidden z-20 font-sans text-gray-900">
-      
+
       {/* ── 1. CHAT HEADER ── */}
       <div className="px-3.5 py-2.5 border-b border-gray-100 flex items-center justify-between bg-white shrink-0 relative">
         <div className="flex items-center gap-2 min-w-0">
           <span
-            className={`w-2.5 h-2.5 rounded-full ${
-              isConnected
+            className={`w-2.5 h-2.5 rounded-full ${isConnected
                 ? "bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.4)]"
                 : "bg-amber-400 animate-pulse"
-            } shrink-0`}
+              } shrink-0`}
           />
           <div className="min-w-0">
             <div className="flex items-center gap-1.5">
@@ -425,8 +422,8 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
               {activeTab === "chat"
                 ? isConnected ? "Global Community · Live Connected" : "Connecting to GOC chat server..."
                 : activeTab === "community"
-                ? "Circles & Events"
-                : "Mentors Directory"}
+                  ? "Circles & Events"
+                  : "Mentors Directory"}
             </p>
           </div>
         </div>
@@ -519,11 +516,10 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
           <div className="flex items-center gap-1.5 overflow-x-auto py-0.5">
             <button
               onClick={() => switchRoom("global")}
-              className={`px-3 py-1 rounded-full text-[11px] font-extrabold flex items-center gap-1 shrink-0 transition-all cursor-pointer ${
-                activeRoomId === "global" || !activeRoomId || (activeRoomId === room?._id && room?.type === "global")
+              className={`px-3 py-1 rounded-full text-[11px] font-extrabold flex items-center gap-1 shrink-0 transition-all cursor-pointer ${activeRoomId === "global" || !activeRoomId || (activeRoomId === room?._id && room?.type === "global")
                   ? "bg-[#4f46e5] text-white shadow-xs"
                   : "bg-white text-gray-600 border border-gray-200 hover:border-indigo-300"
-              }`}
+                }`}
             >
               <span>🌐</span> Global Chat
             </button>
@@ -535,11 +531,10 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
                 <button
                   key={c.roomId}
                   onClick={() => switchRoom(c.roomId)}
-                  className={`px-3 py-1 rounded-full text-[11px] font-extrabold flex items-center gap-1.5 shrink-0 transition-all cursor-pointer ${
-                    isActive
+                  className={`px-3 py-1 rounded-full text-[11px] font-extrabold flex items-center gap-1.5 shrink-0 transition-all cursor-pointer ${isActive
                       ? "bg-[#4f46e5] text-white shadow-xs"
                       : "bg-white text-gray-600 border border-gray-200 hover:border-indigo-300"
-                  }`}
+                    }`}
                 >
                   <span>{c.type === "circle" ? c.icon || "💬" : "👤"}</span>
                   <span className="truncate max-w-[100px]">{c.name}</span>
@@ -643,9 +638,8 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
                   return (
                     <div
                       key={msg._id}
-                      className={`group relative flex gap-2.5 items-start ${
-                        isOwn ? "flex-row-reverse" : ""
-                      }`}
+                      className={`group relative flex gap-2.5 items-start ${isOwn ? "flex-row-reverse" : ""
+                        }`}
                     >
                       {/* Avatar */}
                       <div className="relative shrink-0">
@@ -658,9 +652,8 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
 
                       {/* Message Content Bubble */}
                       <div
-                        className={`flex flex-col gap-0.5 max-w-[82%] ${
-                          isOwn ? "items-end" : "items-start"
-                        }`}
+                        className={`flex flex-col gap-0.5 max-w-[82%] ${isOwn ? "items-end" : "items-start"
+                          }`}
                       >
                         {/* Sender Info & Role */}
                         <div className="flex items-center gap-1.5 px-0.5">
@@ -688,9 +681,8 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
                         {/* Reply Quote Preview if exists */}
                         {msg.replyToId && (
                           <div
-                            className={`text-[10.5px] px-2.5 py-1 rounded-lg border-l-2 border-[#4f46e5] bg-gray-50 text-gray-600 truncate max-w-full ${
-                              isOwn ? "self-end" : "self-start"
-                            }`}
+                            className={`text-[10.5px] px-2.5 py-1 rounded-lg border-l-2 border-[#4f46e5] bg-gray-50 text-gray-600 truncate max-w-full ${isOwn ? "self-end" : "self-start"
+                              }`}
                           >
                             <span className="font-bold text-[#4f46e5]">
                               Replying to {msg.replyToId.displayNameSnapshot || "user"}:
@@ -705,13 +697,12 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
 
                         {/* Main Message Body */}
                         <div
-                          className={`relative text-[12px] px-3 py-2 rounded-2xl leading-relaxed shadow-2xs ${
-                            msg.isDeleted
+                          className={`relative text-[12px] px-3 py-2 rounded-2xl leading-relaxed shadow-2xs ${msg.isDeleted
                               ? "bg-gray-100 text-gray-400 italic rounded-2xl border border-gray-200"
                               : isOwn
-                              ? "bg-gray-900 text-white rounded-tr-xs"
-                              : "bg-gray-50 text-gray-800 border border-gray-200 rounded-tl-xs"
-                          }`}
+                                ? "bg-gray-900 text-white rounded-tr-xs"
+                                : "bg-gray-50 text-gray-800 border border-gray-200 rounded-tl-xs"
+                            }`}
                         >
                           {msg.isDeleted ? (
                             <span>This message was deleted ({msg.deleteReason || "removed"}).</span>
@@ -810,9 +801,8 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
                         {/* 3-Dot Hover Action Menu */}
                         {!msg.isDeleted && (
                           <div
-                            className={`opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 mt-0.5 text-[10px] ${
-                              isOwn ? "flex-row-reverse" : ""
-                            }`}
+                            className={`opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 mt-0.5 text-[10px] ${isOwn ? "flex-row-reverse" : ""
+                              }`}
                           >
                             <div className="relative">
                               <button
@@ -830,9 +820,8 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
                               {/* Actions Popover */}
                               {activeActionMenuId === msg._id && (
                                 <div
-                                  className={`absolute bottom-full mb-1 ${
-                                    isOwn ? "right-0" : "left-0"
-                                  } w-40 bg-white border border-gray-200 rounded-xl shadow-lg p-1.5 z-40 text-[11px] font-semibold text-gray-700 space-y-0.5`}
+                                  className={`absolute bottom-full mb-1 ${isOwn ? "right-0" : "left-0"
+                                    } w-40 bg-white border border-gray-200 rounded-xl shadow-lg p-1.5 z-40 text-[11px] font-semibold text-gray-700 space-y-0.5`}
                                 >
                                   <button
                                     onClick={() => {
@@ -962,11 +951,10 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
                     <div className="flex items-center gap-1.5 shrink-0">
                       <button
                         onClick={() => joinCircle(c._id)}
-                        className={`text-[10.5px] font-extrabold px-2.5 py-1 rounded-full cursor-pointer transition-colors ${
-                          c.isMember
+                        className={`text-[10.5px] font-extrabold px-2.5 py-1 rounded-full cursor-pointer transition-colors ${c.isMember
                             ? "bg-gray-100 text-gray-700 hover:bg-red-50 hover:text-red-600 border border-gray-200"
                             : "bg-indigo-50 text-[#4f46e5] hover:bg-indigo-100 border border-indigo-200"
-                        }`}
+                          }`}
                       >
                         {c.isMember ? "Joined" : "+ Join"}
                       </button>
@@ -978,6 +966,19 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
                         className="text-[10.5px] font-extrabold text-white bg-[#4f46e5] hover:bg-indigo-700 px-3 py-1 rounded-full cursor-pointer transition-colors shadow-xs"
                       >
                         Open Chat
+                      </button>
+                      <button
+                        onClick={async () => {
+                          if (window.confirm(`Delete community circle "${c.name}"?`)) {
+                            const res = await deleteCircle(c._id);
+                            if (res.success) toast.success(`Circle "${c.name}" deleted`);
+                            else toast.error(res.error || "Failed to delete circle");
+                          }
+                        }}
+                        className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 cursor-pointer transition-colors"
+                        title="Delete Circle"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   </div>
@@ -1030,7 +1031,7 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
       {/* ── 5. INPUT & FOOTER AREA ── */}
       {activeTab === "chat" && (
         <div className="px-3.5 py-2.5 border-t border-gray-100 shrink-0 bg-white space-y-2 relative">
-          
+
           {/* Mentions Autocomplete Dropdown */}
           {mentionQuery !== null && mentionUsers.length > 0 && (
             <div className="absolute bottom-full left-4 right-4 mb-2 bg-white border border-gray-200 rounded-xl shadow-lg p-2 z-50 text-[12px]">
@@ -1115,8 +1116,8 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
                 room?.isPaused
                   ? "Chat room is currently paused..."
                   : slowModeCountdown > 0
-                  ? `Wait ${slowModeCountdown}s...`
-                  : "Type @ to mention or message..."
+                    ? `Wait ${slowModeCountdown}s...`
+                    : "Type @ to mention or message..."
               }
               className="w-full bg-gray-50 border border-gray-200 text-[12px] text-gray-900 rounded-full py-2.5 pl-4 pr-16 outline-none focus:bg-white focus:border-[#4f46e5] focus:ring-2 focus:ring-[#4f46e5]/10 transition-all placeholder:text-gray-400 disabled:opacity-50"
             />
@@ -1157,11 +1158,10 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
           <button
             key={id}
             onClick={() => setActiveTab(id as typeof activeTab)}
-            className={`py-2.5 text-[10px] font-bold flex flex-col items-center gap-0.5 transition-all cursor-pointer border-t-2 relative ${
-              activeTab === id
+            className={`py-2.5 text-[10px] font-bold flex flex-col items-center gap-0.5 transition-all cursor-pointer border-t-2 relative ${activeTab === id
                 ? "text-[#4f46e5] border-[#4f46e5]"
                 : "border-transparent hover:bg-gray-50 hover:text-gray-900"
-            }`}
+              }`}
           >
             <Icon className="h-4 w-4" />
             <span>{label}</span>
@@ -1254,7 +1254,7 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
 
             <div className="space-y-2 text-xs text-gray-700 leading-relaxed">
               <p>{viewingOppDetail.description || "Explore this opportunity on the Girls on Campus platform."}</p>
-              
+
               {viewingOppDetail.location && (
                 <div className="flex items-center gap-2 text-gray-600 font-medium">
                   <span className="font-bold text-gray-900">Location:</span> {viewingOppDetail.location}
@@ -1484,11 +1484,10 @@ export function StudentLiveChat({ user, isAdminView = false }: StudentLiveChatPr
                       key={emoji}
                       type="button"
                       onClick={() => setNewCircleIcon(emoji)}
-                      className={`w-9 h-9 text-lg rounded-xl flex items-center justify-center transition-all cursor-pointer ${
-                        newCircleIcon === emoji
+                      className={`w-9 h-9 text-lg rounded-xl flex items-center justify-center transition-all cursor-pointer ${newCircleIcon === emoji
                           ? "bg-indigo-100 border-2 border-[#4f46e5] scale-110 shadow-xs"
                           : "bg-gray-50 border border-gray-200 hover:bg-gray-100"
-                      }`}
+                        }`}
                     >
                       {emoji}
                     </button>
