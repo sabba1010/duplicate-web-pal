@@ -19,6 +19,10 @@ export function StudentDashboard() {
   const [user, setUser] = useState<{ name: string; username: string } | null>(null);
   const [activeTab, setActiveTabState] = useState<TabType>(() => {
     if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      if (params.has("session_id") || params.has("success") || params.has("canceled") || params.get("tab") === "Resources") {
+        return "Resources";
+      }
       return (localStorage.getItem("goc_student_tab") as TabType) || "Dashboard";
     }
     return "Dashboard";

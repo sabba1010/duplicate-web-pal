@@ -109,17 +109,39 @@ export function StudentResourcesView() {
         console.warn("Could not fetch pricing settings:", e);
       }
 
-      // 2. Fetch Subscription Status
-      try {
-        const subRes = await fetch(`${API_BASE}/api/subscription/status`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const subData = await subRes.json();
-        if (subRes.ok && subData.subscription) {
-          setSubscription(subData.subscription);
+      // 2. Sync / Verify session if redirected from Stripe
+      const urlParams = new URLSearchParams(window.location.search);
+      const sessionId = urlParams.get("session_id");
+      const isSuccess = urlParams.get("success");
+
+      if (sessionId) {
+        try {
+          const verifyRes = await fetch(`${API_BASE}/api/subscription/verify-session?session_id=${sessionId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const verifyData = await verifyRes.json();
+          if (verifyRes.ok && verifyData.subscription) {
+            setSubscription(verifyData.subscription);
+            if (isSuccess) {
+              setActionMessage("🎉 Subscription activated successfully! Access granted.");
+            }
+          }
+        } catch (e) {
+          console.warn("Could not verify session:", e);
         }
-      } catch (e) {
-        console.warn("Could not fetch subscription status:", e);
+      } else {
+        // Fetch Subscription Status
+        try {
+          const subRes = await fetch(`${API_BASE}/api/subscription/status`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const subData = await subRes.json();
+          if (subRes.ok && subData.subscription) {
+            setSubscription(subData.subscription);
+          }
+        } catch (e) {
+          console.warn("Could not fetch subscription status:", e);
+        }
       }
 
       // 3. Fetch Resources
