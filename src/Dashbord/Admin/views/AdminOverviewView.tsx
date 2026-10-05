@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Users, FileText, Activity, AlertTriangle, Bell, LogOut, Search, ExternalLink, Loader2 } from "lucide-react";
+import { Users, FileText, Activity, AlertTriangle, Bell, LogOut, Search, ExternalLink, Loader2, DollarSign, CreditCard, Sparkles, TrendingUp, CheckCircle2, ArrowUpRight } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LabelList } from "recharts";
 import { motion, AnimatePresence } from "framer-motion";
 import { API_BASE } from "../../../lib/api";
@@ -25,7 +25,34 @@ interface UserMember {
   role: string;
   school: string;
   status: "Active" | "Suspended";
+  subscriptionPlan?: "monthly" | "yearly" | "none";
+  subscriptionStatus?: string;
+  currentPeriodEnd?: string;
   createdAt: string;
+}
+
+interface SubscriptionStats {
+  totalRevenue: number;
+  monthlyRevenue: number;
+  yearlyRevenue: number;
+  activeMonthlyCount: number;
+  activeYearlyCount: number;
+  totalActiveSubscribers: number;
+  inactiveCount: number;
+  rates: {
+    monthly: number;
+    yearly: number;
+  };
+  recentTransactions: {
+    id: string;
+    customerEmail: string;
+    amount: number;
+    currency: string;
+    plan: "monthly" | "yearly";
+    date: string;
+    status: string;
+    hostedInvoiceUrl?: string;
+  }[];
 }
 
 interface Submission {
@@ -50,6 +77,7 @@ export function AdminOverviewView() {
   const [users, setUsers] = useState<UserMember[]>([]);
   const [opportunitiesCount, setOpportunitiesCount] = useState(0);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [subscriptionStats, setSubscriptionStats] = useState<SubscriptionStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
@@ -66,14 +94,17 @@ export function AdminOverviewView() {
       setLoading(true);
       const token = localStorage.getItem("goc_token");
 
-      const [usersRes, oppsRes, subsRes] = await Promise.all([
+      const [usersRes, oppsRes, subsRes, statsRes] = await Promise.all([
         fetch(`${API_BASE}/api/users`, {
           headers: { Authorization: `Bearer ${token}` }
         }),
         fetch(`${API_BASE}/api/opportunities`),
         fetch(`${API_BASE}/api/users/submissions`, {
           headers: { Authorization: `Bearer ${token}` }
-        })
+        }),
+        fetch(`${API_BASE}/api/subscription/admin/stats`, {
+          headers: { Authorization: `Bearer ${token}` }
+        }).catch(() => null)
       ]);
 
       if (usersRes.ok) {
@@ -87,6 +118,12 @@ export function AdminOverviewView() {
       if (subsRes.ok) {
         const data = await subsRes.json();
         setSubmissions(data.submissions || []);
+      }
+      if (statsRes && statsRes.ok) {
+        const statsData = await statsRes.json();
+        if (statsData.success && statsData.stats) {
+          setSubscriptionStats(statsData.stats);
+        }
       }
     } catch (err) {
       console.error("Failed to load admin overview data", err);
@@ -209,6 +246,132 @@ export function AdminOverviewView() {
         </div>
       ) : (
         <>
+          {/* Revenue & Package Performance Cards */}
+          <motion.div variants={containerVars} className="space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <h2 className="text-[17px] font-black text-[#111827] tracking-tight flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                  Subscription Revenue & Package Overview
+                </h2>
+                <p className="text-[12px] text-gray-500 font-medium">
+                  Real-time income earned from Resource passes and package performance.
+                </p>
+              </div>
+              <span className="text-[11px] font-extrabold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full shadow-sm flex items-center gap-1.5 self-start sm:self-auto">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Stripe Synchronized
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* Total Income */}
+              <motion.div variants={itemVars} whileHover={{ y: -3 }} className="bg-gradient-to-br from-emerald-50/70 to-white rounded-[22px] p-5 shadow-sm border border-emerald-100 hover:shadow-md transition-all">
+                <div className="flex justify-between items-start mb-3">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center shadow-md shadow-emerald-500/20">
+                    <DollarSign className="w-5 h-5" />
+                  </div>
+                  <span className="bg-emerald-100/70 text-emerald-800 text-[10px] font-black px-2.5 py-0.5 rounded-full">
+                    TOTAL INCOME
+                  </span>
+                </div>
+                <div className="text-[30px] font-black text-[#111827] leading-none mb-1 tracking-tight">
+                  ${(subscriptionStats?.totalRevenue ?? 0).toFixed(2)}
+                </div>
+                <div className="text-[11px] font-bold text-gray-500">
+                  All-time revenue collected
+                </div>
+              </motion.div>
+
+              {/* Monthly Plan Income */}
+              <motion.div variants={itemVars} whileHover={{ y: -3 }} className="bg-gradient-to-br from-pink-50/70 to-white rounded-[22px] p-5 shadow-sm border border-pink-100 hover:shadow-md transition-all">
+                <div className="flex justify-between items-start mb-3">
+                  <div className="w-10 h-10 rounded-xl bg-pink-500 text-white flex items-center justify-center shadow-md shadow-pink-500/20">
+                    <CreditCard className="w-5 h-5" />
+                  </div>
+                  <span className="bg-pink-100/70 text-pink-800 text-[10px] font-black px-2.5 py-0.5 rounded-full">
+                    MONTHLY PASS ($8)
+                  </span>
+                </div>
+                <div className="text-[30px] font-black text-[#111827] leading-none mb-1 tracking-tight">
+                  ${(subscriptionStats?.monthlyRevenue ?? 0).toFixed(2)}
+                </div>
+                <div className="text-[11px] font-bold text-gray-500">
+                  {subscriptionStats?.activeMonthlyCount ?? 0} active subscriber{(subscriptionStats?.activeMonthlyCount ?? 0) !== 1 ? "s" : ""}
+                </div>
+              </motion.div>
+
+              {/* Yearly Plan Income */}
+              <motion.div variants={itemVars} whileHover={{ y: -3 }} className="bg-gradient-to-br from-indigo-50/70 to-white rounded-[22px] p-5 shadow-sm border border-indigo-100 hover:shadow-md transition-all">
+                <div className="flex justify-between items-start mb-3">
+                  <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-md shadow-indigo-600/20">
+                    <Sparkles className="w-5 h-5" />
+                  </div>
+                  <span className="bg-indigo-100/70 text-indigo-800 text-[10px] font-black px-2.5 py-0.5 rounded-full">
+                    YEARLY PASS ($12)
+                  </span>
+                </div>
+                <div className="text-[30px] font-black text-[#111827] leading-none mb-1 tracking-tight">
+                  ${(subscriptionStats?.yearlyRevenue ?? 0).toFixed(2)}
+                </div>
+                <div className="text-[11px] font-bold text-gray-500">
+                  {subscriptionStats?.activeYearlyCount ?? 0} active subscriber{(subscriptionStats?.activeYearlyCount ?? 0) !== 1 ? "s" : ""}
+                </div>
+              </motion.div>
+
+              {/* Total Active Subscribers */}
+              <motion.div variants={itemVars} whileHover={{ y: -3 }} className="bg-gradient-to-br from-amber-50/70 to-white rounded-[22px] p-5 shadow-sm border border-amber-100 hover:shadow-md transition-all">
+                <div className="flex justify-between items-start mb-3">
+                  <div className="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shadow-md shadow-amber-500/20">
+                    <TrendingUp className="w-5 h-5" />
+                  </div>
+                  <span className="bg-amber-100/70 text-amber-800 text-[10px] font-black px-2.5 py-0.5 rounded-full">
+                    PAID SUBSCRIBERS
+                  </span>
+                </div>
+                <div className="text-[30px] font-black text-[#111827] leading-none mb-1 tracking-tight">
+                  {subscriptionStats?.totalActiveSubscribers ?? 0}
+                </div>
+                <div className="text-[11px] font-bold text-gray-500">
+                  Active Resource memberships
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Income Breakdown Bar */}
+            {subscriptionStats && (subscriptionStats.totalRevenue > 0) && (
+              <div className="bg-white rounded-[20px] p-4 border border-gray-100 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+                <div className="w-full md:w-1/3">
+                  <div className="text-[12px] font-extrabold text-[#111827] mb-1">Package Revenue Share</div>
+                  <div className="text-[11px] text-gray-500 font-medium">Income proportion by subscription tier</div>
+                </div>
+                <div className="w-full md:w-2/3 space-y-2">
+                  <div className="w-full h-3 rounded-full bg-gray-100 flex overflow-hidden">
+                    <div 
+                      style={{ width: `${Math.round(((subscriptionStats.monthlyRevenue) / (subscriptionStats.totalRevenue || 1)) * 100)}%` }} 
+                      className="bg-pink-500 h-full transition-all duration-500" 
+                      title="Monthly Plan"
+                    />
+                    <div 
+                      style={{ width: `${Math.round(((subscriptionStats.yearlyRevenue) / (subscriptionStats.totalRevenue || 1)) * 100)}%` }} 
+                      className="bg-indigo-600 h-full transition-all duration-500" 
+                      title="Yearly Plan"
+                    />
+                  </div>
+                  <div className="flex items-center justify-between text-[11px] font-bold text-gray-600">
+                    <span className="flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 rounded-full bg-pink-500 inline-block"></span>
+                      Monthly Pass: ${subscriptionStats.monthlyRevenue.toFixed(2)} ({Math.round(((subscriptionStats.monthlyRevenue) / (subscriptionStats.totalRevenue || 1)) * 100)}%)
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 rounded-full bg-indigo-600 inline-block"></span>
+                      Yearly Pass: ${subscriptionStats.yearlyRevenue.toFixed(2)} ({Math.round(((subscriptionStats.yearlyRevenue) / (subscriptionStats.totalRevenue || 1)) * 100)}%)
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </motion.div>
+
           {/* Metrics Row */}
           <motion.div variants={containerVars} className="grid grid-cols-1 md:grid-cols-4 gap-5">
             {/* Total Students */}
@@ -437,8 +600,23 @@ export function AdminOverviewView() {
                       </div>
                       <div>
                         <div className="font-bold text-[15px] text-[#111827] mb-0.5">{member.name}</div>
-                        <div className="text-[12px] text-gray-500 font-medium">
+                        <div className="text-[12px] text-gray-500 font-medium flex items-center gap-2 flex-wrap">
                           <span className="capitalize">{member.role}</span> &middot; {member.school || "No school specified"}
+                          {member.role === "student" && (
+                            (member.subscriptionStatus === "active" || member.subscriptionStatus === "trialing" || (member.currentPeriodEnd && new Date(member.currentPeriodEnd) > new Date())) ? (
+                              <span className={`text-[10px] font-black px-2.5 py-0.5 rounded-full border shadow-2xs ${
+                                member.subscriptionPlan === "yearly"
+                                  ? "bg-indigo-50 text-indigo-700 border-indigo-200"
+                                  : "bg-pink-50 text-pink-700 border-pink-200"
+                              }`}>
+                                {member.subscriptionPlan === "yearly" ? "⭐ Yearly Pass ($12/yr)" : "📅 Monthly Pass ($8/mo)"}
+                              </span>
+                            ) : (
+                              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gray-100 text-gray-400 border border-gray-200">
+                                Free Member
+                              </span>
+                            )
+                          )}
                         </div>
                       </div>
                     </div>
