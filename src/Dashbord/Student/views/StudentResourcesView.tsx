@@ -109,6 +109,7 @@ export function StudentResourcesView() {
         console.warn("Could not fetch pricing settings:", e);
       }
 
+<<<<<<< HEAD
       // 2. Sync / Verify session if redirected from Stripe
       const urlParams = new URLSearchParams(window.location.search);
       const sessionId = urlParams.get("session_id");
@@ -142,6 +143,19 @@ export function StudentResourcesView() {
         } catch (e) {
           console.warn("Could not fetch subscription status:", e);
         }
+=======
+      // 2. Fetch Subscription Status
+      try {
+        const subRes = await fetch(`${API_BASE}/api/subscription/status`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const subData = await subRes.json();
+        if (subRes.ok && subData.subscription) {
+          setSubscription(subData.subscription);
+        }
+      } catch (e) {
+        console.warn("Could not fetch subscription status:", e);
+>>>>>>> 8c38c71e53278c876bb361f5f715b788e6ac961e
       }
 
       // 3. Fetch Resources
