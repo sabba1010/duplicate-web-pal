@@ -89,16 +89,37 @@ export function AdminOverviewView() {
     mentors: 5.2,
   };
 
+  // Load cached overview data instantly on mount for 0ms initial render
+  useEffect(() => {
+    try {
+      const cached = sessionStorage.getItem("goc_admin_overview_cache");
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed.users) setUsers(parsed.users);
+        if (parsed.opportunitiesCount !== undefined) setOpportunitiesCount(parsed.opportunitiesCount);
+        if (parsed.submissions) setSubmissions(parsed.submissions);
+        if (parsed.subscriptionStats) setSubscriptionStats(parsed.subscriptionStats);
+        setLoading(false);
+      }
+    } catch {
+      // Ignore cache parse error
+    }
+  }, []);
+
   const fetchData = async () => {
     try {
-      setLoading(true);
+      // Only show full spinner if we don't have any cached data loaded
+      if (!sessionStorage.getItem("goc_admin_overview_cache")) {
+        setLoading(true);
+      }
+
       const token = localStorage.getItem("goc_token");
 
       const [usersRes, oppsRes, subsRes, statsRes] = await Promise.all([
         fetch(`${API_BASE}/api/users`, {
           headers: { Authorization: `Bearer ${token}` }
         }),
-        fetch(`${API_BASE}/api/opportunities`),
+        fetch(`${API_BASE}/api/opportunities?countOnly=true`),
         fetch(`${API_BASE}/api/users/submissions`, {
           headers: { Authorization: `Bearer ${token}` }
         }),
@@ -107,24 +128,41 @@ export function AdminOverviewView() {
         }).catch(() => null)
       ]);
 
+      let freshUsers = users;
+      let freshOppsCount = opportunitiesCount;
+      let freshSubs = submissions;
+      let freshStats = subscriptionStats;
+
       if (usersRes.ok) {
         const data = await usersRes.json();
-        setUsers(data.users || []);
+        freshUsers = data.users || [];
+        setUsers(freshUsers);
       }
       if (oppsRes.ok) {
         const data = await oppsRes.json();
-        setOpportunitiesCount(data.count || 0);
+        freshOppsCount = data.count || 0;
+        setOpportunitiesCount(freshOppsCount);
       }
       if (subsRes.ok) {
         const data = await subsRes.json();
-        setSubmissions(data.submissions || []);
+        freshSubs = data.submissions || [];
+        setSubmissions(freshSubs);
       }
       if (statsRes && statsRes.ok) {
         const statsData = await statsRes.json();
         if (statsData.success && statsData.stats) {
-          setSubscriptionStats(statsData.stats);
+          freshStats = statsData.stats;
+          setSubscriptionStats(freshStats);
         }
       }
+
+      // Cache fresh data for instant next loads
+      sessionStorage.setItem("goc_admin_overview_cache", JSON.stringify({
+        users: freshUsers,
+        opportunitiesCount: freshOppsCount,
+        submissions: freshSubs,
+        subscriptionStats: freshStats
+      }));
     } catch (err) {
       console.error("Failed to load admin overview data", err);
     } finally {
