@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Search, Filter, ExternalLink, Calendar, Trash2, Check, Share2, X, Copy } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { API_BASE } from "../../../lib/api";
+import { AddToCalendarButtons } from "../../../components/ui/AddToCalendarButtons";
 
 export function StudentSavedView() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -103,7 +104,7 @@ export function StudentSavedView() {
               <th className="px-6 py-4">Opportunity</th>
               <th className="px-6 py-4">Deadline</th>
               <th className="px-6 py-4">Status</th>
-              <th className="px-6 py-4">Reminder</th>
+              <th className="px-6 py-4">Sync to Calendar</th>
               <th className="px-6 py-4 text-right">Actions</th>
             </tr>
           </thead>
@@ -132,7 +133,7 @@ export function StudentSavedView() {
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-slate-600">
-                  <span className="text-slate-400 text-xs italic">Not set</span>
+                  <AddToCalendarButtons opportunity={{ id: item._id, title: item.title, deadline: item.deadline, category: item.category, organization: item.organization, description: item.description }} />
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right">
                   <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">

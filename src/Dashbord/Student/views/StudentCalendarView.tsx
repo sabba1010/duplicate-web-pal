@@ -17,6 +17,8 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { API_BASE } from "../../../lib/api";
+import { parseOpportunityDeadline } from "../../../lib/calendarUtils";
+import { AddToCalendarButtons } from "../../../components/ui/AddToCalendarButtons";
 
 type ViewMode = "month" | "week" | "list";
 type FilterType = "all" | "saved" | "applied" | "personal";
@@ -31,6 +33,9 @@ interface CalendarEvent {
   isCustom?: boolean;
   opportunityId?: string;
   organization?: string;
+  category?: string;
+  deadlineStr?: string;
+  description?: string;
 }
 
 export function StudentCalendarView() {
@@ -59,6 +64,7 @@ export function StudentCalendarView() {
       });
 
       const allEvents: CalendarEvent[] = [];
+      const seenEventIds = new Set<string>();
 
       if (res.ok) {
         const data = await res.json();
@@ -66,31 +72,40 @@ export function StudentCalendarView() {
         // 1. Personal Reminders (Added manually by student)
         if (data.reminders) {
           data.reminders.forEach((r: any) => {
-            allEvents.push({
-              id: r._id,
-              title: r.title,
-              date: new Date(r.date),
-              type: "personal",
-              notes: r.notes,
-              isCompleted: r.isCompleted,
-              isCustom: true
-            });
+            const eventId = `personal_${r._id}`;
+            if (!seenEventIds.has(eventId)) {
+              seenEventIds.add(eventId);
+              allEvents.push({
+                id: r._id,
+                title: r.title,
+                date: new Date(r.date),
+                type: "personal",
+                notes: r.notes,
+                isCompleted: r.isCompleted,
+                isCustom: true
+              });
+            }
           });
         }
 
         // 2. Saved Opportunities (AUTOMATIC when student saves an opportunity)
         if (data.savedOpportunities) {
           data.savedOpportunities.forEach((opp: any) => {
-            if (opp.deadline) {
-              const d = new Date(opp.deadline);
-              if (!isNaN(d.getTime())) {
+            const eventId = `saved_${opp._id}`;
+            if (!seenEventIds.has(eventId)) {
+              seenEventIds.add(eventId);
+              const d = parseOpportunityDeadline(opp.deadline);
+              if (d) {
                 allEvents.push({
-                  id: `saved_${opp._id}`,
+                  id: eventId,
                   title: `${opp.title} (Saved Deadline)`,
                   date: d,
                   type: "saved",
                   opportunityId: opp._id,
-                  organization: opp.organization
+                  organization: opp.organization,
+                  category: opp.category,
+                  deadlineStr: opp.deadline,
+                  description: opp.description
                 });
               }
             }
@@ -100,16 +115,21 @@ export function StudentCalendarView() {
         // 3. Applied Opportunities (AUTOMATIC when student applies to an opportunity)
         if (data.appliedOpportunities) {
           data.appliedOpportunities.forEach((opp: any) => {
-            if (opp.deadline) {
-              const d = new Date(opp.deadline);
-              if (!isNaN(d.getTime())) {
+            const eventId = `applied_${opp._id}`;
+            if (!seenEventIds.has(eventId)) {
+              seenEventIds.add(eventId);
+              const d = parseOpportunityDeadline(opp.deadline);
+              if (d) {
                 allEvents.push({
-                  id: `applied_${opp._id}`,
+                  id: eventId,
                   title: `${opp.title} (Application Deadline)`,
                   date: d,
                   type: "applied",
                   opportunityId: opp._id,
-                  organization: opp.organization
+                  organization: opp.organization,
+                  category: opp.category,
+                  deadlineStr: opp.deadline,
+                  description: opp.description
                 });
               }
             }
@@ -540,6 +560,21 @@ export function StudentCalendarView() {
 
                     {evt.notes && (
                       <p className="text-[11px] text-[#8b7e85] font-medium">{evt.notes}</p>
+                    )}
+
+                    {evt.opportunityId && (
+                      <div className="pt-1 border-t border-slate-200/60">
+                        <AddToCalendarButtons 
+                          opportunity={{
+                            id: evt.opportunityId,
+                            title: evt.title.replace(/\s*\((Saved|Application) Deadline\)/i, ""),
+                            deadline: evt.deadlineStr || evt.date.toISOString(),
+                            category: evt.category,
+                            organization: evt.organization,
+                            description: evt.description
+                          }} 
+                        />
+                      </div>
                     )}
                   </div>
                 ))}

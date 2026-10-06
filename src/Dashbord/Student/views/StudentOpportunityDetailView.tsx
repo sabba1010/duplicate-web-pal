@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Bookmark, Share2, Calendar, X, Copy, Check, FileText, Send, Sparkles } from "lucide-react";
 import { useState, useEffect } from "react";
 import { API_BASE } from "../../../lib/api";
+import { AddToCalendarButtons } from "../../../components/ui/AddToCalendarButtons";
 
 interface OppCard {
   id: string;
@@ -183,56 +184,69 @@ export function StudentOpportunityDetailView({
           </p>
 
           {/* Actions */}
-          <div className="flex flex-wrap items-center gap-3 border-b border-[#e5e7eb] pb-10">
-            <button 
-              onClick={() => setShowApplyModal(true)}
-              className={`px-7 py-3 rounded-full text-[13px] font-black transition-all shadow-sm flex items-center gap-2 cursor-pointer ${
-                localApplied 
-                  ? "bg-emerald-600 text-white hover:bg-emerald-700" 
-                  : "bg-[#cf3478] text-white hover:bg-[#b82d69] active:scale-95"
-              }`}
-            >
-              {localApplied ? (
-                <>
-                  <Check className="h-4 w-4" /> Application Submitted
-                </>
-              ) : (
-                <>
-                  <Send className="h-4 w-4" /> Apply Now
-                </>
-              )}
-            </button>
-            
-            <button 
-              onClick={handleSave}
-              className={`px-6 py-3 rounded-full text-[13px] font-extrabold border transition-all flex items-center gap-2 cursor-pointer active:scale-95 ${
-                localSaved 
-                  ? "border-[#cf3478] text-[#cf3478] bg-[#fde8f1] shadow-sm" 
-                  : "border-[#e5e7eb] text-[#4b5563] hover:border-[#cf3478] hover:text-[#cf3478] bg-white"
-              }`}
-            >
-              <Bookmark className="h-4 w-4" fill={localSaved ? "currentColor" : "none"} /> 
-              {localSaved ? "Saved" : "Save"}
-            </button>
-            
-            <button 
-              onClick={() => setShowShareModal(true)}
-              className="px-6 py-3 rounded-full text-[13px] font-extrabold border border-[#e5e7eb] text-[#4b5563] hover:border-[#111827] hover:text-[#111827] bg-white transition-all flex items-center gap-2 cursor-pointer"
-            >
-              <Share2 className="h-4 w-4" /> Share
-            </button>
-
-            {opp.pdfFile && (
-              <a 
-                href={opp.pdfFile} 
-                download={`${opp.title.replace(/\s+/g, "_")}_Document.pdf`}
-                target="_blank"
-                rel="noreferrer"
-                className="px-6 py-3 rounded-full text-[13px] font-extrabold border border-indigo-200 text-indigo-600 bg-indigo-50 hover:bg-indigo-100 transition-all flex items-center gap-2 cursor-pointer shadow-xs"
+          <div className="space-y-4 border-b border-[#e5e7eb] pb-8">
+            <div className="flex flex-wrap items-center gap-3">
+              <button 
+                onClick={() => setShowApplyModal(true)}
+                className={`px-7 py-3 rounded-full text-[13px] font-black transition-all shadow-sm flex items-center gap-2 cursor-pointer ${
+                  localApplied 
+                    ? "bg-emerald-600 text-white hover:bg-emerald-700" 
+                    : "bg-[#cf3478] text-white hover:bg-[#b82d69] active:scale-95"
+                }`}
               >
-                <FileText className="h-4 w-4" /> Download PDF Document
-              </a>
-            )}
+                {localApplied ? (
+                  <>
+                    <Check className="h-4 w-4" /> Application Submitted
+                  </>
+                ) : (
+                  <>
+                    <Send className="h-4 w-4" /> Apply Now
+                  </>
+                )}
+              </button>
+              
+              <button 
+                onClick={handleSave}
+                className={`px-6 py-3 rounded-full text-[13px] font-extrabold border transition-all flex items-center gap-2 cursor-pointer active:scale-95 ${
+                  localSaved 
+                    ? "border-[#cf3478] text-[#cf3478] bg-[#fde8f1] shadow-sm" 
+                    : "border-[#e5e7eb] text-[#4b5563] hover:border-[#cf3478] hover:text-[#cf3478] bg-white"
+                }`}
+              >
+                <Bookmark className="h-4 w-4" fill={localSaved ? "currentColor" : "none"} /> 
+                {localSaved ? "Saved" : "Save"}
+              </button>
+              
+              <button 
+                onClick={() => setShowShareModal(true)}
+                className="px-6 py-3 rounded-full text-[13px] font-extrabold border border-[#e5e7eb] text-[#4b5563] hover:border-[#111827] hover:text-[#111827] bg-white transition-all flex items-center gap-2 cursor-pointer"
+              >
+                <Share2 className="h-4 w-4" /> Share
+              </button>
+
+              {opp.pdfFile && (
+                <a 
+                  href={opp.pdfFile} 
+                  download={`${opp.title.replace(/\s+/g, "_")}_Document.pdf`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-6 py-3 rounded-full text-[13px] font-extrabold border border-indigo-200 text-indigo-600 bg-indigo-50 hover:bg-indigo-100 transition-all flex items-center gap-2 cursor-pointer shadow-xs"
+                >
+                  <FileText className="h-4 w-4" /> Download PDF Document
+                </a>
+              )}
+            </div>
+
+            {/* External Calendar Integration Section */}
+            <div className="bg-[#fff7fa] border border-[#f1e4e9] rounded-2xl p-4 space-y-2 max-w-xl">
+              <div className="text-[11px] font-black uppercase text-[#cf3478] tracking-wider flex items-center gap-1.5">
+                <Calendar className="h-3.5 w-3.5" /> Synchronize Opportunity Deadline to External Calendar
+              </div>
+              <p className="text-[12px] text-slate-600 font-medium">
+                Add this deadline directly to your preferred personal calendar with one click:
+              </p>
+              <AddToCalendarButtons opportunity={opp} variant="full" className="pt-1" />
+            </div>
           </div>
         </div>
 
