@@ -114,6 +114,7 @@ export function StudentResourcesView() {
       const sessionId = urlParams.get("session_id");
       const isSuccess = urlParams.get("success");
 
+
       try {
         const endpoint = sessionId
           ? `${API_BASE}/api/subscription/verify-session?session_id=${sessionId}`
@@ -321,11 +322,10 @@ export function StudentResourcesView() {
             whileHover={{ y: -4 }}
             transition={{ duration: 0.2 }}
             onClick={() => setSelectedPlan("monthly")}
-            className={`relative bg-white rounded-3xl p-6 border-2 transition-all cursor-pointer flex flex-col justify-between shadow-sm ${
-              selectedPlan === "monthly"
+            className={`relative bg-white rounded-3xl p-6 border-2 transition-all cursor-pointer flex flex-col justify-between shadow-sm ${selectedPlan === "monthly"
                 ? "border-[#f14f98] ring-4 ring-[#f14f98]/10"
                 : "border-[#f1e4e9] hover:border-[#f9c8df]"
-            }`}
+              }`}
           >
             <div>
               <div className="flex items-center justify-between mb-4">
@@ -379,11 +379,10 @@ export function StudentResourcesView() {
             whileHover={{ y: -4 }}
             transition={{ duration: 0.2 }}
             onClick={() => setSelectedPlan("yearly")}
-            className={`relative bg-gradient-to-b from-[#fff7fa] to-white rounded-3xl p-6 border-2 transition-all cursor-pointer flex flex-col justify-between shadow-sm ${
-              selectedPlan === "yearly"
+            className={`relative bg-gradient-to-b from-[#fff7fa] to-white rounded-3xl p-6 border-2 transition-all cursor-pointer flex flex-col justify-between shadow-sm ${selectedPlan === "yearly"
                 ? "border-[#f14f98] ring-4 ring-[#f14f98]/10"
                 : "border-[#f9c8df] hover:border-[#f14f98]"
-            }`}
+              }`}
           >
             <span className="absolute -top-3 right-6 bg-gradient-to-r from-[#f14f98] to-[#7c5cbf] text-white text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full shadow-xs">
               Best Savings
@@ -550,11 +549,10 @@ export function StudentResourcesView() {
                       href={`${API_BASE}${selectedResource.pdfFile}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`flex items-center gap-2 w-full justify-center px-5 py-3 rounded-xl ${
-                        selectedResource.externalLink
+                      className={`flex items-center gap-2 w-full justify-center px-5 py-3 rounded-xl ${selectedResource.externalLink
                           ? "bg-[#fdf2f8] text-[#f14f98] font-bold hover:bg-[#fce7f3]"
                           : "bg-gradient-to-r from-[#f14f98] to-[#c2185b] text-white font-black shadow-md hover:shadow-lg"
-                      } text-[13px] transition-all`}
+                        } text-[13px] transition-all`}
                     >
                       <FileText className="h-4 w-4" />
                       Open PDF Document
@@ -724,11 +722,10 @@ export function StudentResourcesView() {
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`px-3 py-1.5 rounded-full text-[11px] font-black uppercase tracking-wider transition-all cursor-pointer ${
-                  activeCategory === cat
+                className={`px-3 py-1.5 rounded-full text-[11px] font-black uppercase tracking-wider transition-all cursor-pointer ${activeCategory === cat
                     ? "bg-[#f14f98] text-white shadow-sm"
                     : "bg-[#fdf2f8] text-[#c57090] hover:bg-[#fce7f3]"
-                }`}
+                  }`}
               >
                 {cat}
               </button>
